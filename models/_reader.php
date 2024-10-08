@@ -10,7 +10,6 @@ class Reader{
     private int $id;
     private string $name;
     private string $login;
-    private string $psw;
     private string $phone;
     private ReaderType $readerType;
     private bool $canLoan;
@@ -18,12 +17,11 @@ class Reader{
     private float $debt;
     private string $lastLogin;
 
-    function __construct($id, $name, $login, $psw, $phone, ReaderType $type, $canLoan, $canRegister, $lastLogin) {
+    function __construct($id, $name, $login, $phone, ReaderType $type, $canLoan, $canRegister, $lastLogin) {
+        if (self::isNameValid($name)) $this->name = $name;
+        if (self::isPhoneValid($phone)) $this->phone = $phone;
         $this->id = $id;
-        $this->name = $name;
         $this->login = $login;
-        $this->psw = $psw;
-        $this->phone = $phone;
         $this->readerType = $type;
         $this->canLoan = $canLoan;
         $this->canRegister = $canRegister;
@@ -31,16 +29,12 @@ class Reader{
     }
 
 
-    private function isNameValid(): bool{
-        return true;
+    private function isNameValid($nameToTest): bool{
+        return preg_match("/^[A-zÀ-ÿ][A-zÀ-ÿ']+\s([A-zÀ-ÿ']\s?)*[A-zÀ-ÿ][A-zÀ-ÿ']+$/", $nameToTest);
     }
 
-    private function isPasswordValid(): bool{
-        return true;
-    }
-
-    private function isPhoneValid(): bool{
-        return true;
+    private function isPhoneValid($phoneToTest): bool{
+        return preg_match("/^[1-9]{2}9[0-9]{8}$/", $phoneToTest);
     }
     
     public function get_id(){return $this->id;}
@@ -52,7 +46,6 @@ class Reader{
     public function get_canRegister(){return $this->canRegister;}
     public function get_debt(){return $this->debt;}
     public function get_lastLogin(){return $this->lastLogin;}
-
     
     public function set_login($login){$this->login = $login;}
     public function set_readerType(ReaderType $type){$this->readerType = $type;}
@@ -66,11 +59,15 @@ class Reader{
     public function set_name($name){
         if(self::isNameValid($name))
             $this->name = $name;
+        else
+            throw new UnexpectedValueException("Invalid name format.");
     }
 
     public function set_phone($phone){
         if(self::isPhoneValid($phone))
             $this->phone = $phone;
+        else
+            throw new UnexpectedValueException("Invalid phone format.");
     }
 }
 ?>
