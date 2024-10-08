@@ -1,0 +1,7 @@
+{
+    "php.validate.executablePath": "/usr/bin/php",
+    "php.suggest.basic": false,
+    "phpunit.phpunitBinary": "/usr/local/bin/phpunit",
+    "intelephense.environment.includePaths": ["vendor"]
+    
+}

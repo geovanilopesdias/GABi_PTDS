@@ -1,12 +1,12 @@
 <?php
 
-enum ReaderType{
-    case Librarian;
-    case Student;
-    case Teacher;
+enum ReaderType : string{
+    case LIBRARIAN = 'librarian';
+    case STUDENT = 'student';
+    case TEACHER = 'teacher';
 }
 
-class Reader{
+final class Reader{
     private int $id;
     private string $name;
     private string $login;
@@ -17,15 +17,42 @@ class Reader{
     private float $debt;
     private string $lastLogin;
 
-    function __construct($id, $name, $login, $phone, ReaderType $type, $canLoan, $canRegister, $lastLogin) {
+    private function __construct($name, $login, $phone, ReaderType $type, $canLoan, $canRegister) {
         if (self::isNameValid($name)) $this->name = $name;
         if (self::isPhoneValid($phone)) $this->phone = $phone;
-        $this->id = $id;
         $this->login = $login;
-        $this->readerType = $type;
+        $this->readerType = $type->value;
         $this->canLoan = $canLoan;
         $this->canRegister = $canRegister;
-        $this->lastLogin = $lastLogin;
+    }
+
+    public static function FetchedReader(array $data){
+        $reader = new Reader(
+            $data['name'],
+            $data['login'],
+            $data['phone'],
+            ReaderType::from($data['type']),
+            $data['can_loan'],
+            $data['can_register']
+        );
+        $reader->set_id($data['id']);
+        $reader->set_lastLogin($data['lastLogin']);
+    }
+
+    public static function Librarian($name, $login, $phone){
+        return new Reader($name, $login, $phone, ReaderType::LIBRARIAN, true, true);
+    }
+
+    public static function TeacherLoaner($name, $login, $phone){
+        return new Reader($name, $login, $phone, ReaderType::TEACHER, true, false);
+    }
+
+    public static function TeacherNonLoaner($name, $login, $phone){
+        return new Reader($name, $login, $phone, ReaderType::TEACHER, false, false);
+    }
+
+    public static function Student($name, $login, $phone){
+        return new Reader($name, $login, $phone, ReaderType::STUDENT, false, false);
     }
 
 
@@ -41,15 +68,16 @@ class Reader{
     public function get_name(){return $this->name;}
     public function get_login(){return $this->login;}
     public function get_phone(){return $this->phone;}
-    public function get_readerType(){return $this->readerType;}
+    public function get_readerType(){return $this -> readerType -> value;}
     public function get_canLoan(){return $this->canLoan;}
     public function get_canRegister(){return $this->canRegister;}
     public function get_debt(){return $this->debt;}
     public function get_lastLogin(){return $this->lastLogin;}
     
+    private function set_id(int $id){$this->id = $id;}
     public function set_login($login){$this->login = $login;}
-    public function set_readerType(ReaderType $type){$this->readerType = $type;}
     public function set_canLoan($canLoan){$this->canLoan = $canLoan;}
+    public function set_lastLogin($lastLogin){$this->lastLogin = $lastLogin;}
 
     public function set_debt($debt){
         if($debt >= 0)
