@@ -43,8 +43,25 @@ final class Edition{
         return $edition;
     }
 
-    private function isIsbnValid($isbnToTest): bool{
-        return true;
+    private function isIsbnValid(string $isbnToTest): bool{
+        // ISBN need to be 13 characters long and purely numeric:
+        if (strlen($isbnToTest) != 13) 
+            throw new UnexpectedValueException("ISBN has more (or less) than 13 digits.");
+        if (!ctype_digit($isbnToTest))
+            throw new UnexpectedValueException("ISBN has non-numeric digits.");
+        $digits = str_split($isbnToTest);
+        $sum = 0;
+        // Iterate over the ISBN, but the last digit:
+        for ($d = 0; $d < strlen($isbnToTest)-1; $d++) {
+            if ($d == 0 or $d % 2 == 0) $sum += $digits[$d];
+            else $sum += $digits[$d] * 3;
+        };
+        $remainder = $sum % 10;
+        
+        // If the (sum%10) = 0, last digit should be 0; (10-remainder) otherwise:
+        if ($isbnToTest[strlen($isbnToTest)-1] == 0 and $remainder == 0) return true;
+        if ($isbnToTest[strlen($isbnToTest)-1] == 10 - $remainder) return true;
+        else return false;
     }    
 
     public function get_id(){return $this->id;}
