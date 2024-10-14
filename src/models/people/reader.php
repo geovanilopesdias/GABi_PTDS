@@ -26,6 +26,7 @@ final class Reader{
         $this->canRegister = $canRegister;
     }
 
+    // Would constructors to fetching and inserting both be needed
     public static function FetchedReader(array $data){
         $reader = new Reader(
             $data['name'],
@@ -37,6 +38,7 @@ final class Reader{
         );
         $reader->set_id($data['id']);
         $reader->set_lastLogin($data['lastLogin']);
+        return $reader;
     }
 
     public static function Librarian($name, $login, $phone){

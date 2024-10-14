@@ -6,7 +6,7 @@
             "Geovani\\GaBiPtds\\": "src/"
         }
     },
-    "require-dev": {
+    "require": {
         "phpunit/phpunit": "^11.4"
     }
 }
