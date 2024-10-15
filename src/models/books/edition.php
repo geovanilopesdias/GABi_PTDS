@@ -1,48 +1,55 @@
 <?php
 
 final class Edition{
-    private int $id;
-    private string $isbn;
-    private int $id_opus;
-    private int $id_publisher;
-    private int $edition_number;
-    private int $volume;
-    private int $id_collection;
-    private int $pages;
-    private int $publishing_year;
+    private ?int $id, $volume, $collection_id;
+    private ?string $isbn;
+    private int $opus_id, $publisher_id,
+    $edition_number, $pages, $publishing_year;
     private array $cover_colors;
 
     private function __construct(
-        $id, $isbn, $idOpus, $idPublisher, $editionNumber, $volume,
-        $idCollection, $pages, $publishingYear, $cover_colors) {
+        ?string $isbn, int $opus_id, int $publisher_id, int $editionNumber, ?int $volume,
+        ?int $collection_id, int $pages, ?int $publishing_year, array $cover_colors, ?int $id = null) {
         $this->id = $id;
         $this->isbn = $isbn;
-        $this->id_opus = $idOpus;
-        $this->id_publisher = $idPublisher;
+        $this->opus_id = $opus_id;
+        $this->publisher_id = $publisher_id;
         $this->edition_number = $editionNumber;
         $this->volume = $volume;
-        $this->id_collection = $idCollection;
+        $this->collection_id = $collection_id;
         $this->pages = $pages;
-        $this->publishing_year = $publishingYear;
+        $this->publishing_year = $publishing_year;
         $this->cover_colors = $cover_colors;
     }
 
-    public static function FetchedEdition(array $data){
-        $edition = new Edition(
-            $data['id'],
-            $data['isbn'],
-            $data['id_opus'],
-            $data['id_publisher'],
-            $data['edition_number'],
-            $data['volume'],
-            $data['id_collection'],
-            $data['pages'],
-            $data['publishing_year'],
-            $data['cover_colors'],
-        );
-        return $edition;
+    public function toArray(){
+        return (array) $this;
     }
 
+    public static function fromArray(array $data){
+        return new Edition(
+            $data['isbn'],
+            $data['opus_id'], $data['publisher_id'],
+            $data['edition_number'], $data['volume'],
+            $data['collection_id'],
+            $data['pages'], $data['publishing_year'],
+            $data['cover_colors'],
+            $data['id']
+        );
+    }  
+
+    public function get_id(){return $this->id;}
+    public function get_isbn(){return $this->isbn;}
+    public function get_opus_id(){return $this->opus_id;}
+    public function get_publisher_id(){return $this->publisher_id;}
+    public function get_edition_number(){return $this -> edition_number;}
+    public function get_volume(){return $this->volume;}
+    public function get_collection_id(){return $this->collection_id;}
+    public function get_pages(){return $this->pages;}
+    public function get_publishing_year(){return $this->publishing_year;}
+    public function get_cover_colors(){return $this->cover_colors;}
+
+    // ISBN:
     private function isIsbnValid(string $isbnToTest): bool{
         // ISBN need to be 13 characters long and purely numeric:
         if (strlen($isbnToTest) != 13) 
@@ -62,32 +69,21 @@ final class Edition{
         if ($isbnToTest[strlen($isbnToTest)-1] == 0 and $remainder == 0) return true;
         if ($isbnToTest[strlen($isbnToTest)-1] == 10 - $remainder) return true;
         else return false;
-    }    
+    }  
 
-    public function get_id(){return $this->id;}
-    public function get_isbn(){return $this->isbn;}
-    public function get_id_opus(){return $this->id_opus;}
-    public function get_id_publisher(){return $this->id_publisher;}
-    public function get_edition_number(){return $this -> edition_number;}
-    public function get_volume(){return $this->volume;}
-    public function get_id_collection(){return $this->id_collection;}
-    public function get_pages(){return $this->pages;}
-    public function get_publishing_year(){return $this->publishing_year;}
-    public function get_cover_colors(){return $this->cover_colors;}
-
-    public function set_id_opus(){return $this->id_opus;}
-    public function set_id_publisher(){return $this->id_publisher;}
-    public function set_edition_number(){return $this -> edition_number;}
-    public function set_volume(){return $this->volume;}
-    public function set_id_collection(){return $this->id_collection;}
-    public function set_pages(){return $this->pages;}
-    public function set_publishing_year(){return $this->publishing_year;}
-    public function set_cover_colors(){return $this->cover_colors;}
-    
     public function set_isbn($isbn){
         if(self::isIsbnValid($isbn))$this -> isbn = $isbn;
         else throw new UnexpectedValueException("Invalid ISBN code.");
     }
 
+    public function set_opus_id($opus_id){$this->opus_id = $opus_id;}
+    public function set_publisher_id($publisher_id){$this->publisher_id = $publisher_id;}
+    public function set_edition_number($edition_number){$this -> edition_number = $edition_number;}
+    public function set_volume($volume){$this->volume = $volume;}
+    public function set_collection_id($collection_id){$this->collection_id = $collection_id;}
+    public function set_pages($pages){$this->pages = $pages;}
+    public function set_publishing_year($publishing_year){$this->publishing_year = $publishing_year;}
+    public function set_cover_colors($cover_colors){$this->cover_colors = $cover_colors;}
+   
 }
 ?>

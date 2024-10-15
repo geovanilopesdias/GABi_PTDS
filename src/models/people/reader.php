@@ -21,7 +21,7 @@ final class Reader{
         if (self::isNameValid($name)) $this->name = $name;
         if (self::isPhoneValid($phone)) $this->phone = $phone;
         $this->login = $login;
-        $this->readerType = $type->value;
+        $this->readerType = $type;
         $this->canLoan = $canLoan;
         $this->canRegister = $canRegister;
     }
@@ -70,7 +70,7 @@ final class Reader{
     public function get_name(){return $this->name;}
     public function get_login(){return $this->login;}
     public function get_phone(){return $this->phone;}
-    public function get_readerType(){return $this -> readerType -> value;}
+    public function get_readerType(): string{return $this -> readerType -> value;}
     public function get_canLoan(){return $this->canLoan;}
     public function get_canRegister(){return $this->canRegister;}
     public function get_debt(){return $this->debt;}
