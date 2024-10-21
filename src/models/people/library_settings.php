@@ -12,13 +12,16 @@ final class LibrarySettings{
         $this->head_reserve_queue_deadline = $head_reserve_queue_deadline;
     }
 
-    public static function FetchedSetting(array $data){
-        $settings = new LibrarySettings(
+    public function toArray(){
+        return (array) $this;
+    }
+
+    public static function fromArray(array $data): LibrarySettings{
+        return new LibrarySettings(
             $data['loan_deadline'],
             $data['late_fee'],
             $data['late_fee_period'],
             $data['head_reserve_queue_deadline']);
-        return $settings;
     }
 
     public function get_loan_deadline(){return $this -> loan_deadline;}

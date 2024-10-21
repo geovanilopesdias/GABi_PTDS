@@ -8,11 +8,14 @@ final class Enrollment{
         $this->classroom_id = $classroom_id;
     }
     
-    public static function FetchedEnrollment(array $data){
-        $enrollment = new Enrollment(
+    public function toArray(){
+        return (array) $this;
+    }
+
+    public static function fromArray(array $data): Enrollment{
+        return new Enrollment(
             $data['student_id'],
             $data['classroom_id']);
-        return $enrollment;
     }
 
     public function get_student_id(){return $this->student_id;}

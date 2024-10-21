@@ -8,11 +8,14 @@ final class Classroom{
         $this->year = $year;
     }
 
-    public static function FetchedClassroom(array $data){
-        $classroom = new Classroom(
+    public function toArray(){
+        return (array) $this;
+    }
+
+    public static function fromArray(array $data): Classroom{
+        return new Classroom(
             $data['name'],
             $data['year']);
-        return $classroom;
     }
 
     public function get_name(){return $this -> name;}

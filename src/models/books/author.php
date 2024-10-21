@@ -1,23 +1,46 @@
 <?php
 
 final class Author{
-    private int $id, $birth_year;
+    private ?int $id;
+    private int $birth_year;
     private string $name;
 
-    private function __construct($name, $birth_year, $id = 0) {
-        $this->id = $id;
-        $this->birth_year = $birth_year;
-        $this->set_name($name);
-    }
-
-    public static function fromArray(array $data): Author{
-        return new Author(
-            $data['name'], $data['birth_year'], $data['id']
-        );
+    private function __construct(string $name, int $birth_year, ?int $id = null) {
+        $this -> id = $id;
+        $this -> birth_year = $birth_year;
+        $this -> name = $name;
     }
 
     public function toArray(): array{
         return (array) $this;
+    }
+
+    /**
+     * Static factory for Author from an array.
+     * 
+     * Differently from homonym methods in other classes, the boolean 
+     * confirmation of its role inside a fetching call is meant to avoid
+     * validation instrisic to some setters, as arrays generated from
+     * DQL only contain data already validated.
+     * 
+     * @param array $data The array containing the data to instantiation.
+     * @param bool $for_fetching The confirmation if the usage is or not for fetching.
+     * @return Author
+     */
+    public static function fromArray(array $data, bool $for_fetching): Author{
+        if ($for_fetching)
+            return new Author(
+                $data['name'],
+                $data['birth_year'],
+                $data['id']
+            );
+        else
+            if (Author::isNameValid($data['name']))
+                return new Author(
+                    $data['name'],
+                    $data['birth_year'],
+                    $data['id']
+                );
     }
 
     private function isNameValid($nameToTest): bool{

@@ -1,60 +1,92 @@
 <?php
 
-enum ReaderType : string{
+enum ReaderRole : string{
     case LIBRARIAN = 'librarian';
     case STUDENT = 'student';
     case TEACHER = 'teacher';
 }
 
 final class Reader{
-    private int $id;
-    private string $name;
-    private string $login;
-    private string $phone;
-    private ReaderType $readerType;
-    private bool $canLoan;
-    private bool $canRegister;
-    private float $debt;
-    private string $lastLogin;
+    private ?int $id;
+    private string $name, $login, $phone, $lastLogin;
+    private ReaderRole $role;
+    private bool $can_loan, $canRegister;
+    private ?float $debt;
 
-    private function __construct($name, $login, $phone, ReaderType $type, $canLoan, $canRegister) {
-        if (self::isNameValid($name)) $this->name = $name;
-        if (self::isPhoneValid($phone)) $this->phone = $phone;
+    private function __construct(
+        string $login, ReaderRole $role, bool $can_loan, bool $canRegister,
+        ?int $id = null, ?float $debt = null) {
         $this->login = $login;
-        $this->readerType = $type;
-        $this->canLoan = $canLoan;
+        $this->role = $role;
+        $this->can_loan = $can_loan;
         $this->canRegister = $canRegister;
+        $this->id = $id;
+        $this->debt = $debt;
+    }
+    
+    public function toArray(){
+        return (array) $this;
     }
 
-    // Would constructors to fetching and inserting both be needed
-    public static function FetchedReader(array $data){
-        $reader = new Reader(
-            $data['name'],
+    /**
+     * Static factory for Reader from an array.
+     * 
+     * Differently from homonym methods in other classes, the boolean 
+     * confirmation of its role inside a fetching call is meant to avoid
+     * validation instrisic to some setters, as arrays generated from
+     * DQL only contain data already validated.
+     * 
+     * @param array $data The array containing the data to instantiation.
+     * @param bool $for_fetching The confirmation if the usage is or not for fetching.
+     * @return Opus
+     */
+    public static function fromArray(array $data, bool $for_fetching): Reader{
+        $r = new Reader(
             $data['login'],
-            $data['phone'],
-            ReaderType::from($data['type']),
+            ReaderRole::from($data['role']),
             $data['can_loan'],
-            $data['can_register']
+            $data['can_register'],
+            $data['id'],
+            $data['debt']
         );
-        $reader->set_id($data['id']);
-        $reader->set_lastLogin($data['lastLogin']);
-        return $reader;
+        if ($for_fetching) {
+            $r -> name = $data['name'];
+            $r -> phone = $data['phone'];
+        }
+        else{
+            $r -> set_name(['name']);
+            $r -> set_phone($data['phone']);
+        }
+        return $r;
+    }
+    //string $login, ReaderRole $role, bool $can_loan, bool $canRegister
+
+    public static function Librarian(string $login, string $name, string $phone){
+        $r = new Reader($login, ReaderRole::LIBRARIAN, true, true);
+        $r -> set_name($name);
+        $r -> set_phone($phone);
+        return $r;
     }
 
-    public static function Librarian($name, $login, $phone){
-        return new Reader($name, $login, $phone, ReaderType::LIBRARIAN, true, true);
-    }
-
-    public static function TeacherLoaner($name, $login, $phone){
-        return new Reader($name, $login, $phone, ReaderType::TEACHER, true, false);
+    public static function TeacherLoaner(string $login, string $name, string $phone){
+        $r = new Reader($login, ReaderRole::TEACHER, true, true);
+        $r -> set_name($name);
+        $r -> set_phone($phone);
+        return $r;
     }
 
     public static function TeacherNonLoaner($name, $login, $phone){
-        return new Reader($name, $login, $phone, ReaderType::TEACHER, false, false);
+        $r = new Reader($login, ReaderRole::TEACHER, false, true);
+        $r -> set_name($name);
+        $r -> set_phone($phone);
+        return $r;
     }
 
     public static function Student($name, $login, $phone){
-        return new Reader($name, $login, $phone, ReaderType::STUDENT, false, false);
+        $r = new Reader($login, ReaderRole::TEACHER, false, false);
+        $r -> set_name($name);
+        $r -> set_phone($phone);
+        return $r;
     }
 
 
@@ -70,15 +102,14 @@ final class Reader{
     public function get_name(){return $this->name;}
     public function get_login(){return $this->login;}
     public function get_phone(){return $this->phone;}
-    public function get_readerType(): string{return $this -> readerType -> value;}
-    public function get_canLoan(){return $this->canLoan;}
+    public function get_role(): string {return $this -> role -> value;}
+    public function get_can_loan(){return $this->can_loan;}
     public function get_canRegister(){return $this->canRegister;}
     public function get_debt(){return $this->debt;}
     public function get_lastLogin(){return $this->lastLogin;}
     
-    private function set_id(int $id){$this->id = $id;}
     public function set_login($login){$this->login = $login;}
-    public function set_canLoan($canLoan){$this->canLoan = $canLoan;}
+    public function set_can_loan($can_loan){$this->can_loan = $can_loan;}
     public function set_lastLogin($lastLogin){$this->lastLogin = $lastLogin;}
 
     public function set_debt($debt){

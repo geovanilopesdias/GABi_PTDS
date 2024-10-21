@@ -8,11 +8,14 @@ final class Teaching{
         $this->classroom_id = $classroom_id;
     }
 
-    public static function FetchedTeaching(array $data){
-        $teaching = new Teaching(
+    public function toArray(){
+        return (array) $this;
+    }
+
+    public static function fromArray(array $data): Teaching{
+        return new Teaching(
             $data['teacher_id'],
             $data['classroom_id']);
-        return $teaching;
     }
 
     public function get_teacher_id(){return $this->teacher_id;}

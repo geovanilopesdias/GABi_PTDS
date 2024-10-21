@@ -11,13 +11,23 @@ final class Opus{
         return (array) $this;
     }
 
-    public static function fromArray(array $data, bool $for_fetching){
+    /**
+     * Static factory for Opus from an array.
+     * 
+     * Differently from homonym methods in other classes, the boolean 
+     * confirmation of its role inside a fetching call is meant to avoid
+     * validation instrisic to some setters, as arrays generated from
+     * DQL only contain data already validated.
+     * 
+     * @param array $data The array containing the data to instantiation.
+     * @param bool $for_fetching The confirmation if the usage is or not for fetching.
+     * @return Opus
+     */
+    public static function fromArray(array $data, bool $for_fetching): Opus{
         $o = new Opus($data['title']);
         $fields_without_valiation = ['id', 'original_year', 'cutter_sanborn'];
         foreach ($fields_without_valiation as $f) {
-            if (!empty($data[$f])) {
-                $o -> $f = $data[$f];
-            }
+            if (!empty($data[$f])) $o -> $f = $data[$f];
         }
         if ($for_fetching) {
             $o -> ddc = $data['ddc'];

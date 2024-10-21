@@ -7,18 +7,12 @@ final class Edition{
     $edition_number, $pages, $publishing_year;
     private array $cover_colors;
 
-    private function __construct(
-        ?string $isbn, int $opus_id, int $publisher_id, int $editionNumber, ?int $volume,
-        ?int $collection_id, int $pages, ?int $publishing_year, array $cover_colors, ?int $id = null) {
-        $this->id = $id;
-        $this->isbn = $isbn;
+    private function __construct(int $opus_id, int $publisher_id, int $editionNumber,
+        int $pages, array $cover_colors) {
         $this->opus_id = $opus_id;
         $this->publisher_id = $publisher_id;
         $this->edition_number = $editionNumber;
-        $this->volume = $volume;
-        $this->collection_id = $collection_id;
         $this->pages = $pages;
-        $this->publishing_year = $publishing_year;
         $this->cover_colors = $cover_colors;
     }
 
@@ -26,17 +20,23 @@ final class Edition{
         return (array) $this;
     }
 
-    public static function fromArray(array $data){
-        return new Edition(
-            $data['isbn'],
-            $data['opus_id'], $data['publisher_id'],
-            $data['edition_number'], $data['volume'],
-            $data['collection_id'],
-            $data['pages'], $data['publishing_year'],
-            $data['cover_colors'],
-            $data['id']
+    public static function fromArray(array $data, bool $for_fetching): Edition{
+        $e = new Edition(
+            $data['opus_id'],
+            $data['publisher_id'],
+            $data['edition_number'],
+            $data['pages'],
+            $data['cover_colors']
         );
-    }  
+        $fields_without_valiation = ['id', 'volume', 'collection_id'];
+        foreach ($fields_without_valiation as $f) 
+            if (!empty($data[$f])) $e -> $f = $data[$f];
+        
+        if ($for_fetching) $e -> isbn = $data['isbn'];
+        else $e -> set_isbn($data['isbn']);
+        
+        return $e;
+    }
 
     public function get_id(){return $this->id;}
     public function get_isbn(){return $this->isbn;}
@@ -49,7 +49,6 @@ final class Edition{
     public function get_publishing_year(){return $this->publishing_year;}
     public function get_cover_colors(){return $this->cover_colors;}
 
-    // ISBN:
     private function isIsbnValid(string $isbnToTest): bool{
         // ISBN need to be 13 characters long and purely numeric:
         if (strlen($isbnToTest) != 13) 
