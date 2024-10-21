@@ -26,7 +26,7 @@ final class Author{
 
     public function get_id() {return $this->id;}
     public function get_name() {return $this->name;}
-    public function get_birth_year() {return $this->$birth_year;}
+    public function get_birth_year() {return $this->birth_year;}
 
     public function set_name(string $name) {
       if (self::isNameValid($name))

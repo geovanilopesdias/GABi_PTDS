@@ -44,21 +44,21 @@ final class Loan{
     }
 
     public function get_id(): int {return $this->id;}
-    public function get_id_copy(): int {return $this->id_copy;}
-    public function get_id_reader(): int {return $this->id_reader;}
-    public function get_id_opener(): int {return $this->id_opener;}
-    public function get_id_closer(): int {return $this->id_closer;}
-    public function get_id_receiver(): int {return $this->id_receiver;}
-    public function get_date_opening(): string {return $this->date_opening;}
-    public function get_date_closing(): string {return $this->date_closing;}
-    public function get_date_loan(): string {return $this->date_loan;}
-    public function get_date_return(): string {return $this->date_return;}
+    public function get_id_copy(): int {return $this->copy_id;}
+    public function get_id_reader(): int {return $this->reader_id;}
+    public function get_id_opener(): int {return $this->opener_id;}
+    public function get_id_closer(): int {return $this->closer_id;}
+    public function get_id_receiver(): int {return $this->receiver_id;}
+    public function get_date_opening(): string {return $this->opening_date;}
+    public function get_date_closing(): string {return $this->closing_date;}
+    public function get_date_loan(): string {return $this->loan_date;}
+    public function get_date_return(): string {return $this->return_date;}
     public function get_debt(): float {return $this->debt;}
     
-    public function set_id_closer(int $id_closer){$this->id_closer = $id_closer;}
-    public function set_id_receiver(int $id_receiver){$this->id_receiver = $id_receiver;}
-    public function set_date_closing(string $date_loan){$this->date_loan = $date_loan;}
-    public function set_date_return(string $date_return){$this->date_return = $date_return;}
+    public function set_id_closer(int $id_closer){$this->closer_id = $id_closer;}
+    public function set_id_receiver(int $id_receiver){$this->receiver_id = $id_receiver;}
+    public function set_date_closing(string $date_loan){$this->loan_date = $date_loan;}
+    public function set_date_return(string $date_return){$this->return_date = $date_return;}
     public function set_debt(float $debt){$this->debt = $debt;}
     
 

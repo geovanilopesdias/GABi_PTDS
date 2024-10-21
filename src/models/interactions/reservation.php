@@ -11,12 +11,16 @@ final class Reservation{
         $this->operation_date = $operation_date;
     }
 
-    public static function FetchedRecomendation(array $data){
-        $reservation = new Reservation(
+    public function toArray(){
+        return (array) $this;
+    }
+
+    public static function fromArray(array $data){
+        return new Reservation(
             $data['opus_id'],
             $data['reader_id'],
-            $data['operation_date']);
-        return $reservation;
+            $data['operation_date']
+        );
     }
 
     public function get_opus_id(){return $this->opus_id;}

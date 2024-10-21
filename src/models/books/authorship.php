@@ -15,7 +15,7 @@ final class Authorship{
     }
 
     public function toArray(): array{
-        return (array) $author;
+        return (array) $this;
     }
 
     public function get_opus_id() {return $this->opus_id;}
