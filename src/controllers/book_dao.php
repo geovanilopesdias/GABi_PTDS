@@ -1,5 +1,6 @@
 <?php
-require_once 'connection.php';
+
+require_once 'dao_mng.php';
 
 
 ?>

@@ -10,16 +10,16 @@ final class Reader{
     private ?int $id;
     private string $name, $login, $phone, $lastLogin;
     private ReaderRole $role;
-    private bool $can_loan, $canRegister;
+    private bool $can_loan, $can_register;
     private ?float $debt;
 
     private function __construct(
-        string $login, ReaderRole $role, bool $can_loan, bool $canRegister,
+        string $login, ReaderRole $role, bool $can_loan, bool $can_register,
         ?int $id = null, ?float $debt = null) {
         $this->login = $login;
         $this->role = $role;
         $this->can_loan = $can_loan;
-        $this->canRegister = $canRegister;
+        $this->can_register = $can_register;
         $this->id = $id;
         $this->debt = $debt;
     }
@@ -59,7 +59,6 @@ final class Reader{
         }
         return $r;
     }
-    //string $login, ReaderRole $role, bool $can_loan, bool $canRegister
 
     public static function Librarian(string $login, string $name, string $phone){
         $r = new Reader($login, ReaderRole::LIBRARIAN, true, true);
@@ -75,14 +74,14 @@ final class Reader{
         return $r;
     }
 
-    public static function TeacherNonLoaner($name, $login, $phone){
+    public static function TeacherNonLoaner(string $name, string $login, string $phone){
         $r = new Reader($login, ReaderRole::TEACHER, false, true);
         $r -> set_name($name);
         $r -> set_phone($phone);
         return $r;
     }
 
-    public static function Student($name, $login, $phone){
+    public static function Student(string $name, string $login, string $phone){
         $r = new Reader($login, ReaderRole::TEACHER, false, false);
         $r -> set_name($name);
         $r -> set_phone($phone);
@@ -104,7 +103,7 @@ final class Reader{
     public function get_phone(){return $this->phone;}
     public function get_role(): string {return $this -> role -> value;}
     public function get_can_loan(){return $this->can_loan;}
-    public function get_canRegister(){return $this->canRegister;}
+    public function get_can_register(){return $this->can_register;}
     public function get_debt(){return $this->debt;}
     public function get_lastLogin(){return $this->lastLogin;}
     
