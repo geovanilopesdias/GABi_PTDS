@@ -1,9 +1,8 @@
 <?php
 final class Enrollment{
-    private int $student_id;
-    private string $classroom_id;
+    private int $student_id, $classroom_id;
 
-    private function __construct($student_id, $classroom_id) {
+    private function __construct(int $student_id, int $classroom_id) {
         $this->student_id = $student_id;
         $this->classroom_id = $classroom_id;
     }
@@ -18,8 +17,8 @@ final class Enrollment{
             $data['classroom_id']);
     }
 
-    public function get_student_id(){return $this->student_id;}
-    public function get_classroom_id(){return $this->classroom_id;}
+    public function get_student_id(): int{return $this->student_id;}
+    public function get_classroom_id(): int{return $this->classroom_id;}
 }
 
 ?>

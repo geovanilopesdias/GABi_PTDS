@@ -108,7 +108,7 @@ final class Reader{
     public function get_lastLogin(){return $this->lastLogin;}
     
     public function set_login($login){$this->login = $login;}
-    public function set_can_loan($can_loan){$this->can_loan = $can_loan;}
+    public function set_can_loan(bool $can_loan){$this->can_loan = $can_loan;}
     public function set_lastLogin($lastLogin){$this->lastLogin = $lastLogin;}
 
     public function set_debt($debt){
