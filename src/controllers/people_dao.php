@@ -5,11 +5,11 @@ require '../models/people/reader.php';
 require '../models/people/classroom.php';
 require '../models/people/teaching.php';
 require '../models/people/enrollment.php';
+require '../book_dao.php';
 
 final class PeopleDAO{
-    
     // Registration:
-    public function register_student(array $data, int $user_id){
+    public static function register_student(array $data, int $user_id){
         if (DAOManager::can_user_register($user_id)){
             $db_man = new DAOManager();
             $s = Reader::Student($data['name'], $data['login'], $data['phone']);
@@ -18,7 +18,7 @@ final class PeopleDAO{
         else return false;
     }
 
-    public function register_loaner_teacher(array $data, int $user_id){
+    public static function register_loaner_teacher(array $data, int $user_id){
         if (DAOManager::can_user_register($user_id)){
             $db_man = new DAOManager();
             $s = Reader::TeacherLoaner($data['name'], $data['login'], $data['phone']);
@@ -27,7 +27,7 @@ final class PeopleDAO{
         else return false;
     }
 
-    public function register_non_loaner_teacher(array $data, int $user_id){
+    public static function register_non_loaner_teacher(array $data, int $user_id){
         if (DAOManager::can_user_register($user_id)){
             $db_man = new DAOManager();
             $s = Reader::TeacherNonLoaner($data['name'], $data['login'], $data['phone']);
@@ -36,7 +36,7 @@ final class PeopleDAO{
         else return false;
     }
 
-    public function register_classroom(array $data, int $user_id){
+    public static function register_classroom(array $data, int $user_id){
         if (DAOManager::can_user_register($user_id)){
             $db_man = new DAOManager();
             $c = Classroom::fromArray($data);
@@ -45,7 +45,7 @@ final class PeopleDAO{
         else return false;
     }
 
-    public function register_enrollment(array $data, int $user_id){
+    public static function register_enrollment(array $data, int $user_id){
         if (DAOManager::can_user_register($user_id)){
             $db_man = new DAOManager();
             $e = Enrollment::fromArray($data);
@@ -54,7 +54,7 @@ final class PeopleDAO{
         else return false;
     }
 
-    public function register_teaching(array $data, int $user_id){
+    public static function register_teaching(array $data, int $user_id){
         if (DAOManager::can_user_register($user_id)){
             $db_man = new DAOManager();
             $t = Teaching::fromArray($data);
@@ -63,48 +63,51 @@ final class PeopleDAO{
         else return false;
     }
     
+
+
     // Updating:
-    public function edit_reader(array $data, int $user_id){
+    public static function edit_reader(array $data, int $user_id){
         if (DAOManager::can_user_register($user_id)){
             $db_man = new DAOManager();
             $t = Reader::fromArray($data, false);
-            return $db_man -> update_entity_with_id_in(DB::READER_TABLE, $t -> toArray());
+            return $db_man -> update_entity_in(DB::READER_TABLE, $t -> toArray());
         }
         else return false;
     }
 
-    public function edit_classroom(array $data, int $user_id){
+    public static function edit_classroom(array $data, int $user_id){
         if (DAOManager::can_user_register($user_id)){
             $db_man = new DAOManager();
             $c = Classroom::fromArray($data);
-            return $db_man -> update_entity_with_id_in(DB::CLASSROOM_TABLE, $c -> toArray());
+            return $db_man -> update_entity_in(DB::CLASSROOM_TABLE, $c -> toArray());
         }
         else return false;
     }
 
-    public function authorize_teacher_as_loaner(int $teacher_id, int $user_id){
+    public static function authorize_teacher_as_loaner(int $teacher_id, int $user_id){
         /** @var Reader $teacher  */
         if (DAOManager::can_user_register($user_id)){
             $db_man = new DAOManager();
+            /** @var Reader $teacher  */
             $teacher = self::fetch_reader_by_id($teacher_id);
             $teacher -> set_can_loan(true);
-            return $db_man -> update_entity_with_id_in(DB::READER_TABLE, $teacher -> toArray());
+            return $db_man -> update_entity_in(DB::READER_TABLE, $teacher -> toArray());
         }
         return false;
     }
 
-    public function disallow_teacher_as_loaner(int $teacher_id, int $user_id){
-        /** @var Reader $teacher  */
+    public static function disallow_teacher_as_loaner(int $teacher_id, int $user_id){       
         if (DAOManager::can_user_register($user_id)){
             $db_man = new DAOManager();
+            /** @var Reader $teacher  */
             $teacher = self::fetch_reader_by_id($teacher_id);
             $teacher -> set_can_loan(false);
-            return $db_man -> update_entity_with_id_in(DB::READER_TABLE, $teacher -> toArray());
+            return $db_man -> update_entity_in(DB::READER_TABLE, $teacher -> toArray());
         }
         return false;
     }
 
-    public function transfer_students_to_classroom(array $students, int $classroom_id, int $user_id){
+    public static function transfer_students_to_classroom(array $students, int $classroom_id, int $user_id): bool{
         if (DAOManager::can_user_register($user_id)){
             $db_man = new DAOManager();
             foreach($students as $s){
@@ -118,14 +121,50 @@ final class PeopleDAO{
         return false;
     }
     
+    public static function update_library_debts(){
+        // Escrever após book_dao.php estar pronta!
+    }
+    
 
-// update_library_debts
-// transferStudentsToClassroom
 
-// deleteReader ==> Fazer delete_register em DAOManager primeiro!
-// deleteClassroom
-// deleteTeaching
-// deleteEnrollment
+    // Deleting:
+    public static function delete_reader(int $reader_id, int $user_id){
+        if (DAOManager::can_user_register($user_id)){
+            $db_man = new DAOManager();
+            return $db_man -> delete_record_in(DB::READER_TABLE, $reader_id);
+        }
+        else return false;
+    }
+
+    public static function delete_classroom(int $classroom_id, int $user_id){
+        if (DAOManager::can_user_register($user_id)){
+            $db_man = new DAOManager();
+            return $db_man -> delete_record_in(DB::CLASSROOM_TABLE, $classroom_id);
+        }
+        else return false;
+    }
+
+    public static function delete_enrollment(int $classroom_id, int $student_id, int $user_id){
+        if (DAOManager::can_user_register($user_id)){
+            $db_man = new DAOManager();
+            return $db_man -> delete_relationship(
+                DB::ENROLLMENT_TABLE, 'classroom_id', 'student_id',
+                $classroom_id, $student_id);
+        }
+        else return false;
+    }
+
+    public static function delete_teaching(int $classroom_id, int $teacher_id, int $user_id){
+        if (DAOManager::can_user_register($user_id)){
+            $db_man = new DAOManager();
+            return $db_man -> delete_relationship(
+                DB::TEACHING_TABLE, 'classroom_id', 'teacher_id',
+                $classroom_id, $teacher_id);
+        }
+        else return false;
+    }
+    
+
 
     // Security: ===> Should this be in security maneger?
     private function sanitize_passphrase(string $psw){}
@@ -134,15 +173,17 @@ final class PeopleDAO{
 
     private function salt_passphrase(string $psw){}
 
-    public function protect_passphrase(string $psw){
+    public static function protect_passphrase(string $psw){
         //Usa sanitize_passphrase, encrypt_passphrase e salt_passphrase
     }
 
-    public function generate_first_passphrase(string $psw){
+    public static function generate_first_passphrase(string $psw){
         //Usa sanitize_passphrase, encrypt_passphrase e salt_passphrase
     }
 
 
+
+    // Reading:
     public static function fetch_reader_for_access(int $login, string $psw) {
         $db_man = new DAOManager();
         // Fazer
@@ -151,7 +192,8 @@ final class PeopleDAO{
 
     // Searching:
     // ID-fetchers:
-    public static function fetch_reader_by_id(int $id): Reader {
+    
+    public static function fetch_reader_by_id(int $id) {
         $db_man = new DAOManager();
         $reader_array = $db_man -> fetch_record_by_id_from(DB::READER_TABLE, $id);
         $reader_array['passphrase'] = ''; // Clear passphrase field for search or linking

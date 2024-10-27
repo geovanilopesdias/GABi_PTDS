@@ -52,8 +52,7 @@ final class DB {
 enum DML_OPS {
     case INSERT;
     case UPDATE;
-    //case DELETE;
-    
+    case DELETE;
 }
 
 final class DAOManager{
@@ -87,19 +86,18 @@ final class DAOManager{
     private function get_dml_clause_for(DML_OPS $op, string $t_name, array $t_fields): string{
         if ($op === DML_OPS::UPDATE){
             $set_clauses = array();
-            foreach ($t_fields as $f) 
-                $set_clauses[] = "$f = :$f";
+            foreach ($t_fields as $f) $set_clauses[] = "$f = :$f";
         }
 
         return match ($op){
-            DML_OPS::INSERT => "INSERT INTO " . $t_name . " (" . implode(', ', $t_fields) .") VALUES (" . implode(', :', $t_fields) . ")",
-            DML_OPS::UPDATE => "UPDATE " . $t_name . " SET " . implode(', ', $set_clauses) . " WHERE id = :id",
-            // DML_OPS::DELETE => "DELETE FROM " . $t_name . " WHERE id = :id",
+            DML_OPS::INSERT => "INSERT INTO $t_name (" . implode(', ', $t_fields) .") VALUES (" . implode(', :', $t_fields) . ")",
+            DML_OPS::UPDATE => "UPDATE $t_name  SET " . implode(', ', $set_clauses) . " WHERE id = :id",
+            DML_OPS::DELETE => "DELETE FROM $t_name WHERE id = :id",
         };
     }
 
     // ----- Insertion:
-    public function insert_record_in(string $t_name, array $data){
+    public function insert_record_in(string $t_name, array $data): bool {
         //Send to insertion clause only non-empty fields:
         foreach ($data as $field => $value)
             if (isset($value)) 
@@ -118,7 +116,7 @@ final class DAOManager{
     /**
      * States the standard update behaviour for tables with an integer id.
      */
-    public function update_entity_with_id_in(string $t_name, array $data){
+    public function update_entity_in(string $t_name, array $data): bool {
         if (!isset($data['id'])) 
             throw new InvalidArgumentException("An entity ID is required for update.");
         
@@ -141,9 +139,9 @@ final class DAOManager{
     public function update_relationship(
         string $element_table, string $relation_table,
         string $container_fk_field, string $element_fk_field,
-        int $container_fk_value, array $element_data){
+        int $container_fk_value, array $element_data): bool {
             if (!in_array($relation_table, DB::TABLES_WITHOUT_ID)) 
-                throw new InvalidArgumentException("You should be using the method update_entity_with_id_in for $relation_table table.");
+                throw new InvalidArgumentException("You should be using the method update_entity_in in table $relation_table.");
             
             $sql = "UPDATE $relation_table AS rt JOIN $element_table AS et
                     ON rt.$element_fk_field = :et.id
@@ -152,19 +150,38 @@ final class DAOManager{
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindValue(":element_fk_value", $element_data['id']);
             $stmt->bindValue(":container_fk_value", $container_fk_value);
+            return  $stmt->execute();
     }
 
     
     
     // ----- Deleting:
-    public function delete_record_in(){
-        
+    public function delete_record_in(string $t_name, int $id): bool {
+        $sql = self::get_dml_clause_for(DML_OPS::DELETE, $t_name, array());
+        $stmt = $this -> pdo -> prepare($sql);
+        $stmt->bindValue(":id", $id);
+        return $stmt->execute();
+    }
+    
+    public function delete_relationship(
+        string $relation_table,
+        string $container_fk_field, string $element_fk_field,
+        int $container_fk_value, int $element_fk_value): bool {
+            if (!in_array($relation_table, DB::TABLES_WITHOUT_ID)) 
+                throw new InvalidArgumentException("You should be using the method delete_record_in table $relation_table.");
+            
+            $sql = "DELETE FROM $relation_table 
+                    WHERE $container_fk_field = :container_fk_value
+                    AND $element_fk_field = :element_fk_value";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindValue(":container_fk_value", $container_fk_value);
+            $stmt->bindValue(":element_fk_value", $element_fk_value);
+            return  $stmt->execute();
     }
     
     
-    
     // >>> DQL
-    // ----- DQL Clause builder:
+    // ----- DQL Clause builders:
     private function get_base_select_clause(string $t_name, array $fields, bool $distinct = false): string {
         $field_clause = empty($fields) ? "*" : implode(', ', $fields);
         $distinct_clause = $distinct ? "DISTINCT " : "";
@@ -210,18 +227,16 @@ final class DAOManager{
         return implode(" $logic ", $on_clauses);
     }
     
-        private function build_select_query(
-            string $t_name,
-            array $fields = [],
-            array $where_conditions = [],
-            string $logic = 'AND',
-            ?string $ordering_key = null,
-            bool $distinct = false
-    ): string {
+    private function build_select_query(
+        string $t_name,
+        array $fields = [],
+        array $where_conditions = [],
+        string $logic = 'AND',
+        ?string $ordering_key = null,
+        bool $distinct = false): string {
         $base_query = $this->get_base_select_clause($t_name, $fields, $distinct);
         $where_clause = $this->get_where_clause($where_conditions, $logic);
         $ordering_clause = $this->get_ordering_clause($ordering_key);
-    
         return "$base_query $where_clause $ordering_clause";
     }
 
@@ -231,22 +246,21 @@ final class DAOManager{
         array $on_conditions, string $on_logic = 'AND',
         array $t1_where_conditions = [], array $t2_where_conditions = [],
         string $t1_where_logic = 'AND', string $t2_where_logic = 'AND',
-        ?string $ordering_key = null, bool $distinct = false
-    ): string {
-        $select_clause = ($distinct ? "DISTINCT " : "") .
-            (empty($t1_fields) ? "$t1_name.*" : implode(', ', $t1_fields)) . ", " .
-            (empty($t2_fields) ? "$t2_name.*" : implode(', ', $t2_fields));
-    
-        $t1_where_clause = $this->get_where_clause($t1_where_conditions, $t1_where_logic);
-        $t2_where_clause = $this->get_where_clause($t2_where_conditions, $t2_where_logic);
-        $on_clause = $this->get_on_clause($on_conditions, $on_logic);
-        $sql = "SELECT $select_clause FROM $t1_name JOIN $t2_name ON $on_clause";
+        ?string $ordering_key = null, bool $distinct = false): string {
+            $select_clause = ($distinct ? "DISTINCT " : "") .
+                (empty($t1_fields) ? "$t1_name.*" : implode(', ', $t1_fields)) . ", " .
+                (empty($t2_fields) ? "$t2_name.*" : implode(', ', $t2_fields));
         
-        if ($t1_where_clause) $sql .= " WHERE " . $t1_where_clause;
-        if ($t2_where_clause) $sql .= ($t1_where_clause ? " AND " : " WHERE ") . $t2_where_clause;
-        if ($ordering_key) $sql .= " ORDER BY $ordering_key";
-    
-        return $sql;
+            $t1_where_clause = $this->get_where_clause($t1_where_conditions, $t1_where_logic);
+            $t2_where_clause = $this->get_where_clause($t2_where_conditions, $t2_where_logic);
+            $on_clause = $this->get_on_clause($on_conditions, $on_logic);
+            $sql = "SELECT $select_clause FROM $t1_name JOIN $t2_name ON $on_clause";
+            
+            if ($t1_where_clause) $sql .= " WHERE " . $t1_where_clause;
+            if ($t2_where_clause) $sql .= ($t1_where_clause ? " AND " : " WHERE ") . $t2_where_clause;
+            if ($ordering_key) $sql .= " ORDER BY $ordering_key";
+        
+            return $sql;
     }
     
     
@@ -298,17 +312,16 @@ final class DAOManager{
         array $on_conditions, string $on_logic = 'AND',
         array $t1_where_conditions = [], array $t2_where_conditions = [],
         string $t1_where_logic = 'AND', string $t2_where_logic = 'AND',
-        ?string $ordering_key = null, bool $distinct = false
-    ): array{
-    $dql = self::build_joint_query(
-        $t1_name, $t2_name, $t1_fields, $t2_fields,
-        $on_conditions, $on_logic, $t1_where_conditions, $t2_where_conditions,
-        $t1_where_logic, $t2_where_logic, $ordering_key, $distinct
-    );
-    $stmt = $this -> pdo -> prepare($dql);
-    foreach ($search as $f => $value) $stmt -> bindValue(":$f", $value);
-    $stmt -> execute();
-    return $stmt -> fetchAll();
+        ?string $ordering_key = null, bool $distinct = false): array{
+        $dql = self::build_joint_query(
+            $t1_name, $t2_name, $t1_fields, $t2_fields,
+            $on_conditions, $on_logic, $t1_where_conditions, $t2_where_conditions,
+            $t1_where_logic, $t2_where_logic, $ordering_key, $distinct
+        );
+        $stmt = $this -> pdo -> prepare($dql);
+        foreach ($search as $f => $value) $stmt -> bindValue(":$f", $value);
+        $stmt -> execute();
+        return $stmt -> fetchAll();
 }
 
 

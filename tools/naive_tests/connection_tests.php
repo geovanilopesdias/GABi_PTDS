@@ -1,19 +1,17 @@
 <?php 
 
-require_once('../src/controllers/like.php');
+require('../src/controllers/people_dao.php');
 
-function instance_test(){
-    $data['synopsis_id'] = 123;
-    $data['student_id'] = 234;
-    return Like::fromArray($data);
+//Testing for student insertion:
+function insertion_test(){
+    $data['name'] = 'Geovani Lopes Dias';
+    $data['login'] = 'login';
+    $data['phone'] = '51992380715';
+    return PeopleDAO::register_student($data, 111);  //111 should be the librarian id!
 }
 
-function getters_test(Like $s){
-    $fields_to_get = ['synopsis_id', 'synopsis_id'];
-    foreach ($fields_to_get as $field) {
-        $getterMethod =  'get_' . $field;
-        echo $field . ':' . $s -> $getterMethod() . '</br>';
-    }
+function fetching_test(){
+    return PeopleDAO::fetch_students_by_name('Geovani');
 }
 
 echo '<!DOCTYPE html>
@@ -26,8 +24,8 @@ echo '<!DOCTYPE html>
 <body>';
     
 $instance = instance_test();
-echo getters_test($instance);
-echo var_dump($instance -> toArray());
+echo (insertion_test()) ? "Insertion sucessfull" : "Insertion failed";
+echo (fetching_test()) ? var_dump($fetching_test()) : "No results";;
 
 echo '</body> </html>';
 
