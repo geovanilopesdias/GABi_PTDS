@@ -8,17 +8,17 @@ enum ReaderRole : string{
 
 final class Reader{
     private ?int $id;
-    private string $name, $login, $phone, $lastLogin;
+    private string $name, $login, $phone, $last_login;
     private ReaderRole $role;
-    private bool $can_loan, $can_register;
+    private bool $can_borrow, $can_register;
     private ?float $debt;
 
     private function __construct(
-        string $login, ReaderRole $role, bool $can_loan, bool $can_register,
+        string $login, ReaderRole $role, bool $can_borrow, bool $can_register,
         ?int $id = null, ?float $debt = null) {
         $this->login = $login;
         $this->role = $role;
-        $this->can_loan = $can_loan;
+        $this->can_borrow = $can_borrow;
         $this->can_register = $can_register;
         $this->id = $id;
         $this->debt = $debt;
@@ -44,7 +44,7 @@ final class Reader{
         $r = new Reader(
             $data['login'],
             ReaderRole::from($data['role']),
-            $data['can_loan'],
+            $data['can_borrow'],
             $data['can_register'],
             $data['id'],
             $data['debt']
@@ -52,6 +52,7 @@ final class Reader{
         if ($for_fetching) {
             $r -> name = $data['name'];
             $r -> phone = $data['phone'];
+            $r -> last_login = $data['last_login'];
         }
         else{
             $r -> set_name(['name']);
@@ -102,14 +103,14 @@ final class Reader{
     public function get_login(){return $this->login;}
     public function get_phone(){return $this->phone;}
     public function get_role(): string {return $this -> role -> value;}
-    public function get_can_loan(){return $this->can_loan;}
+    public function get_can_loan(){return $this->can_borrow;}
     public function get_can_register(){return $this->can_register;}
     public function get_debt(){return $this->debt;}
-    public function get_lastLogin(){return $this->lastLogin;}
+    public function get_last_login(){return $this->last_login;}
     
     public function set_login($login){$this->login = $login;}
-    public function set_can_loan(bool $can_loan){$this->can_loan = $can_loan;}
-    public function set_lastLogin($lastLogin){$this->lastLogin = $lastLogin;}
+    public function set_can_loan(bool $can_borrow){$this->can_borrow = $can_borrow;}
+    public function set_last_login($last_login){$this->last_login = $last_login;}
 
     public function set_debt($debt){
         if($debt >= 0)

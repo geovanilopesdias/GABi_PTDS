@@ -1,17 +1,17 @@
 <?php
-echo __DIR__ ;
-require (__DIR__ . 'dao_mng.php');
-require (__DIR__ .'/models/people/reader.php');
-require (__DIR__ .'/models/people/classroom.php');
-require (__DIR__ .'/models/people/teaching.php');
-require (__DIR__ .'/models/people/enrollment.php');
-require (__DIR__ .'/book_dao.php');
+
+require_once (__DIR__ . '/../managers/dao_mng.php');
+require_once (__DIR__ . '/../models/people/reader.php');
+require_once (__DIR__ . '/../models/people/classroom.php');
+require_once (__DIR__ . '/../models/people/teaching.php');
+require_once (__DIR__ . '/../models/people/enrollment.php');
+// require_once ('book_dao.php');
 
 final class PeopleDAO{
     // Registration:
     public static function register_student(array $data, int $user_id){
-        if (DAOManager::can_user_register($user_id)){
-            $db_man = new DAOManager();
+        $db_man = new DAOManager();
+        if ($db_man -> can_user_register($user_id)){
             $s = Reader::Student($data['name'], $data['login'], $data['phone']);
             return $db_man -> insert_record_in(DB::READER_TABLE, $s -> toArray());
         }
@@ -19,8 +19,8 @@ final class PeopleDAO{
     }
 
     public static function register_loaner_teacher(array $data, int $user_id){
-        if (DAOManager::can_user_register($user_id)){
-            $db_man = new DAOManager();
+        $db_man = new DAOManager();
+        if ($db_man -> can_user_register($user_id)){
             $s = Reader::TeacherLoaner($data['name'], $data['login'], $data['phone']);
             return $db_man -> insert_record_in(DB::READER_TABLE, $s -> toArray());
         }
@@ -28,8 +28,8 @@ final class PeopleDAO{
     }
 
     public static function register_non_loaner_teacher(array $data, int $user_id){
-        if (DAOManager::can_user_register($user_id)){
-            $db_man = new DAOManager();
+        $db_man = new DAOManager();
+        if ($db_man -> can_user_register($user_id)){
             $s = Reader::TeacherNonLoaner($data['name'], $data['login'], $data['phone']);
             return $db_man -> insert_record_in(DB::READER_TABLE, $s -> toArray());
         }
@@ -37,8 +37,8 @@ final class PeopleDAO{
     }
 
     public static function register_classroom(array $data, int $user_id){
-        if (DAOManager::can_user_register($user_id)){
-            $db_man = new DAOManager();
+        $db_man = new DAOManager();
+        if ($db_man -> can_user_register($user_id)){
             $c = Classroom::fromArray($data);
             return $db_man -> insert_record_in(DB::CLASSROOM_TABLE, $c -> toArray());
         }
@@ -46,8 +46,8 @@ final class PeopleDAO{
     }
 
     public static function register_enrollment(array $data, int $user_id){
-        if (DAOManager::can_user_register($user_id)){
-            $db_man = new DAOManager();
+        $db_man = new DAOManager();
+        if ($db_man -> can_user_register($user_id)){
             $e = Enrollment::fromArray($data);
             return $db_man -> insert_record_in(DB::ENROLLMENT_TABLE, $e -> toArray());
         }
@@ -55,8 +55,8 @@ final class PeopleDAO{
     }
 
     public static function register_teaching(array $data, int $user_id){
-        if (DAOManager::can_user_register($user_id)){
-            $db_man = new DAOManager();
+        $db_man = new DAOManager();
+        if ($db_man -> can_user_register($user_id)){
             $t = Teaching::fromArray($data);
             return $db_man -> insert_record_in(DB::TEACHING_TABLE, $t -> toArray());
         }
@@ -67,8 +67,8 @@ final class PeopleDAO{
 
     // Updating:
     public static function edit_reader(array $data, int $user_id){
-        if (DAOManager::can_user_register($user_id)){
-            $db_man = new DAOManager();
+        $db_man = new DAOManager();
+        if ($db_man -> can_user_register($user_id)){
             $t = Reader::fromArray($data, false);
             return $db_man -> update_entity_in(DB::READER_TABLE, $t -> toArray());
         }
@@ -76,8 +76,8 @@ final class PeopleDAO{
     }
 
     public static function edit_classroom(array $data, int $user_id){
-        if (DAOManager::can_user_register($user_id)){
-            $db_man = new DAOManager();
+        $db_man = new DAOManager();
+        if ($db_man -> can_user_register($user_id)){
             $c = Classroom::fromArray($data);
             return $db_man -> update_entity_in(DB::CLASSROOM_TABLE, $c -> toArray());
         }
@@ -86,8 +86,8 @@ final class PeopleDAO{
 
     public static function authorize_teacher_as_loaner(int $teacher_id, int $user_id){
         /** @var Reader $teacher  */
-        if (DAOManager::can_user_register($user_id)){
-            $db_man = new DAOManager();
+        $db_man = new DAOManager();
+        if ($db_man -> can_user_register($user_id)){
             /** @var Reader $teacher  */
             $teacher = self::fetch_reader_by_id($teacher_id);
             $teacher -> set_can_loan(true);
@@ -97,8 +97,8 @@ final class PeopleDAO{
     }
 
     public static function disallow_teacher_as_loaner(int $teacher_id, int $user_id){       
-        if (DAOManager::can_user_register($user_id)){
-            $db_man = new DAOManager();
+        $db_man = new DAOManager();
+        if ($db_man -> can_user_register($user_id)){
             /** @var Reader $teacher  */
             $teacher = self::fetch_reader_by_id($teacher_id);
             $teacher -> set_can_loan(false);
@@ -108,8 +108,8 @@ final class PeopleDAO{
     }
 
     public static function transfer_students_to_classroom(array $students, int $classroom_id, int $user_id): bool{
-        if (DAOManager::can_user_register($user_id)){
-            $db_man = new DAOManager();
+        $db_man = new DAOManager();
+        if ($db_man -> can_user_register($user_id)){
             foreach($students as $s){
                 $db_man -> update_relationship(
                     DB::READER_TABLE, DB::ENROLLMENT_TABLE, 
@@ -129,24 +129,24 @@ final class PeopleDAO{
 
     // Deleting:
     public static function delete_reader(int $reader_id, int $user_id){
-        if (DAOManager::can_user_register($user_id)){
-            $db_man = new DAOManager();
+        $db_man = new DAOManager();
+        if ($db_man -> can_user_register($user_id)){
             return $db_man -> delete_record_in(DB::READER_TABLE, $reader_id);
         }
         else return false;
     }
 
     public static function delete_classroom(int $classroom_id, int $user_id){
-        if (DAOManager::can_user_register($user_id)){
-            $db_man = new DAOManager();
+        $db_man = new DAOManager();
+        if ($db_man -> can_user_register($user_id)){
             return $db_man -> delete_record_in(DB::CLASSROOM_TABLE, $classroom_id);
         }
         else return false;
     }
 
     public static function delete_enrollment(int $classroom_id, int $student_id, int $user_id){
-        if (DAOManager::can_user_register($user_id)){
-            $db_man = new DAOManager();
+        $db_man = new DAOManager();
+        if ($db_man -> can_user_register($user_id)){
             return $db_man -> delete_relationship(
                 DB::ENROLLMENT_TABLE, 'classroom_id', 'student_id',
                 $classroom_id, $student_id);
@@ -155,8 +155,8 @@ final class PeopleDAO{
     }
 
     public static function delete_teaching(int $classroom_id, int $teacher_id, int $user_id){
-        if (DAOManager::can_user_register($user_id)){
-            $db_man = new DAOManager();
+        $db_man = new DAOManager();
+        if ($db_man -> can_user_register($user_id)){
             return $db_man -> delete_relationship(
                 DB::TEACHING_TABLE, 'classroom_id', 'teacher_id',
                 $classroom_id, $teacher_id);

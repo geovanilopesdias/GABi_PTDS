@@ -1,7 +1,7 @@
 <?php
 
-require_once 'connection.php';
-require '../models/people/reader.php';
+require_once ('connection.php');
+require_once (__DIR__ . '/../models/people/reader.php');
 
 final class DB {
     const READER_TABLE = 'readers';
@@ -66,10 +66,10 @@ final class DAOManager{
      * @var Reader $u 
      * @return bool
      * */
-    public static function can_user_register(int $id): bool{ 
+    public function can_user_register(int $id): bool{ 
         /** @var Reader $u  */
         $u = Reader::fromArray(
-            self::fetch_record_by_id_from(DB::READER_TABLE, $id), 
+            $this -> fetch_record_by_id_from(DB::READER_TABLE, $id), 
             true); // Factory used truly for fetching
         return $u -> get_can_register();
     }
@@ -105,12 +105,13 @@ final class DAOManager{
 
         $sql = self::get_dml_clause_for(DML_OPS::INSERT, $t_name, $t_fields);
         $stmt = $this -> pdo -> prepare($sql);
-        foreach ($t_fields as $field) 
-            $stmt -> bindValue(":$field", $data[$field]);
-        return $stmt->execute();
-    }
-
-    
+        
+            foreach ($t_fields as $field) {
+                try {$stmt -> bindValue(":$field", $data[$field]);}   
+                catch (PDOException $e) {die("Connection failed: " . $e->getMessage() . $field);}
+            }
+            return $stmt->execute();    
+        }   
     
     // ----- Updating:
     /**
