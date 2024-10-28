@@ -1,11 +1,11 @@
 <?php
-
-require 'dao_mng.php';
-require '../models/people/reader.php';
-require '../models/people/classroom.php';
-require '../models/people/teaching.php';
-require '../models/people/enrollment.php';
-require '../book_dao.php';
+echo __DIR__ ;
+require (__DIR__ . 'dao_mng.php');
+require (__DIR__ .'/models/people/reader.php');
+require (__DIR__ .'/models/people/classroom.php');
+require (__DIR__ .'/models/people/teaching.php');
+require (__DIR__ .'/models/people/enrollment.php');
+require (__DIR__ .'/book_dao.php');
 
 final class PeopleDAO{
     // Registration:
