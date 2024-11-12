@@ -5,7 +5,7 @@ require_once (__DIR__ . '/../models/people/reader.php');
 
 final class DB {
     const READER_TABLE = 'readers';
-    const READER_FIELDS = ['id', 'login', 'passphrase', 'name', 'phone', 'role', 'debt', 'can_borrow', 'can_register'];
+    const READER_FIELDS = ['id', 'login', 'passphrase', 'name', 'phone', 'role', 'debt', 'can_borrow', 'can_register', 'last_login'];
     const CLASSROOM_TABLE = 'classrooms';
     const CLASSROOM_FIELDS = ['id', 'name', 'year'];
     const ENROLLMENT_TABLE = 'enrollments';
@@ -90,7 +90,7 @@ final class DAOManager{
         }
 
         return match ($op){
-            DML_OPS::INSERT => "INSERT INTO $t_name (" . implode(', ', $t_fields) .") VALUES (" . implode(', :', $t_fields) . ")",
+            DML_OPS::INSERT => "INSERT INTO $t_name (" . implode(', ', $t_fields) .") VALUES (:" . implode(', :', $t_fields) . ")",
             DML_OPS::UPDATE => "UPDATE $t_name  SET " . implode(', ', $set_clauses) . " WHERE id = :id",
             DML_OPS::DELETE => "DELETE FROM $t_name WHERE id = :id",
         };
@@ -99,19 +99,28 @@ final class DAOManager{
     // ----- Insertion:
     public function insert_record_in(string $t_name, array $data): bool {
         //Send to insertion clause only non-empty fields:
-        foreach ($data as $field => $value)
-            if (isset($value)) 
-                $t_fields[] = $field;
+        $t_fields = [];
+        foreach ($data as $field => $value) 
+            if (isset($value) || is_bool($value))  // allow bools to pass even if they are false
+                $t_fields[] = $field;       
 
         $sql = self::get_dml_clause_for(DML_OPS::INSERT, $t_name, $t_fields);
         $stmt = $this -> pdo -> prepare($sql);
         
-            foreach ($t_fields as $field) {
-                try {$stmt -> bindValue(":$field", $data[$field]);}   
-                catch (PDOException $e) {die("Connection failed: " . $e->getMessage() . $field);}
-            }
-            return $stmt->execute();    
-        }   
+        foreach ($t_fields as $field) {
+            try {
+                if (is_bool($data[$field])) {
+                    $stmt->bindValue(":$field", $data[$field], PDO::PARAM_BOOL);
+                } else {
+                    $stmt->bindValue(":$field", $data[$field]);
+                }
+            }   
+            catch (PDOException $e) {die("Connection failed: " . $e->getMessage() . $field . 'SQL Statement: '. $sql);}
+        }
+        
+        try {return $stmt->execute();}
+        catch (PDOException $e) {die("Connection failed: " . $e->getMessage());}
+    }   
     
     // ----- Updating:
     /**
@@ -191,21 +200,19 @@ final class DAOManager{
 
     private function get_where_clause(array $conditions, string $logic = 'AND'): string {
         if (empty($conditions)) return ""; // No conditions, no WHERE clause
+        
         $clauses = [];
         foreach ($conditions as $condition) {
             $field = $condition['field'];
-            $operator = $condition['operator'] ?? '='; // Default to '=' if not specified
+            $operator = strtoupper($condition['operator'] ?? '=');
             $valuePlaceholder = ":$field";
-    
-            // Adjust the clause based on operator
-            if (strtoupper($operator) === 'LIKE' || strtoupper($operator) === '!=') {
-                $clauses[] = "$field $operator $valuePlaceholder";
-            } else {
-                $clauses[] = "$field = $valuePlaceholder";
-            }
-        }    
+            $clauses[] = "$field $operator $valuePlaceholder";
+        }
         return "WHERE " . implode(" $logic ", $clauses);
     }
+    
+    
+    
 
     private function get_ordering_clause(?string $ordering_key): string {
         return isset($ordering_key) ? "ORDER BY $ordering_key" : "";
@@ -268,20 +275,20 @@ final class DAOManager{
 
     // ----- Fetchers:
     public function fetch_all_records_from(string $t_name): array{
-        $stmt = $this->pdo->prepare("SELECT * FROM " . $t_name);
+        $stmt = $this->pdo->prepare("SELECT * FROM " . $t_name); $stmt->setFetchMode(PDO::FETCH_ASSOC);
         return $stmt->fetchAll();
     }
     
     public function fetch_record_by_id_from(string $t_name, int $id): array{
         $stmt = $this->pdo->prepare("SELECT * FROM " . $t_name . " WHERE id = :id");
-        $stmt->execute([':id' => $id]);
+        $stmt->execute([':id' => $id]); $stmt->setFetchMode(PDO::FETCH_ASSOC);
         return $stmt->fetch();
     }
 
     // Excluir e aplicar fetch_records_from em people_dao.php
     public function fetch_records_by_text_from(string $t_name, string $field, string $keyword): array{
         $stmt = $this->pdo->prepare("SELECT * FROM " . $t_name . " WHERE $field LIKE :%$field%");
-        $stmt->execute([':$field' => $keyword]);
+        $stmt->execute([':$field' => $keyword]); $stmt->setFetchMode(PDO::FETCH_ASSOC);
         return $stmt->fetchAll();
     }
 
@@ -289,20 +296,24 @@ final class DAOManager{
      * General purpose-searching in a single table.
      */
     public function fetch_records_from(
-            array $search,    
-            string $t_name,
-            array $t_fields,
-            array $where_conditions = [],
-            string $logic = 'AND',
-            ?string $ordering_key = null,
-            bool $distinct = false
-        ): array{
+        array $search,    
+        string $t_name,
+        array $t_fields,
+        array $where_conditions = [],
+        string $logic = 'AND',
+        ?string $ordering_key = null,
+        bool $distinct = false
+    ): array {
         $dql = self::build_select_query($t_name, $t_fields, $where_conditions, $logic, $ordering_key, $distinct);
-        $stmt = $this -> pdo -> prepare($dql);
-        foreach ($search as $f => $value) $stmt -> bindValue(":$f", $value);
-        $stmt -> execute();
-        return $stmt -> fetchAll();
+        $stmt = $this->pdo->prepare($dql);
+
+        foreach ($search as $field => $value) $stmt->bindValue(":$field", $value);      
+    
+        try {$stmt->execute(); $stmt->setFetchMode(PDO::FETCH_ASSOC);}
+        catch (PDOException $e) {die("Connection failed: " . $e->getMessage() . '\nDQL Statement: '. $dql);}
+        return $stmt->fetchAll();
     }
+    
 
     /**
      * General purpose searching in thwo joined tables.
@@ -321,11 +332,9 @@ final class DAOManager{
         );
         $stmt = $this -> pdo -> prepare($dql);
         foreach ($search as $f => $value) $stmt -> bindValue(":$f", $value);
-        $stmt -> execute();
+        $stmt -> execute(); $stmt->setFetchMode(PDO::FETCH_ASSOC);
         return $stmt -> fetchAll();
-}
-
-
+    }
 
 }
 

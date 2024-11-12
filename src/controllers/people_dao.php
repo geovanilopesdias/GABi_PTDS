@@ -12,7 +12,8 @@ final class PeopleDAO{
     public static function register_student(array $data, int $user_id){
         $db_man = new DAOManager();
         if ($db_man -> can_user_register($user_id)){
-            $s = Reader::Student($data['name'], $data['login'], $data['phone']);
+            $s = Reader::Student($data['login'], $data['passphrase'], $data['name'], $data['phone']);
+            $s -> set_last_login((new DateTimeImmutable())->format('Y-m-d H:i:s'));
             return $db_man -> insert_record_in(DB::READER_TABLE, $s -> toArray());
         }
         else return false;
@@ -21,7 +22,8 @@ final class PeopleDAO{
     public static function register_loaner_teacher(array $data, int $user_id){
         $db_man = new DAOManager();
         if ($db_man -> can_user_register($user_id)){
-            $s = Reader::TeacherLoaner($data['name'], $data['login'], $data['phone']);
+            $s = Reader::TeacherLoaner($data['login'], $data['passphrase'], $data['name'], $data['phone']);
+            $s -> set_last_login((new DateTimeImmutable())->format('Y-m-d H:i:s'));
             return $db_man -> insert_record_in(DB::READER_TABLE, $s -> toArray());
         }
         else return false;
@@ -30,7 +32,8 @@ final class PeopleDAO{
     public static function register_non_loaner_teacher(array $data, int $user_id){
         $db_man = new DAOManager();
         if ($db_man -> can_user_register($user_id)){
-            $s = Reader::TeacherNonLoaner($data['name'], $data['login'], $data['phone']);
+            $s = Reader::TeacherNonLoaner($data['login'], $data['passphrase'], $data['name'], $data['phone']);
+            $s -> set_last_login((new DateTimeImmutable())->format('Y-m-d H:i:s'));
             return $db_man -> insert_record_in(DB::READER_TABLE, $s -> toArray());
         }
         else return false;
@@ -217,13 +220,13 @@ final class PeopleDAO{
     public static function fetch_students_by_name(string $cleaned_name) {
         $db_man = new DAOManager();
         $student_instances = array();
-        $search = ['name' => $cleaned_name, 'role' => 'student'];
+        $search = ['name' => "%$cleaned_name%", 'role' => 'student'];
         $where_conditions = [
-            ['field' => 'name', "operator" => '='],
+            ['field' => 'name', "operator" => 'ILIKE'],
             ['field' => 'role', "operator" => '=']];
         $fetched_students = $db_man -> fetch_records_from(
             $search, DB::READER_TABLE, DB::READER_FIELDS,
-            $where_conditions, 'name', false);
+            $where_conditions, 'AND', 'name', false);
         foreach($fetched_students as $s) $student_instances[] = Reader::fromArray($s, true);
         return $student_instances;
     }
@@ -231,13 +234,13 @@ final class PeopleDAO{
     public static function fetch_teachers_by_name(string $cleaned_name) {
         $db_man = new DAOManager();
         $teacher_instances = array();
-        $search = ['name' => $cleaned_name, 'role' => 'teacher'];
+        $search = ['name' => "%$cleaned_name%", 'role' => 'teacher'];
         $where_conditions = [
-            ['field' => 'name', "operator" => '='],
+            ['field' => 'name', "operator" => 'ILIKE'],
             ['field' => 'role', "operator" => '=']];
         $fetched_students = $db_man -> fetch_records_from(
             $search, DB::READER_TABLE, DB::READER_FIELDS,
-            $where_conditions, 'name', false);
+            $where_conditions, 'AND', 'name', false);
         foreach($fetched_students as $t) $teacher_instances[] = Reader::fromArray($t, true);
         return $teacher_instances;
     }

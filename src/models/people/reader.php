@@ -8,7 +8,7 @@ enum ReaderRole : string{
 
 final class Reader{
     private ?int $id;
-    private string $name, $login, $phone, $last_login;
+    private string $name, $login, $passphrase, $phone, $last_login;
     private ReaderRole $role;
     private bool $can_borrow, $can_register;
     private ?float $debt;
@@ -24,9 +24,21 @@ final class Reader{
         $this->debt = $debt;
     }
     
-    public function toArray(){
-        return (array) $this;
+    public function toArray(): array {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'login' => $this->login,
+            'passphrase' => $this->passphrase,
+            'phone' => $this->phone,
+            'last_login' => $this->last_login,
+            'role' => $this->role->value,
+            'can_borrow' => $this->can_borrow,
+            'can_register' => $this->can_register,
+            'debt' => $this->debt,
+        ];
     }
+    
 
     /**
      * Static factory for Reader from an array.
@@ -53,37 +65,43 @@ final class Reader{
             $r -> name = $data['name'];
             $r -> phone = $data['phone'];
             $r -> last_login = $data['last_login'];
+            $r -> passphrase = $data['passphrase'];
         }
         else{
             $r -> set_name(['name']);
             $r -> set_phone($data['phone']);
+            $r -> set_passphrase($data['passphrase']);
         }
         return $r;
     }
 
-    public static function Librarian(string $login, string $name, string $phone){
+    public static function Librarian(string $login, string $passphrase, string $name, string $phone){
         $r = new Reader($login, ReaderRole::LIBRARIAN, true, true);
+        $r -> set_passphrase($passphrase);
         $r -> set_name($name);
         $r -> set_phone($phone);
         return $r;
     }
 
-    public static function TeacherLoaner(string $login, string $name, string $phone){
+    public static function TeacherLoaner(string $login, string $passphrase, string $name, string $phone){
         $r = new Reader($login, ReaderRole::TEACHER, true, true);
+        $r -> set_passphrase($passphrase);
         $r -> set_name($name);
         $r -> set_phone($phone);
         return $r;
     }
 
-    public static function TeacherNonLoaner(string $name, string $login, string $phone){
+    public static function TeacherNonLoaner(string $login, string $passphrase, string $name, string $phone){
         $r = new Reader($login, ReaderRole::TEACHER, false, true);
+        $r -> set_passphrase($passphrase);
         $r -> set_name($name);
         $r -> set_phone($phone);
         return $r;
     }
 
-    public static function Student(string $name, string $login, string $phone){
-        $r = new Reader($login, ReaderRole::TEACHER, false, false);
+    public static function Student(string $login, string $passphrase, string $name, string $phone){
+        $r = new Reader($login, ReaderRole::STUDENT, false, false);
+        $r -> set_passphrase($passphrase);
         $r -> set_name($name);
         $r -> set_phone($phone);
         return $r;
@@ -101,6 +119,7 @@ final class Reader{
     public function get_id(){return $this->id;}
     public function get_name(){return $this->name;}
     public function get_login(){return $this->login;}
+    public function get_passphrase(){return $this->passphrase;}
     public function get_phone(){return $this->phone;}
     public function get_role(): string {return $this -> role -> value;}
     public function get_can_loan(){return $this->can_borrow;}
@@ -112,6 +131,11 @@ final class Reader{
     public function set_can_loan(bool $can_borrow){$this->can_borrow = $can_borrow;}
     public function set_last_login($last_login){$this->last_login = $last_login;}
 
+    // Modificar para inserir salga etc.
+    public function set_passphrase(string $passphrase): void {
+        $this->passphrase = hash('sha256', $passphrase); // Assign the hashed value to the property
+    }
+    
     public function set_debt($debt){
         if($debt >= 0)
             $this->debt = $debt;
