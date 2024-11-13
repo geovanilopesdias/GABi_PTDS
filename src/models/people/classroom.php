@@ -11,7 +11,11 @@ final class Classroom{
     }
 
     public function toArray(){
-        return (array) $this;
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'year' => $this->year
+        ];
     }
 
     public static function fromArray(array $data): Classroom{

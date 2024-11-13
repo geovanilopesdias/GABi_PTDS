@@ -8,7 +8,10 @@ final class Enrollment{
     }
     
     public function toArray(){
-        return (array) $this;
+        return [
+            'student_id' => $this->student_id,
+            'classroom_id' => $this->classroom_id
+        ];
     }
 
     public static function fromArray(array $data): Enrollment{

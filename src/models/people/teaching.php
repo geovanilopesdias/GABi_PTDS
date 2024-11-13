@@ -9,7 +9,10 @@ final class Teaching{
     }
 
     public function toArray(){
-        return (array) $this;
+        return [
+            'teacher_id' => $this->teacher_id,
+            'classroom_id' => $this->classroom_id
+        ];
     }
 
     public static function fromArray(array $data): Teaching{

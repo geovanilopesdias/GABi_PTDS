@@ -9,7 +9,7 @@ require_once (__DIR__ . '/../models/people/enrollment.php');
 
 final class PeopleDAO{
     // Registration:
-    public static function register_student(array $data, int $user_id){
+    public static function register_student(array $data, int $user_id){ //OK
         $db_man = new DAOManager();
         if ($db_man -> can_user_register($user_id)){
             $s = Reader::Student($data['login'], $data['passphrase'], $data['name'], $data['phone']);
@@ -19,7 +19,7 @@ final class PeopleDAO{
         else return false;
     }
 
-    public static function register_loaner_teacher(array $data, int $user_id){
+    public static function register_loaner_teacher(array $data, int $user_id){ //OK
         $db_man = new DAOManager();
         if ($db_man -> can_user_register($user_id)){
             $s = Reader::TeacherLoaner($data['login'], $data['passphrase'], $data['name'], $data['phone']);
@@ -29,7 +29,7 @@ final class PeopleDAO{
         else return false;
     }
 
-    public static function register_non_loaner_teacher(array $data, int $user_id){
+    public static function register_non_loaner_teacher(array $data, int $user_id){ //OK
         $db_man = new DAOManager();
         if ($db_man -> can_user_register($user_id)){
             $s = Reader::TeacherNonLoaner($data['login'], $data['passphrase'], $data['name'], $data['phone']);
@@ -39,7 +39,7 @@ final class PeopleDAO{
         else return false;
     }
 
-    public static function register_classroom(array $data, int $user_id){
+    public static function register_classroom(array $data, int $user_id){  //OK
         $db_man = new DAOManager();
         if ($db_man -> can_user_register($user_id)){
             $c = Classroom::fromArray($data);
@@ -48,7 +48,7 @@ final class PeopleDAO{
         else return false;
     }
 
-    public static function register_enrollment(array $data, int $user_id){
+    public static function register_enrollment(array $data, int $user_id){ //OK
         $db_man = new DAOManager();
         if ($db_man -> can_user_register($user_id)){
             $e = Enrollment::fromArray($data);
@@ -57,7 +57,7 @@ final class PeopleDAO{
         else return false;
     }
 
-    public static function register_teaching(array $data, int $user_id){
+    public static function register_teaching(array $data, int $user_id){ // OK
         $db_man = new DAOManager();
         if ($db_man -> can_user_register($user_id)){
             $t = Teaching::fromArray($data);
@@ -69,14 +69,33 @@ final class PeopleDAO{
 
 
     // Updating:
-    public static function edit_reader(array $data, int $user_id){
+    public static function edit_reader(int $id_to_update, array $data, int $used_id): bool { //OK
         $db_man = new DAOManager();
-        if ($db_man -> can_user_register($user_id)){
-            $t = Reader::fromArray($data, false);
-            return $db_man -> update_entity_in(DB::READER_TABLE, $t -> toArray());
+        if (!$db_man->can_user_register($used_id)) return false;
+        $current_reader_data = $db_man->fetch_record_by_id_from(DB::READER_TABLE, $id_to_update);
+        if (empty($current_reader_data)) return false;
+        $reader = Reader::fromArray($current_reader_data, true);
+        
+        if (isset($data['can_register']) or isset($data['can_borrow']))
+            throw new InvalidArgumentException("Permissions shouldn't be lightly updated: use des/authorize methods instead.");
+
+        if (isset($data['name']) && $data['name'] !== $reader->get_name()) 
+            $update_data['name'] = $data['name'];
+        
+        if (isset($data['login']) && $data['login'] !== $reader->get_login()) 
+            $update_data['login'] = $data['login'];
+
+        if (isset($data['phone']) && $data['phone'] !== $reader->get_phone()) 
+            $update_data['phone'] = $data['phone'];
+        
+        if (!empty($update_data)) {
+            $update_data['id'] = $id_to_update;
+            return $db_man->update_entity_in(DB::READER_TABLE, $update_data);
         }
-        else return false;
+    
+        return false;
     }
+    
 
     public static function edit_classroom(array $data, int $user_id){
         $db_man = new DAOManager();
@@ -87,24 +106,27 @@ final class PeopleDAO{
         else return false;
     }
 
-    public static function authorize_teacher_as_loaner(int $teacher_id, int $user_id){
+    public static function authorize_teacher_as_loaner(int $teacher_id, int $user_id){ // SQLSTATE[22P02]
         /** @var Reader $teacher  */
         $db_man = new DAOManager();
         if ($db_man -> can_user_register($user_id)){
             /** @var Reader $teacher  */
             $teacher = self::fetch_reader_by_id($teacher_id);
-            $teacher -> set_can_loan(true);
+            if($teacher -> get_role() == 'student')
+                throw new InvalidArgumentException("Students aren't allowed to borrow/loan at all.");
+            
+            $teacher -> set_can_loan(1);
             return $db_man -> update_entity_in(DB::READER_TABLE, $teacher -> toArray());
         }
         return false;
     }
 
-    public static function disallow_teacher_as_loaner(int $teacher_id, int $user_id){       
+    public static function disallow_teacher_as_loaner(int $teacher_id, int $user_id){ //SQLSTATE[22P02]       
         $db_man = new DAOManager();
         if ($db_man -> can_user_register($user_id)){
             /** @var Reader $teacher  */
             $teacher = self::fetch_reader_by_id($teacher_id);
-            $teacher -> set_can_loan(false);
+            $teacher -> set_can_loan(0);
             return $db_man -> update_entity_in(DB::READER_TABLE, $teacher -> toArray());
         }
         return false;
@@ -119,7 +141,6 @@ final class PeopleDAO{
                     'classroom_id', 'student_id',
                     $classroom_id, $s -> toArray());
             }
-            //
         }
         return false;
     }
@@ -196,20 +217,22 @@ final class PeopleDAO{
     // Searching:
     // ID-fetchers:
     
-    public static function fetch_reader_by_id(int $id) {
+    public static function fetch_reader_by_id(int $id) {  // OK
         $db_man = new DAOManager();
         $reader_array = $db_man -> fetch_record_by_id_from(DB::READER_TABLE, $id);
         $reader_array['passphrase'] = ''; // Clear passphrase field for search or linking
-        return Reader::fromArray($reader_array, true); // Factory used truly for fetching
+        if ($reader_array) return Reader::fromArray($reader_array, true); // Factory used truly for fetching
+        else return null;
     }
 
-    public static function fetch_classroom_by_id(int $id): Classroom {
+    public static function fetch_classroom_by_id(int $id) {  //OK
         $db_man = new DAOManager();
         $class_array = $db_man -> fetch_record_by_id_from(DB::CLASSROOM_TABLE, $id);
-        return Classroom::fromArray($class_array);
+        if ($class_array) return Classroom::fromArray($class_array);
+        else return null;
     }
 
-    public static function fetch_all_classrooms() {
+    public static function fetch_all_classrooms() {  //OK
         $db_man = new DAOManager();
         $classroom_instances = array();
         $fetched_classrooms = $db_man -> fetch_all_records_from(DB::CLASSROOM_TABLE);
@@ -217,7 +240,7 @@ final class PeopleDAO{
         return $classroom_instances;
     }
 
-    public static function fetch_students_by_name(string $cleaned_name) {
+    public static function fetch_students_by_name(string $cleaned_name) { //OK
         $db_man = new DAOManager();
         $student_instances = array();
         $search = ['name' => "%$cleaned_name%", 'role' => 'student'];
@@ -227,49 +250,57 @@ final class PeopleDAO{
         $fetched_students = $db_man -> fetch_records_from(
             $search, DB::READER_TABLE, DB::READER_FIELDS,
             $where_conditions, 'AND', 'name', false);
+        
+        if (!$fetched_students) return null;
+        
         foreach($fetched_students as $s) $student_instances[] = Reader::fromArray($s, true);
         return $student_instances;
     }
 
-    public static function fetch_teachers_by_name(string $cleaned_name) {
+    public static function fetch_teachers_by_name(string $cleaned_name) { //OK
         $db_man = new DAOManager();
         $teacher_instances = array();
         $search = ['name' => "%$cleaned_name%", 'role' => 'teacher'];
         $where_conditions = [
             ['field' => 'name', "operator" => 'ILIKE'],
             ['field' => 'role', "operator" => '=']];
-        $fetched_students = $db_man -> fetch_records_from(
+        $fetched_teachers = $db_man -> fetch_records_from(
             $search, DB::READER_TABLE, DB::READER_FIELDS,
             $where_conditions, 'AND', 'name', false);
-        foreach($fetched_students as $t) $teacher_instances[] = Reader::fromArray($t, true);
+
+        if (!$fetched_teachers) return null;
+        foreach($fetched_teachers as $t) $teacher_instances[] = Reader::fromArray($t, true);
         return $teacher_instances;
     }
 
-    public static function fetch_all_students_from_classroom(int $classroom_id) {
+    public static function fetch_all_students_from_classroom(int $classroom_id) { //OK
         $db_man = new DAOManager();
-        $search = ["enrollment.classroom_id" => $classroom_id];
-        $on_conditions = [['field1' => 'id'], ['field2' => 'student_id']];
-        $enrollment_where_conditions = ['field' => 'student.id'];
-        $student_instances = array();
-        $on_conditions = [['field1' => 'id'], ['field2' => 'student_id']];
-        $fetched_students = $db_man -> fetch_jointed_records_from(
-            $search, DB::READER_TABLE, DB::ENROLLMENT_TABLE, DB::READER_FIELDS, DB::ENROLLMENT_FIELDS,
-            $on_conditions, 'AND', array(), $enrollment_where_conditions, 'AND', 'AND',
-            'reader.name', false);
+        $search = ["classroom_id" => $classroom_id];
+        $on_conditions = [['field1' => DB::READER_TABLE.'.id', 'operator' => '=', 'field2' => DB::ENROLLMENT_TABLE.'.student_id']];
+        $enrollment_where_conditions = [['field' => 'classroom_id', 'operator' => '=']];
+        $fetched_students = $db_man->fetch_jointed_records_from(
+            $search,
+            DB::READER_TABLE, DB::ENROLLMENT_TABLE, DB::READER_FIELDS, DB::ENROLLMENT_FIELDS,
+            $on_conditions, 'AND', array(),  // No conditions for READER_TABLE
+            $enrollment_where_conditions, 'AND', 'AND',
+            DB::READER_TABLE.'.name', false // Order by reader's names
+        );
+        if (!$fetched_students) return null;
         foreach($fetched_students as $s) $student_instances[] = Reader::fromArray($s, true);
         return $student_instances;
     }
+    
 
-    public static function fetch_all_teachers_from_classroom(int $classroom_id) {
+    public static function fetch_all_teachers_from_classroom(int $classroom_id) {//OK
         $db_man = new DAOManager();
-        $teacher_instances = array();
-        $search = ["teaching.classroom_id" => $classroom_id];
-        $on_conditions = [['field1' => 'id'], ['field2' => 'teacher_id']];
-        $teaching_where_conditions = ['field' => 'teaching.id'];
+        $search = ["classroom_id" => $classroom_id];
+        $on_conditions = [['field1' => DB::READER_TABLE.'.id', 'operator' => '=', 'field2' => DB::TEACHING_TABLE.'.teacher_id']];
+        $teaching_where_conditions = [['field' => 'classroom_id', 'operator' => '=']];
         $fetched_teachers = $db_man -> fetch_jointed_records_from(
             $search, DB::READER_TABLE, DB::TEACHING_TABLE, DB::READER_FIELDS, DB::TEACHING_FIELDS,
             $on_conditions, 'AND', array(), $teaching_where_conditions, 'AND', 'AND',
-            'reader.name', false);
+            DB::READER_TABLE.'.name', false);
+        if (!$fetched_teachers) return null;
         foreach($fetched_teachers as $t) $teacher_instances[] = Reader::fromArray($t, true);
         return $teacher_instances;
     }

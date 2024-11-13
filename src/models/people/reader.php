@@ -50,7 +50,7 @@ final class Reader{
      * 
      * @param array $data The array containing the data to instantiation.
      * @param bool $for_fetching The confirmation if the usage is or not for fetching.
-     * @return Opus
+     * @return Reader
      */
     public static function fromArray(array $data, bool $for_fetching): Reader{
         $r = new Reader(
@@ -84,7 +84,7 @@ final class Reader{
     }
 
     public static function TeacherLoaner(string $login, string $passphrase, string $name, string $phone){
-        $r = new Reader($login, ReaderRole::TEACHER, true, true);
+        $r = new Reader($login, ReaderRole::TEACHER, true, false);
         $r -> set_passphrase($passphrase);
         $r -> set_name($name);
         $r -> set_phone($phone);
@@ -92,7 +92,7 @@ final class Reader{
     }
 
     public static function TeacherNonLoaner(string $login, string $passphrase, string $name, string $phone){
-        $r = new Reader($login, ReaderRole::TEACHER, false, true);
+        $r = new Reader($login, ReaderRole::TEACHER, false, false);
         $r -> set_passphrase($passphrase);
         $r -> set_name($name);
         $r -> set_phone($phone);

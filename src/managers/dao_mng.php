@@ -135,11 +135,14 @@ final class DAOManager{
         foreach ($data as $field => $value)
             if (isset($value)) 
                 $t_fields[] = $field;
+            if (is_bool($value)) $value = $value ? true : false;
+                
 
         $dml = self::get_dml_clause_for(DML_OPS::UPDATE, $t_name, $t_fields);
         $stmt = $this -> pdo -> prepare($dml);
         foreach ($t_fields as $f) $stmt -> bindValue(":$f", $data[$f]);
-        return $stmt->execute();
+        try {return $stmt->execute();}
+        catch (PDOException $e) {die("Connection failed: " . $e->getMessage(). "DML: $dml");}
     }
 
     /**
@@ -198,7 +201,7 @@ final class DAOManager{
         return "SELECT $distinct_clause $field_clause FROM $t_name";
     }
 
-    private function get_where_clause(array $conditions, string $logic = 'AND'): string {
+    private function get_where_clause(array $conditions, string $logic = 'AND', bool $is_second_clause = false): string {
         if (empty($conditions)) return ""; // No conditions, no WHERE clause
         
         $clauses = [];
@@ -208,7 +211,8 @@ final class DAOManager{
             $valuePlaceholder = ":$field";
             $clauses[] = "$field $operator $valuePlaceholder";
         }
-        return "WHERE " . implode(" $logic ", $clauses);
+        if ($is_second_clause) return "AND " . implode(" $logic ", $clauses);
+        else return "WHERE " . implode(" $logic ", $clauses);
     }
     
     
@@ -260,13 +264,10 @@ final class DAOManager{
                 (empty($t2_fields) ? "$t2_name.*" : implode(', ', $t2_fields));
         
             $t1_where_clause = $this->get_where_clause($t1_where_conditions, $t1_where_logic);
-            $t2_where_clause = $this->get_where_clause($t2_where_conditions, $t2_where_logic);
+            $t2_where_clause = $this->get_where_clause($t2_where_conditions, $t2_where_logic, true);
             $on_clause = $this->get_on_clause($on_conditions, $on_logic);
-            $sql = "SELECT $select_clause FROM $t1_name JOIN $t2_name ON $on_clause";
-            
-            if ($t1_where_clause) $sql .= " WHERE " . $t1_where_clause;
-            if ($t2_where_clause) $sql .= ($t1_where_clause ? " AND " : " WHERE ") . $t2_where_clause;
-            if ($ordering_key) $sql .= " ORDER BY $ordering_key";
+            $ordering_clause = $this -> get_ordering_clause($ordering_key);
+            $sql = "SELECT $select_clause FROM $t1_name JOIN $t2_name ON $on_clause $t1_where_clause $t2_where_clause $ordering_clause";
         
             return $sql;
     }
@@ -274,19 +275,23 @@ final class DAOManager{
     
 
     // ----- Fetchers:
-    public function fetch_all_records_from(string $t_name): array{
-        $stmt = $this->pdo->prepare("SELECT * FROM " . $t_name); $stmt->setFetchMode(PDO::FETCH_ASSOC);
-        return $stmt->fetchAll();
+    public function fetch_all_records_from(string $t_name): mixed{ //OK
+        $stmt = $this->pdo->prepare("SELECT * FROM " . $t_name);
+        try {
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+        catch (PDOException $e) {die("Connection failed: " . $e->getMessage() . ' SQL Statement: ' . $stmt->queryString);}
     }
     
-    public function fetch_record_by_id_from(string $t_name, int $id): array{
+    public function fetch_record_by_id_from(string $t_name, int $id): mixed{
         $stmt = $this->pdo->prepare("SELECT * FROM " . $t_name . " WHERE id = :id");
         $stmt->execute([':id' => $id]); $stmt->setFetchMode(PDO::FETCH_ASSOC);
         return $stmt->fetch();
     }
 
     // Excluir e aplicar fetch_records_from em people_dao.php
-    public function fetch_records_by_text_from(string $t_name, string $field, string $keyword): array{
+    public function fetch_records_by_text_from(string $t_name, string $field, string $keyword): mixed{
         $stmt = $this->pdo->prepare("SELECT * FROM " . $t_name . " WHERE $field LIKE :%$field%");
         $stmt->execute([':$field' => $keyword]); $stmt->setFetchMode(PDO::FETCH_ASSOC);
         return $stmt->fetchAll();
@@ -295,7 +300,7 @@ final class DAOManager{
     /**
      * General purpose-searching in a single table.
      */
-    public function fetch_records_from(
+    public function fetch_records_from( //OK
         array $search,    
         string $t_name,
         array $t_fields,
@@ -324,7 +329,7 @@ final class DAOManager{
         array $on_conditions, string $on_logic = 'AND',
         array $t1_where_conditions = [], array $t2_where_conditions = [],
         string $t1_where_logic = 'AND', string $t2_where_logic = 'AND',
-        ?string $ordering_key = null, bool $distinct = false): array{
+        ?string $ordering_key = null, bool $distinct = false): mixed{
         $dql = self::build_joint_query(
             $t1_name, $t2_name, $t1_fields, $t2_fields,
             $on_conditions, $on_logic, $t1_where_conditions, $t2_where_conditions,
