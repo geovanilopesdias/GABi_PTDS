@@ -1,14 +1,23 @@
 <?php
 
+// require_once '../../../tools/cutter/cutter.php';
+
 final class Opus{
     private string $title;
     private ?int $id, $original_year;
     private ?string $alternative_url, $ddc, $cutter_sanborn;
 
-    private function __construct(string $title) {$this->title = $title;}
+    private function __construct(string $title, ?int $id = null) {$this->title = $title;}
 
     public function toArray(){
-        return (array) $this;
+        return [
+            'id' => $this->id ?? null,
+            'title' => $this->title,
+            'original_year' => $this->original_year,
+            'alternative_url' => $this->alternative_url,
+            'ddc' => $this->ddc,
+            'cutter_sanborn' => $this->cutter_sanborn ?? ''
+        ];
     }
 
     /**
@@ -25,8 +34,8 @@ final class Opus{
      */
     public static function fromArray(array $data, bool $for_fetching): Opus{
         $o = new Opus($data['title']);
-        $fields_without_valiation = ['id', 'original_year', 'cutter_sanborn'];
-        foreach ($fields_without_valiation as $f) {
+        $fields_without_validation = ['id', 'original_year', 'cutter_sanborn'];
+        foreach ($fields_without_validation as $f) {
             if (!empty($data[$f])) $o -> $f = $data[$f];
         }
         if ($for_fetching) {
@@ -44,7 +53,8 @@ final class Opus{
         return preg_match('/^\d{1,3}(\.\d+)?$/', $ddcToTest);
     }
 
-    private function isUrlValid($urlToTest): bool{
+    private function isUrlValid(?string $urlToTest): bool{
+        if (empty($urlToTest)) return true;
         return filter_var($urlToTest, FILTER_VALIDATE_URL);
     }
 
@@ -60,7 +70,6 @@ final class Opus{
     public function get_alternative_url(){return $this->alternative_url;}
 
     public function set_title(string $title){$this->title = $title;}
-    public function set_cutter_sanborn(string $cutter_sanborn){$this->cutter_sanborn = $cutter_sanborn;}
     public function set_original_year(int $original_year){$this->original_year = $original_year;}
     
     public function set_ddc(string $ddc){
@@ -68,11 +77,17 @@ final class Opus{
         else throw new UnexpectedValueException("Invalid DDC Code.");
     }
 
-    public function set_alternative_url(string $alternative_url){
+    public function set_alternative_url(?string $alternative_url){
         if(self::isUrlValid($alternative_url))
-            $this -> alternative_url = $alternative_url;
+            $this -> alternative_url = $alternative_url ?? '';
         else throw new UnexpectedValueException("Invalid URL.");
     }
 
+    // public function set_cutter_sanborn(string $author_with_surname_first){
+    //     // Adicionar preg_match para formato da variáveil $author_with_surname_first
+    //     // Precisa ser algo como "Silva, João".
+    //     // if(false) return false;
+    //     $this->cutter_sanborn = Cutter::find($author_with_surname_first).PHP_EOL;
+    // }
 }
 ?>

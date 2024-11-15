@@ -15,7 +15,7 @@ final class DB {
     const LIBRARY_SETTING_TABLE = 'Library_Settings';
     const LIBRARY_SETTING_FIELDS = ['loan_deadline', 'late_fee', 'late_fee_period', 'head_reserve_queue_deadline'];
     const OPUS_TABLE = 'opuses';
-    const OPUS_FIELDS = ['id', 'title', 'original_year', 'ddc', 'cutter_sunborn', 'alternative_url'];
+    const OPUS_FIELDS = ['id', 'title', 'original_year', 'ddc', 'cutter_sanborn', 'alternative_url'];
     const WRITER_TABLE = 'writers';
     const WRITER_FIELDS = ['id', 'name', 'birth_year'];
     const AUTHORSHIP_TABLE = 'authorship';
@@ -130,17 +130,14 @@ final class DAOManager{
         if (!isset($data['id'])) 
             throw new InvalidArgumentException("An entity ID is required for update.");
         
-        //Send to updating clause only non-empty fields:
-        $t_fields = array();
-        foreach ($data as $field => $value)
-            if (isset($value)) 
-                $t_fields[] = $field;
-            if (is_bool($value)) $value = $value ? true : false;
-                
-
+        foreach ($data as $field => $value) $t_fields[] = $field;
+    
         $dml = self::get_dml_clause_for(DML_OPS::UPDATE, $t_name, $t_fields);
         $stmt = $this -> pdo -> prepare($dml);
-        foreach ($t_fields as $f) $stmt -> bindValue(":$f", $data[$f]);
+        foreach ($data as $f => $value){
+            if (is_bool($value)) $stmt->bindValue(":$f", $value, PDO::PARAM_BOOL);
+            else $stmt->bindValue(":$f", $value);
+        }
         try {return $stmt->execute();}
         catch (PDOException $e) {die("Connection failed: " . $e->getMessage(). "DML: $dml");}
     }
@@ -151,19 +148,20 @@ final class DAOManager{
      */
     public function update_relationship(
         string $element_table, string $relation_table,
-        string $container_fk_field, string $element_fk_field,
-        int $container_fk_value, array $element_data): bool {
+         string $element_fk_field, string $relation_fk_field,
+        int $relation_fk_value, array $element_data): bool {
             if (!in_array($relation_table, DB::TABLES_WITHOUT_ID)) 
                 throw new InvalidArgumentException("You should be using the method update_entity_in in table $relation_table.");
-            
-            $sql = "UPDATE $relation_table AS rt JOIN $element_table AS et
-                    ON rt.$element_fk_field = :et.id
-                    SET rt.$element_fk_field = :element_fk_value
-                    WHERE rt.$container_fk_field = :container_fk_value";
+
+            $sql = "UPDATE $relation_table rt
+                    SET $relation_fk_field = :relation_fk_value
+                    FROM $element_table et
+                    WHERE rt.$element_fk_field = :element_fk_value";
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindValue(":element_fk_value", $element_data['id']);
-            $stmt->bindValue(":container_fk_value", $container_fk_value);
-            return  $stmt->execute();
+            $stmt->bindValue(":relation_fk_value", $relation_fk_value);
+            try {return $stmt->execute();}
+            catch (PDOException $e) {die("Connection failed: " . $e->getMessage(). "DML: $sql");}
     }
 
     
@@ -173,21 +171,22 @@ final class DAOManager{
         $sql = self::get_dml_clause_for(DML_OPS::DELETE, $t_name, array());
         $stmt = $this -> pdo -> prepare($sql);
         $stmt->bindValue(":id", $id);
-        return $stmt->execute();
+        try {return $stmt->execute();}
+        catch (PDOException $e) {die("Connection failed: " . $e->getMessage(). "DML: $sql");}
     }
     
     public function delete_relationship(
         string $relation_table,
-        string $container_fk_field, string $element_fk_field,
-        int $container_fk_value, int $element_fk_value): bool {
+        string $relation_fk_field, string $element_fk_field,
+        int $relation_fk_value, int $element_fk_value): bool {
             if (!in_array($relation_table, DB::TABLES_WITHOUT_ID)) 
                 throw new InvalidArgumentException("You should be using the method delete_record_in table $relation_table.");
             
             $sql = "DELETE FROM $relation_table 
-                    WHERE $container_fk_field = :container_fk_value
+                    WHERE $relation_fk_field = :relation_fk_value
                     AND $element_fk_field = :element_fk_value";
             $stmt = $this->pdo->prepare($sql);
-            $stmt->bindValue(":container_fk_value", $container_fk_value);
+            $stmt->bindValue(":relation_fk_value", $relation_fk_value);
             $stmt->bindValue(":element_fk_value", $element_fk_value);
             return  $stmt->execute();
     }
@@ -201,22 +200,27 @@ final class DAOManager{
         return "SELECT $distinct_clause $field_clause FROM $t_name";
     }
 
-    private function get_where_clause(array $conditions, string $logic = 'AND', bool $is_second_clause = false): string {
+    /**
+     * Generate elaborated where clauses based conditions and logic passed.
+     * @var conditions: An array of arrays, whose keys should be 'field' and 'operator'.
+     */
+    private function get_where_clause(
+        array $conditions, string $logic = 'AND', bool $is_second_clause = false): string {
         if (empty($conditions)) return ""; // No conditions, no WHERE clause
         
-        $clauses = [];
-        foreach ($conditions as $condition) {
-            $field = $condition['field'];
-            $operator = strtoupper($condition['operator'] ?? '=');
-            $valuePlaceholder = ":$field";
+        foreach ($conditions as $c) {
+            $field = $c['field'];
+            $operator = strtoupper($c['operator'] ?? '=');
+            $valuePlaceholder = ':'.str_replace('.', '_', $c['field']);
             $clauses[] = "$field $operator $valuePlaceholder";
         }
         if ($is_second_clause) return "AND " . implode(" $logic ", $clauses);
         else return "WHERE " . implode(" $logic ", $clauses);
     }
     
-    
-    
+    private function get_grouping_clause(?string $grouping_key): string {
+        return isset($grouping_key) ? "GROUP BY $grouping_key" : "";
+    }
 
     private function get_ordering_clause(?string $ordering_key): string {
         return isset($ordering_key) ? "ORDER BY $ordering_key" : "";
@@ -272,6 +276,32 @@ final class DAOManager{
             return $sql;
     }
     
+    private function build_elements_relation_joint_query(
+        string $e1_table, string $e2_table, string $relation_table,
+        array $e1_fields, array $e2_fields, array $rt_fields,
+        string $grouping_key,
+        array $e1_where_conditions = [], array $e2_where_conditions = [],
+        string $e1_where_logic = 'AND', string $e2_where_logic = 'AND',
+        ?string $ordering_key = null, bool $distinct = false): string {
+            $select_clause = ($distinct ? "DISTINCT " : "").
+                (empty($e1_fields) ? '': "$e1_table." . implode(", $e1_table.", $e1_fields)).', '.
+                (empty($e1_fields) ? '':
+                "json_agg(json_build_object(".
+                    implode(", ", array_map(fn($f) => "'$f', $e2_table.$f", $e2_fields)).")) AS $e2_table");
+
+            $e1_where_clause = $this->get_where_clause($e1_where_conditions, $e1_where_logic);
+            $e2_where_clause = $this->get_where_clause($e2_where_conditions, $e2_where_logic, true);
+
+            $on_clause1 = "$relation_table.".$rt_fields['e1_id']." = $e1_table.id";
+            $on_clause2 = "$relation_table.".$rt_fields['e2_id']." = $e2_table.id";
+            $grouping_clause = $this -> get_grouping_clause($grouping_key);
+            $ordering_clause = $this -> get_ordering_clause($ordering_key);
+            
+            return "SELECT $select_clause FROM $relation_table
+                JOIN $e1_table ON $on_clause1
+                JOIN $e2_table ON $on_clause2
+                $e1_where_clause $e2_where_clause $grouping_clause $ordering_clause";
+    }
     
 
     // ----- Fetchers:
@@ -290,13 +320,6 @@ final class DAOManager{
         return $stmt->fetch();
     }
 
-    // Excluir e aplicar fetch_records_from em people_dao.php
-    public function fetch_records_by_text_from(string $t_name, string $field, string $keyword): mixed{
-        $stmt = $this->pdo->prepare("SELECT * FROM " . $t_name . " WHERE $field LIKE :%$field%");
-        $stmt->execute([':$field' => $keyword]); $stmt->setFetchMode(PDO::FETCH_ASSOC);
-        return $stmt->fetchAll();
-    }
-
     /**
      * General purpose-searching in a single table.
      */
@@ -307,8 +330,7 @@ final class DAOManager{
         array $where_conditions = [],
         string $logic = 'AND',
         ?string $ordering_key = null,
-        bool $distinct = false
-    ): array {
+        bool $distinct = false): array {
         $dql = self::build_select_query($t_name, $t_fields, $where_conditions, $logic, $ordering_key, $distinct);
         $stmt = $this->pdo->prepare($dql);
 
@@ -321,7 +343,7 @@ final class DAOManager{
     
 
     /**
-     * General purpose searching in thwo joined tables.
+     * General purpose searching in two joined tables.
      */
     public function fetch_jointed_records_from(
         array $search, string $t1_name, string $t2_name,
@@ -341,6 +363,29 @@ final class DAOManager{
         return $stmt -> fetchAll();
     }
 
+    public function fetch_elements_relation_joint(
+        array $search, string $e1_table, string $e2_table, string $relation_table,
+        array $e1_fields, array $e2_fields, array $rt_fields,
+        string $grouping_key,
+        array $e1_where_conditions = [], array $e2_where_conditions = [],
+        string $e1_where_logic = 'AND', string $e2_where_logic = 'AND',
+        ?string $ordering_key = null, bool $distinct = false){
+        $dql = self::build_elements_relation_joint_query(
+            $e1_table, $e2_table, $relation_table,
+            $e1_fields, $e2_fields, $rt_fields, $grouping_key,
+            $e1_where_conditions, $e2_where_conditions,
+            $e1_where_logic, $e2_where_logic,
+            $ordering_key, $distinct);
+        $stmt = $this -> pdo -> prepare($dql);
+        foreach ($search as $f => $value) $stmt -> bindValue(":$f", $value);
+        $stmt -> execute(); $stmt->setFetchMode(PDO::FETCH_ASSOC);
+        $results = $stmt -> fetchAll();
+        foreach ($results as &$row) 
+            if (isset($row[$e2_table])) 
+                $row[$e2_table] = json_decode($row[$e2_table], true); // Decode writers field into an array
+        return $results;
+        
+    }
 }
 
 ?>

@@ -1,21 +1,25 @@
 <?php
 final class Collection{
-    private int $id;
+    private ?int $id;
     private string $name;
     private int $publisher_id;
 
-    private function __construct($name, $publisher_id, $id = 0) {
+    private function __construct(string $name, int $publisher_id, ?int $id = null) {
         $this->id = $id;
         $this->name = $name;
         $this->publisher_id = $publisher_id;
     }
 
     public function toArray(){
-        return (array) $this;
+        return [
+            'id' => $this->id ?? null,
+            'name' => $this->name,
+            'publisher_id' => $this->publisher_id
+        ];
     }
 
     public static function fromArray(array $data){
-        return new BookCopy(
+        return new Collection(
             $data['name'],
             $data['publisher_id'],
             $data['id']

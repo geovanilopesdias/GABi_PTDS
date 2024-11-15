@@ -26,7 +26,7 @@ final class Reader{
     
     public function toArray(): array {
         return [
-            'id' => $this->id,
+            'id' => $this->id ?? null,
             'name' => $this->name,
             'login' => $this->login,
             'passphrase' => $this->passphrase,
@@ -68,7 +68,8 @@ final class Reader{
             $r -> passphrase = $data['passphrase'];
         }
         else{
-            $r -> set_name(['name']);
+            $r -> last_login = $data['last_login'];
+            $r -> set_name($data['name']);
             $r -> set_phone($data['phone']);
             $r -> set_passphrase($data['passphrase']);
         }

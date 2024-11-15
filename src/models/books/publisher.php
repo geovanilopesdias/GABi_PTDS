@@ -11,7 +11,10 @@ final class Publisher{
     }
 
     public function toArray(){
-        return (array) $this;
+        return [
+            'id' => $this->id ?? null,
+            'name' => $this->name
+        ];
     }
 
     public static function fromArray(array $data){
