@@ -5,13 +5,17 @@ require('../../src/controllers/people_dao.php');
 
 //Testing for student insertion:
 function insertion_test(){
-    $data['name'] = 'A divina comédia';
-    $data['publisher_id'] = 2; // Nova fronteira
-    // $data['title'] = 'Psicogênese da Língua Escrita'; 
-    // $data['original_year'] = 1984; 
-    // $data['alternative_url'] = '';
-    // $data['ddc'] = '370';
-    return BookDAO::register_collection($data, 1);  // 1 should be the librarian id!
+    $data['edition_id'] = 3;
+    $data['asset_code'] = '2024-1';
+    // $data['edition_number'] = 12;
+    // $data['collection_id'] = 1;
+    // $data['translators'] = 'Xavier Pinheiro';
+    // $data['pages'] = 176;
+    // $data['publishing_year'] = 2017;
+    // $data['isbn'] = '9788520941607';
+    // $data['volume'] = 3;
+    // $data['cover_colors'] = 'azul';
+    return BookDAO::register_book_copy($data, 1);  // 1 should be the librarian id!
 }
 
 // function updating_test(){
@@ -27,12 +31,12 @@ function insertion_test(){
 function fetching_test(){
     // return BookDAO::fetch_all_opuses();
     // return BookDAO::fetch_all_writers();
-    return BookDAO::fetch_all_collections();
+    return BookDAO::fetch_whole_bookshelf();
 }
 
    
-$i = insertion_test();
-echo ($i) ? "Insertion sucessfull" : "Insertion failed";
+// $i = insertion_test();
+// echo ($i) ? "Insertion sucessfull" : "Insertion failed";
 
 // $u = updating_test();
 // echo ($u) ? "Updating sucessfull" : "Updating failed";

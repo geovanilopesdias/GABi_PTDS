@@ -22,7 +22,7 @@ final class Collection{
         return new Collection(
             $data['name'],
             $data['publisher_id'],
-            $data['id']
+            $data['id'] ?? null
         );
     }
 

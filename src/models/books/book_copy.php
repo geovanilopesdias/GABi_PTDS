@@ -9,29 +9,42 @@ enum BookCopyStatus : string{
 }
 
 final class BookCopy{
-    private int $id, $edition_id;
+    private ?int $id;
+    private int $edition_id;
     private string $asset_code;
     private BookCopyStatus $status;
 
     private function __construct(
-        int $edition_id, string $asset_code, string $status, int $id = 0) {
+        int $edition_id, string $asset_code, ?string $status = null, ?int $id = null) {
         $this->id = $id;
         $this->edition_id = $edition_id;
         $this->asset_code = $asset_code;
-        $this->status = BookCopyStatus::from($status);
+        if(!is_null($status)) $this->status = BookCopyStatus::from($status);
     }
 
     public function toArray(){
-        return (array) $this;
+        return [
+            'id' => $this->id ?? null,
+            'edition_id' => $this->edition_id,
+            'asset_code' => $this->asset_code,
+            'status' => $this->status->value
+        ];
     }
     
-    public static function fromArray(array $data){
-        return new BookCopy(
+    public static function fromArray(array $data, bool $for_insertion = false){
+        $book = new BookCopy(
             $data['edition_id'],
-            $data['asset_code'],
-            $data['status'],
-            $data['id']
+            $data['asset_code']
         );
+        if(!$for_insertion) {
+            $book -> set_status($data['status']);
+            $book -> id = $data['id'] ?? null;
+        }
+        else {
+            $book -> set_status('available');
+            $book -> id = $data['id'] ?? null;
+        }
+        return $book;
     }
 
     public function get_id(): int {return $this->id;}

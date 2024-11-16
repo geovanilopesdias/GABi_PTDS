@@ -7,7 +7,9 @@ final class Opus{
     private ?int $id, $original_year;
     private ?string $alternative_url, $ddc, $cutter_sanborn;
 
-    private function __construct(string $title, ?int $id = null) {$this->title = $title;}
+    private function __construct(string $title, ?int $id = null) {
+        $this->title = $title; $this->id = $id;
+    }
 
     public function toArray(){
         return [

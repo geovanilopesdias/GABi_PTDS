@@ -58,7 +58,7 @@ final class Reader{
             ReaderRole::from($data['role']),
             $data['can_borrow'],
             $data['can_register'],
-            $data['id'],
+            $data['id'] ?? null,
             $data['debt']
         );
         if ($for_fetching) {

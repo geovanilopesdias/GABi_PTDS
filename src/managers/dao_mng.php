@@ -27,7 +27,7 @@ final class DB {
     const COLLECTION_TABLE = 'collections';
     const COLLECTION_FIELDS = ['id', 'name', 'publisher_id'];
     const BOOK_COPY_TABLE = 'bookshelf';
-    const BOOK_COPY_FIELDS = ['id', 'edition_id', 'asset_number', 'status'];
+    const BOOK_COPY_FIELDS = ['id', 'edition_id', 'asset_code', 'status'];
     const LOAN_TABLE = 'loans';
     const LOAN_FIELDS = ['id', 'copy_id', 'reader_id', 'opener_id', 'opening_date', 'closer_id', 'closing_date', 'loan_date', 'return_date', 'debt', 'debt_receiver_id'];
     const RECOMENDATION_TABLE = 'recomendations';
@@ -385,6 +385,16 @@ final class DAOManager{
                 $row[$e2_table] = json_decode($row[$e2_table], true); // Decode writers field into an array
         return $results;
         
+    }
+
+    public function fetch_complex_join_dql(string $dql, array $search){
+        $stmt = $this -> pdo -> prepare($dql);
+        foreach ($search as $f => $value) $stmt -> bindValue(":$f", $value);
+        try {
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+        catch (PDOException $e) {die("Connection failed: " . $e->getMessage() . ' SQL Statement: ' . $stmt->queryString);}
     }
 }
 

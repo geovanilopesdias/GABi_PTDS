@@ -20,7 +20,7 @@ final class Publisher{
     public static function fromArray(array $data){
         return new Publisher(
             $data['name'],
-            $data['id']
+            $data['id'] ?? null
         );
     }
 
