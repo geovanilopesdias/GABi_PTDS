@@ -219,6 +219,20 @@ final class BookDAO{
         return $results;
     }
 
+    // By-fetchers
+    
+    // fetchOpusByTitle
+// fetchOpusByAuthor
+// fetchOpusByAuthorAndTitle
+// fetchCopyByID
+// fetchCopyByAssetNumber
+// fetchAllOpusCopies
+// fetchCopyByPublisher
+// fetchCopyByCollection
+// fetchCopyByCoverColor
+
+
+
     // ----- UPDATING
     // Searching:
     public static function edit_opus(int $id_to_update, array $data, int $user_id): bool { // OK
@@ -403,15 +417,5 @@ final class BookDAO{
 
 }
 
-
-// fetchOpusByTitle
-// fetchOpusByAuthor
-// fetchOpusByAuthorAndTitle
-// fetchCopyByID
-// fetchCopyByAssetNumber
-// fetchAllOpusCopies
-// fetchCopyByPublisher
-// fetchCopyByCollection
-// fetchCopyByCoverColor
 
 ?>
