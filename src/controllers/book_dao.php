@@ -220,7 +220,7 @@ final class BookDAO{
     }
 
     // By-fetchers
-    
+
     // fetchOpusByTitle
 // fetchOpusByAuthor
 // fetchOpusByAuthorAndTitle
@@ -383,18 +383,14 @@ final class BookDAO{
     // Row erasing
     public static function delete_edition(int $edition_id, int $user_id){  // OK
         $db_man = new DAOManager();
-        if ($db_man -> can_user_register($user_id))
-            return $db_man -> delete_record_in(DB::EDITION_TABLE, $edition_id);
-        
-        else return false;
+        if (!$db_man -> can_user_register($user_id)) return false;
+        return $db_man -> delete_record_in(DB::EDITION_TABLE, $edition_id);
     }
 
     public static function delete_book_copy(int $book_copy_id, int $user_id){  // Not tested
         $db_man = new DAOManager();
-        if ($db_man -> can_user_register($user_id))
-            return $db_man -> delete_record_in(DB::BOOK_COPY_TABLE, $book_copy_id);
-        
-        else return false;
+        if (!$db_man -> can_user_register($user_id)) return false;
+        return $db_man -> delete_record_in(DB::BOOK_COPY_TABLE, $book_copy_id);
     }
 
     // Special erasing
