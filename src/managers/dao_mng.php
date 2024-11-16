@@ -19,7 +19,7 @@ final class DB {
     const WRITER_TABLE = 'writers';
     const WRITER_FIELDS = ['id', 'name', 'birth_year'];
     const AUTHORSHIP_TABLE = 'authorship';
-    const AUTHORSHIP_FIELDS = ['author_id', 'opus_id'];
+    const AUTHORSHIP_FIELDS = ['writer_id', 'opus_id'];
     const PUBLISHER_TABLE = 'publishers';
     const PUBLISHER_FIELDS = ['id', 'name'];
     const EDITION_TABLE = 'editions';
@@ -148,18 +148,18 @@ final class DAOManager{
      */
     public function update_relationship(
         string $element_table, string $relation_table,
-         string $element_fk_field, string $relation_fk_field,
-        int $relation_fk_value, array $element_data): bool {
+         string $element_fk_field, string $container_fk_field,
+        int $container_fk_value, array $element_data): bool {
             if (!in_array($relation_table, DB::TABLES_WITHOUT_ID)) 
                 throw new InvalidArgumentException("You should be using the method update_entity_in in table $relation_table.");
 
             $sql = "UPDATE $relation_table rt
-                    SET $relation_fk_field = :relation_fk_value
+                    SET $container_fk_field = :container_fk_value
                     FROM $element_table et
                     WHERE rt.$element_fk_field = :element_fk_value";
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindValue(":element_fk_value", $element_data['id']);
-            $stmt->bindValue(":relation_fk_value", $relation_fk_value);
+            $stmt->bindValue(":container_fk_value", $container_fk_value);
             try {return $stmt->execute();}
             catch (PDOException $e) {die("Connection failed: " . $e->getMessage(). "DML: $sql");}
     }
@@ -177,18 +177,19 @@ final class DAOManager{
     
     public function delete_relationship(
         string $relation_table,
-        string $relation_fk_field, string $element_fk_field,
-        int $relation_fk_value, int $element_fk_value): bool {
+        string $container_fk_field, string $element_fk_field,
+        int $container_fk_value, int $element_fk_value): bool {
             if (!in_array($relation_table, DB::TABLES_WITHOUT_ID)) 
                 throw new InvalidArgumentException("You should be using the method delete_record_in table $relation_table.");
             
             $sql = "DELETE FROM $relation_table 
-                    WHERE $relation_fk_field = :relation_fk_value
+                    WHERE $container_fk_field = :container_fk_value
                     AND $element_fk_field = :element_fk_value";
             $stmt = $this->pdo->prepare($sql);
-            $stmt->bindValue(":relation_fk_value", $relation_fk_value);
+            $stmt->bindValue(":container_fk_value", $container_fk_value);
             $stmt->bindValue(":element_fk_value", $element_fk_value);
-            return  $stmt->execute();
+            try {return $stmt->execute();}
+        catch (PDOException $e) {die("Connection failed: " . $e->getMessage(). "DML: $sql");}
     }
     
     

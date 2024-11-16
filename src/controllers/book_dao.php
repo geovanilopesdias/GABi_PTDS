@@ -47,7 +47,7 @@ final class BookDAO{
         return $db_man -> insert_record_in(DB::COLLECTION_TABLE, $c -> toArray());   
     }
 
-    public static function register_edition(array $data, int $user_id){ //OK
+    public static function register_edition(array $data, int $user_id){ // SQLSTATE[23505] Unique violation
         $db_man = new DAOManager();
         if (!$db_man -> can_user_register($user_id)) return false;
         $e = Edition::fromArray($data, false);
@@ -78,6 +78,27 @@ final class BookDAO{
         return Edition::fromArray($edition_array, true); // Factory used truly for fetching
     }
 
+    public static function fetch_bookcopy_by_id(int $id): ?BookCopy { // OK
+        $db_man = new DAOManager();
+        $edition_array = $db_man -> fetch_record_by_id_from(DB::BOOK_COPY_TABLE, $id);
+        if (empty($edition_array)) return null;
+        return BookCopy::fromArray($edition_array, true); // Factory used truly for fetching
+    }
+
+    public static function fetch_writer_by_id(int $id): ?Writer { // OK
+        $db_man = new DAOManager();
+        $writer_array = $db_man -> fetch_record_by_id_from(DB::WRITER_TABLE, $id);
+        if (empty($writer_array)) return null;
+        return Writer::fromArray($writer_array, true); // Factory used truly for fetching
+    }
+
+    public static function fetch_collection_by_id(int $id): ?Collection { // OK
+        $db_man = new DAOManager();
+        $collection_array = $db_man -> fetch_record_by_id_from(DB::COLLECTION_TABLE, $id);
+        if (empty($collection_array)) return null;
+        return Collection::fromArray($collection_array, true); // Factory used truly for fetching
+    }
+    
     // All fetchers:
     public static function fetch_all_opuses() { //OK
         $db_man = new DAOManager();
@@ -122,10 +143,24 @@ final class BookDAO{
         foreach($fetched_copies as $c) $copies_instances[] = BookCopy::fromArray($c, false);
         return $copies_instances;
     }
+
+    public static function fetch_authorships_from_opus(int $opus_id) { // OK
+        $db_man = new DAOManager();
+        $fetched_authorships = $db_man -> 
+            fetch_records_from(
+                ['opus_id' => $opus_id],
+                DB::AUTHORSHIP_TABLE, DB::AUTHORSHIP_FIELDS,
+                [['field' => 'opus_id']]
+            );
+        $authorship_instances = array();
+        foreach($fetched_authorships as $a) $authorship_instances[] = Authorship::fromArray($a);
+        return $authorship_instances;
+    }
     
     // Join-fetchers
     /**
      * Fetching joining to opus data its respective writers data through authorship table.
+     * No authors will result in an empty return.
      */
     public static function fetch_opus_with_writers(int $opus_id): ?array { // OK
         $db_man = new DAOManager();
@@ -186,7 +221,7 @@ final class BookDAO{
 
     // ----- UPDATING
     // Searching:
-    public static function edit_opus(int $id_to_update, array $data, int $user_id): bool {
+    public static function edit_opus(int $id_to_update, array $data, int $user_id): bool { // OK
         $db_man = new DAOManager();
         if (!$db_man->can_user_register($user_id)) return false;
 
@@ -205,7 +240,7 @@ final class BookDAO{
         return $db_man->update_entity_in(DB::OPUS_TABLE, $data);
     }
 
-    public static function edit_edition(int $id_to_update, array $data, int $user_id): bool {
+    public static function edit_edition(int $id_to_update, array $data, int $user_id): bool { // OK
         $db_man = new DAOManager();
         if (!$db_man->can_user_register($user_id)) return false;
 
@@ -218,23 +253,156 @@ final class BookDAO{
         
         try{
             $edition = Edition::fromArray($current_edition_data, false);
-            $data['id'] = $edition -> get_id();
+            $data['id'] = $id_to_update;
         }
         catch(Exception $e) {echo ("Edition setting failed: " . $e->getMessage());}
         return $db_man->update_entity_in(DB::EDITION_TABLE, $data);
     }
-    // editOpus
-    // editEdition
-    // editCopy
+
+    public static function edit_book_copy(int $id_to_update, array $data, int $user_id): bool { // OK
+        if (isset($data['status']))
+            throw new InvalidArgumentException("Book copy status shouldn't be lightly updated: use borrow/return methods instead.");
+        
+        $db_man = new DAOManager();
+        if (!$db_man->can_user_register($user_id)) return false;
+
+        $current_book_copy_data = self::fetch_bookcopy_by_id($id_to_update) -> toArray();
+        if (empty($current_book_copy_data)) return false;
+        
+        // Edit current book copy's data in order to scan them through checkers into model setters:
+        foreach($current_book_copy_data as $field => &$v)
+            if(isset($data[$field]) and $v !== $data[$field]) $v = $data[$field];
+        
+        try{
+            $copy = BookCopy::fromArray($current_book_copy_data, false); // It's not a insertion instanciation
+            $data['id'] = $id_to_update;
+        }
+        catch(Exception $e) {echo ("Edition setting failed: " . $e->getMessage());}
+        return $db_man->update_entity_in(DB::BOOK_COPY_TABLE, $data);
+    }
+    
+    public static function setBookCopyStatusAs(string $status, int $id_to_update, int $user_id): bool { // OK
+        $db_man = new DAOManager();
+        if (!$db_man->can_user_register($user_id)) return false;
+
+        $current_book_copy_data = self::fetch_bookcopy_by_id($id_to_update) -> toArray();
+        if (empty($current_book_copy_data)) return false;
+        
+        // Edit current book copy's status in order to scan if is a valid one:
+        try{
+            $copy = BookCopy::fromArray($current_book_copy_data, false); // It's not a insertion instanciation
+            $copy -> set_status($status);
+        }
+        catch(Exception $e) {echo ("Edition setting failed: " . $e->getMessage());}
+        return $db_man->update_entity_in(
+            DB::BOOK_COPY_TABLE,
+            ['id' => $id_to_update, 'status' => $copy -> get_status()]
+        );
+    }
+    
+    public static function edit_writer(int $id_to_update, array $data, int $user_id): bool { // OK        
+        $db_man = new DAOManager();
+        if (!$db_man->can_user_register($user_id)) return false;
+
+        $current_writer_data = self::fetch_writer_by_id($id_to_update) -> toArray();
+        if (empty($current_writer_data)) return false;
+        
+        // Edit current book copy's data if name is being change to scan it:
+        if(isset($data['name'])){
+            foreach($current_writer_data as $field => &$v)
+                if(isset($data[$field]) and $v !== $data[$field]) $v = $data[$field];
+            try{
+                $w = Writer::fromArray($current_writer_data, false); // It's not a fetching instanciation
+            }
+            catch(Exception $e) {echo ("Edition setting failed: " . $e->getMessage()); return false;}
+        }
+        $data['id'] = $id_to_update;
+        return $db_man->update_entity_in(DB::WRITER_TABLE, $data);
+    }
+
+    public static function edit_collection(int $id_to_update, array $data, int $user_id): bool { // OK        
+        $db_man = new DAOManager();
+        if (!$db_man->can_user_register($user_id)) return false;
+
+        $current_collection_data = self::fetch_collection_by_id($id_to_update) -> toArray();
+        if (empty($current_collection_data)) return false;
+               
+        $data['id'] = $id_to_update;
+        return $db_man->update_entity_in(DB::COLLECTION_TABLE, $data);
+    }
+
+    public static function edit_publisher(int $id_to_update, array $data, int $user_id): bool { //OK
+        $db_man = new DAOManager();
+        if (!$db_man->can_user_register($user_id)) return false;
+
+        $current_publisher_data = self::fetch_collection_by_id($id_to_update) -> toArray();
+        if (empty($current_publisher_data)) return false;
+               
+        $data['id'] = $id_to_update;
+        return $db_man->update_entity_in(DB::PUBLISHER_TABLE, $data);
+    }
+    
+    public static function edit_all_opus_authorship( // OK
+        array $writers, int $opus_id, int $user_id): bool{
+        // Checks if writers contain only Writer instances:
+        if(count($writers) !== count(array_filter($writers, fn($item) => $item instanceof Writer))) 
+            throw new InvalidArgumentException(
+                'An array of writer instances should be passed to edit authorships.');
+        
+        $db_man = new DAOManager();
+        if (!$db_man -> can_user_register($user_id)) return false;
+        
+        self::clear_opus_authorships($opus_id, $user_id);
+        foreach($writers as $w){
+            $sql = self::register_authorship(
+                ['opus_id' => $opus_id,
+                'writer_id' => $w -> get_id()],
+                $user_id);
+            if(!$sql) return false;
+        }
+        
+        return true;
+    }
+
+
+    // ----- ERASING
+    // Row erasing
+    public static function delete_edition(int $edition_id, int $user_id){  // OK
+        $db_man = new DAOManager();
+        if ($db_man -> can_user_register($user_id))
+            return $db_man -> delete_record_in(DB::EDITION_TABLE, $edition_id);
+        
+        else return false;
+    }
+
+    public static function delete_book_copy(int $book_copy_id, int $user_id){  // Not tested
+        $db_man = new DAOManager();
+        if ($db_man -> can_user_register($user_id))
+            return $db_man -> delete_record_in(DB::BOOK_COPY_TABLE, $book_copy_id);
+        
+        else return false;
+    }
+
+    // Special erasing
+    public static function clear_opus_authorships(int $opus_id, int $user_id){ //OK
+        $db_man = new DAOManager();
+        if (!$db_man -> can_user_register($user_id)) return false;
+        
+        $opus_authorships = self::fetch_authorships_from_opus($opus_id);
+        if(empty($opus_authorships)) return false;
+        foreach($opus_authorships as $a){
+            $sql = $db_man -> delete_relationship(
+            DB::AUTHORSHIP_TABLE, 'opus_id', 'writer_id',
+            $opus_id, $a -> get_writer_id());
+            if(!$sql) return false;
+        }
+        return true;
+    }
+    
+
 
 }
 
-
-
-
-// deleteEdition
-// deleteCopy
-// setBookCopyStatusAs
 
 // fetchOpusByTitle
 // fetchOpusByAuthor

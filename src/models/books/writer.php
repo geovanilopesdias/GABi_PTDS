@@ -1,11 +1,10 @@
 <?php
 
 final class Writer{
-    private ?int $id;
-    private int $birth_year;
-    private string $name;
+    private ?int $id, $birth_year;
+    private ?string $name;
 
-    private function __construct(string $name, int $birth_year, ?int $id = null) {
+    private function __construct(?int $id = null, ?int $birth_year = null, ?string $name = null) {
         $this -> id = $id;
         $this -> birth_year = $birth_year;
         $this -> name = $name;
@@ -14,8 +13,8 @@ final class Writer{
     public function toArray(): array{
         return [
             'id' => $this->id ?? null,
-            'birth_year' => $this->birth_year,
-            'name' => $this->name
+            'birth_year' => $this->birth_year ?? null,
+            'name' => $this->name ?? null
         ];
     }
 
@@ -34,16 +33,15 @@ final class Writer{
     public static function fromArray(array $data, bool $for_fetching): Writer{
         if ($for_fetching)
             return new Writer(
-                $data['name'],
+                $data['id'],
                 $data['birth_year'],
-                $data['id']
+                $data['name']
             );
-        else
-            if (Writer::isNameValid($data['name']))
-                return new Writer(
-                    $data['name'],
-                    $data['birth_year']
-                );
+        else{
+            $w = new Writer($data['id'], $data['birth_year']);
+            $w -> set_name($data['name']);
+            return $w;
+        }
     }
 
     private static function isNameValid($nameToTest): bool{
@@ -57,7 +55,7 @@ final class Writer{
     public function set_name(string $name) {
         if (self::isNameValid($name))
             $this->name = $name;
-        else throw new UnexpectedValueException("Invalid name format.");
+        else throw new UnexpectedValueException("$name is an invalid name format for an writer.");
     }
     
   public function set_birth_year(int $birth_year) {

@@ -31,7 +31,7 @@ final class Edition{
             'pages' => $this->pages ?? null,
             'cover_colors' => $this->cover_colors ?? null,
             'translators' => $this->translators ?? null,
-            'collection_id' => $this->collection_id ?? 0,
+            'collection_id' => $this->collection_id ?? null,
             'isbn' => $this->isbn ?? null,
             'volume' => $this->volume ?? 1
         ];
@@ -94,9 +94,9 @@ final class Edition{
     }  
 
     public function set_isbn($isbn){
-        if(is_null($isbn)) $this -> isbn =  null;
-        if(self::isIsbnValid($isbn))$this -> isbn = $isbn;
-        else throw new UnexpectedValueException("Invalid ISBN code.");
+        if(is_null($isbn)) $this -> isbn = null;
+        if(self::isIsbnValid($isbn)) $this -> isbn = $isbn;
+        else throw new UnexpectedValueException("$isbn is an invalid ISBN code.");
     }
 
 
@@ -108,8 +108,8 @@ final class Edition{
         if(is_null($translators)) $this -> translators = null;
         
         $translators_as_array = explode(',', $translators);
-        foreach($translators_as_array as $t) if(!self::isNameValid($t))
-            throw new UnexpectedValueException("Invalid ISBN code.");
+        foreach($translators_as_array as $t) if(!self::isNameValid(trim($t)))
+            throw new UnexpectedValueException("Translators' names may have invalid characters.");
         
         $this -> translators = $translators;
     }

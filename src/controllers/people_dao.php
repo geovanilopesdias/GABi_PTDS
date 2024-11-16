@@ -58,8 +58,6 @@ final class PeopleDAO{
         $t = Teaching::fromArray($data);
         return $db_man -> insert_record_in(DB::TEACHING_TABLE, $t -> toArray());
     }
-    
-
 
     // Updating:
     public static function edit_reader(int $id_to_update, array $data, int $user_id): bool { //OK
@@ -85,7 +83,6 @@ final class PeopleDAO{
         return $db_man->update_entity_in(DB::READER_TABLE, $data);
     }
     
-
     public static function edit_classroom(int $id_to_update, array $data, int $user_id){ // OK
         $db_man = new DAOManager();
         if (!$db_man->can_user_register($user_id) or
@@ -122,7 +119,7 @@ final class PeopleDAO{
         return $db_man -> update_entity_in(DB::READER_TABLE, $data);
     }
 
-    public static function transfer_students_to_classroom( //OK
+    public static function transfer_students_to_classroom( // OK
         array $students, int $classroom_id, int $user_id): bool{
         $db_man = new DAOManager();
         if ($db_man -> can_user_register($user_id)){
@@ -136,6 +133,20 @@ final class PeopleDAO{
         }
         return false;
     }
+
+    public static function re_enroll_student_to(int $classroom_id, int $student_id, int $user_id): bool{
+        $db_man = new DAOManager();
+        $fetched_student = self::fetch_reader_by_id($student_id, true);
+        if (!$db_man -> can_user_register($user_id)) return false;
+        if (empty($fetched_student -> toArray()) or empty(self::fetch_classroom_by_id($classroom_id) -> toArray()))
+            return false;
+        return $db_man -> update_relationship(
+            DB::READER_TABLE, DB::ENROLLMENT_TABLE, 
+            'student_id', 'classroom_id',
+            $classroom_id, $fetched_student -> toArray());        
+    }
+
+    
     
     public static function update_library_debts(){
         // Escrever após book_dao.php estar pronta!
