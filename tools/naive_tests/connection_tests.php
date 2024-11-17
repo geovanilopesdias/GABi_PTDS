@@ -4,22 +4,24 @@ require('../../src/controllers/book_dao.php');
 require('../../src/controllers/people_dao.php');
 
 function insertion_test(){
-    $data['isbn'] = '9788573075724';
-    $data['opus_id'] = 4;
-    $data['publisher_id'] = 1;
-    $data['edition_number'] = 1;
-    $data['pages'] = 304;
-    $data['cover_colors'] = 'rosa, lilás';
-    $data['publishing_year'] = 1999;
-    $data['translators'] = 'Diana Myriam Lichtenstein, Liana Di Marco, Mário Corso';
-    // $data['edition_number'] = 12;
-    // $data['collection_id'] = 1;
-    // $data['translators'] = 'Xavier Pinheiro';
-    // $data['pages'] = 176;
-    // $data['publishing_year'] = 2017;
-    // $data['isbn'] = '9788520941607';
-    // $data['volume'] = 3;
-    // $data['cover_colors'] = 'azul';
+    // $data['isbn'] = '9788536300405';
+    // $data['opus_id'] = 3;
+    // $data['publisher_id'] = 1;
+    // $data['edition_number'] = 9;
+    // $data['pages'] = 685;
+    // $data['volume'] = null;
+    // $data['collection_id'] = null;
+    // $data['cover_colors'] = 'amarelo, laranja, roxo';
+    // $data['publishing_year'] = 2002;
+    // $data['translators'] = 'Trieste Freire Ricci, Maria Helena Gravina';
+    $data['edition_id'] = 12;
+    $data['collection_id'] = 1;
+    $data['translators'] = 'Xavier Pinheiro';
+    $data['pages'] = 176;
+    $data['publishing_year'] = 2017;
+    $data['isbn'] = '9788520941607';
+    $data['volume'] = 3;
+    $data['cover_colors'] = 'azul';
     return BookDAO::register_edition($data, 1);  // 1 should be the librarian id!
 }
 

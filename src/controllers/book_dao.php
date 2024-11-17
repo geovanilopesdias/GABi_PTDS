@@ -47,7 +47,7 @@ final class BookDAO{
         return $db_man -> insert_record_in(DB::COLLECTION_TABLE, $c -> toArray());   
     }
 
-    public static function register_edition(array $data, int $user_id){ // SQLSTATE[23505] Unique violation
+    public static function register_edition(array $data, int $user_id){ // OK
         $db_man = new DAOManager();
         if (!$db_man -> can_user_register($user_id)) return false;
         $e = Edition::fromArray($data, false);

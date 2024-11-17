@@ -91,7 +91,7 @@ final class DAOManager{
 
         return match ($op){
             DML_OPS::INSERT => "INSERT INTO $t_name (" . implode(', ', $t_fields) .") VALUES (:" . implode(', :', $t_fields) . ")",
-            DML_OPS::UPDATE => "UPDATE $t_name  SET " . implode(', ', $set_clauses) . " WHERE id = :id",
+            DML_OPS::UPDATE => "UPDATE $t_name SET " . implode(', ', $set_clauses) . " WHERE id = :id",
             DML_OPS::DELETE => "DELETE FROM $t_name WHERE id = :id",
         };
     }

@@ -9,13 +9,14 @@ final class Edition{
         int $opus_id, int $publisher_id,
         ?int $collection_id = null, ?int $pages = null, ?int $editionNumber = null,
         ?int $publishing_year = null,
-        ?string $cover_colors = null, ?int $id = null, ?string $translators = null) {
+        ?string $cover_colors = null, ?int $volume = 1, ?int $id = null, ?string $translators = null) {
         $this->opus_id = $opus_id;
         $this->publisher_id = $publisher_id;
         $this->collection_id = $collection_id;
         $this->edition_number = $editionNumber;
         $this->publishing_year = $publishing_year;
         $this->pages = $pages;
+        $this->volume = $volume;
         $this->cover_colors = $cover_colors;
         $this->translators = $translators;
         $this->id = $id;
