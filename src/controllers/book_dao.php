@@ -169,7 +169,7 @@ final class BookDAO{
         $where_condition = [['field' => DB::OPUS_TABLE.".id", 'operator' => '=']];
         //e1 = opuses, e2 = writers
         return $db_man -> fetch_elements_relation_joint(
-            ['opuses_id' => $opus_id], DB::OPUS_TABLE, DB::WRITER_TABLE, DB::AUTHORSHIP_TABLE,
+            ['opuses_id' => $opus_id], DB::OPUS_TABLE, DB::OPUS_TABLE, DB::WRITER_TABLE, DB::AUTHORSHIP_TABLE,
             DB::OPUS_FIELDS, ['name', 'birth_year'], ['e1_id' => 'opus_id', 'e2_id' => 'writer_id'],
             DB::OPUS_TABLE.".id", // Grouping
             $where_condition, [], 'AND', 'AND',  // Where logic
@@ -180,15 +180,12 @@ final class BookDAO{
     public static function fetch_edition_with_opus_writer_data(int $edition_id): ?array { //OK
         $db_man = new DAOManager();
         
-        // Fetch the edition details first
         $fetched_opus = self::fetch_edition_by_id($edition_id);
         if (empty($fetched_opus)) return null;
     
-        // Prepare the fields for the query
         $edition_fields = ['id', 'volume', 'edition_number', 'publishing_year', 'pages', 'cover_colors', 'translators'];
         $opus_fields = ['title', 'original_year', 'alternative_url', 'ddc', 'cutter_sanborn'];
         
-        // Build the DQL query string
         $dql = "SELECT ".
             DB::EDITION_TABLE . "." . implode(", ".DB::EDITION_TABLE.".",$edition_fields) . ", ".
             DB::OPUS_TABLE . "." . implode(", ".DB::OPUS_TABLE.".",$opus_fields) . ", ".
@@ -203,11 +200,50 @@ final class BookDAO{
             " GROUP BY ".DB::EDITION_TABLE . ".id, ".DB::OPUS_TABLE.".id, ".DB::PUBLISHER_TABLE . ".name".
             " ORDER BY ".DB::OPUS_TABLE.".title";
         
-        // Prepare search parameter with the edition ID
         $search = ['edition_id' => $edition_id];
+        $results = $db_man->fetch_complex_join_dql($dql, $search);
+        foreach ($results as &$row) {
+            if (isset($row['writers'])) {
+                $row['writers'] = json_decode($row['writers'], true); // Decode writers field into an array
+            }
+        }
+        return $results;
+    }
+
+    public static function fetch_bookcopy_with_edition_opus_writer_data(string $bookcopy_asset_code): ?array {
+        $db_man = new DAOManager();
+        
+        // Fetch the edition details first
+        $fetched_opus = self::fetch_bookcopy_by_asset_code($bookcopy_asset_code, false);
+        if (empty($fetched_opus)) return null;
+    
+        // Prepare the fields for the query
+        $book_copy_fields = ['id', 'asset_code', 'status'];
+        $edition_fields = ['volume', 'edition_number', 'publishing_year', 'pages', 'cover_colors', 'translators'];
+        $opus_fields = ['title', 'original_year', 'alternative_url', 'ddc', 'cutter_sanborn'];
+        
+        // Build the DQL query string
+        $dql = "SELECT ".
+            DB::BOOK_COPY_TABLE . "." . implode(", ".DB::BOOK_COPY_TABLE.".", $book_copy_fields) . ", ".
+            DB::EDITION_TABLE . "." . implode(", ".DB::EDITION_TABLE.".",$edition_fields) . ", ".
+            DB::OPUS_TABLE . "." . implode(", ".DB::OPUS_TABLE.".",$opus_fields) . ", ".
+            DB::PUBLISHER_TABLE . ".name AS publisher,".
+            " json_agg(json_build_object('name', ".DB::WRITER_TABLE.".name, 'birth_year', ".DB::WRITER_TABLE.".birth_year)) AS ".DB::WRITER_TABLE.
+            " FROM ". DB::AUTHORSHIP_TABLE.
+            " JOIN ". DB::OPUS_TABLE. " ON ".DB::AUTHORSHIP_TABLE.".opus_id = ".DB::OPUS_TABLE.".id".
+            " JOIN ". DB::WRITER_TABLE. " ON ".DB::AUTHORSHIP_TABLE.".writer_id = ".DB::WRITER_TABLE.".id".
+            " JOIN ". DB::EDITION_TABLE. " ON ".DB::EDITION_TABLE.".opus_id = ".DB::OPUS_TABLE.".id".
+            " JOIN ". DB::BOOK_COPY_TABLE. " ON ".DB::BOOK_COPY_TABLE.".edition_id = ".DB::EDITION_TABLE.".id".
+            " JOIN ". DB::PUBLISHER_TABLE. " ON ".DB::PUBLISHER_TABLE.".id = ".DB::EDITION_TABLE.".publisher_id".
+            " WHERE ".DB::BOOK_COPY_TABLE.".asset_code = :asset_code".
+            " GROUP BY ".DB::BOOK_COPY_TABLE . ".id, ".DB::EDITION_TABLE . ".id, ".DB::OPUS_TABLE.".id, ".DB::PUBLISHER_TABLE . ".name".
+            " ORDER BY ".DB::OPUS_TABLE.".title";
+        
+        // Prepare search parameter with the edition ID
+        $search = ['asset_code' => $bookcopy_asset_code];
     
         // Execute the query
-        $results = $db_man->fetch_complex_join_dql($dql, $search);
+        $results = $db_man->fetch_complex_join_dql($dql, $search, true); // Fetch for uniqueness
         
         // Decode the 'writers' field from JSON to an array
         foreach ($results as &$row) {
@@ -220,18 +256,147 @@ final class BookDAO{
     }
 
     // By-fetchers
+    public static function fetch_bookcopy_by_asset_code(string $asset_code): ?BookCopy { //OK
+        $db_man = new DAOManager();
+        $bookcopy_array = $db_man -> fetch_records_from(
+            ['asset_code' => $asset_code],
+            DB::BOOK_COPY_TABLE, DB::BOOK_COPY_FIELDS,
+            [['field' => 'asset_code', 'operator' => '=']], // WHERE conditions
+            'AND', null, false, true // Not distinct, but unique
+        );
+        if (empty($bookcopy_array)) return null;
+        return BookCopy::fromArray(
+            $bookcopy_array, // fetch_records_from returns a 2D array
+            false); // Factory NOT used for insertion
+    }
 
-    // fetchOpusByTitle
-// fetchOpusByAuthor
-// fetchOpusByAuthorAndTitle
-// fetchCopyByID
-// fetchCopyByAssetNumber
-// fetchAllOpusCopies
-// fetchCopyByPublisher
-// fetchCopyByCollection
-// fetchCopyByCoverColor
+    public static function fetch_opus_by_title(string $title): ?array { // OK
+        $db_man = new DAOManager();
+        $opus_arrays = $db_man -> fetch_records_from(
+            ['title' => "%$title%"],
+            DB::OPUS_TABLE, DB::OPUS_FIELDS,
+            [['field' => 'title', 'operator' => 'ILIKE']] // WHERE conditions
+        );
+        
+        if (empty($opus_arrays)) return null;
+        foreach ($opus_arrays as $opus)
+            $opus_instances[] = Opus::fromArray($opus, true); // Factory TRULY for fetching
+        return $opus_instances;
+    }
+    
+    public static function fetch_opus_by_author(string $author): ?array { // OK  
+        $db_man = new DAOManager();
+        $search = ['name' => "%$author%"];
+        $where_condition = [['field' => DB::WRITER_TABLE.'.name', 'operator' => 'ILIKE']];
+        $opus_instances = $db_man -> 
+            fetch_elements_relation_joint(
+                $search, DB::WRITER_TABLE,
+                DB::OPUS_TABLE, DB::WRITER_TABLE, DB::AUTHORSHIP_TABLE,
+                DB::OPUS_FIELDS, ['name', 'birth_year'],
+                ['container_id' => 'opus_id', 'element_id' => 'writer_id'],
+                DB::OPUS_TABLE.".id", // Grouping
+                $where_condition, [], 'AND', 'AND',  // Where logic
+                DB::OPUS_TABLE.".title"); // Ordering       
+        return $opus_instances;
+    }
 
+    public static function fetch_all_opus_copies(int $opus_id): ?array { //OK
+        $db_man = new DAOManager();
+        
+        $fetched_opus = self::fetch_opus_by_id($opus_id);
+        if (empty($fetched_opus)) return null;
+        
+        $bookcopy_fields = ['asset_code', 'status'];
+        $edition_fields = ['volume', 'edition_number', 'publishing_year', 'pages', 'cover_colors', 'translators'];
+        $opus_fields = ['title', 'original_year', 'alternative_url', 'ddc', 'cutter_sanborn'];
+        
+        $dql = "SELECT ".
+            DB::BOOK_COPY_TABLE . "." . implode(", ".DB::BOOK_COPY_TABLE.".",$bookcopy_fields) . ", ".    
+            DB::EDITION_TABLE . "." . implode(", ".DB::EDITION_TABLE.".",$edition_fields) . ", ".
+            DB::OPUS_TABLE . "." . implode(", ".DB::OPUS_TABLE.".",$opus_fields) . ", ".
+            DB::PUBLISHER_TABLE . ".name AS publisher,".
+            " json_agg(json_build_object('name', ".DB::WRITER_TABLE.".name, 'birth_year', ".DB::WRITER_TABLE.".birth_year)) AS ".DB::WRITER_TABLE.
+            " FROM ". DB::AUTHORSHIP_TABLE.
+            " JOIN ". DB::OPUS_TABLE. " ON ".DB::AUTHORSHIP_TABLE.".opus_id = ".DB::OPUS_TABLE.".id".
+            " JOIN ". DB::WRITER_TABLE. " ON ".DB::AUTHORSHIP_TABLE.".writer_id = ".DB::WRITER_TABLE.".id".
+            " JOIN ". DB::EDITION_TABLE. " ON ".DB::EDITION_TABLE.".opus_id = ".DB::OPUS_TABLE.".id".
+            " JOIN ". DB::BOOK_COPY_TABLE. " ON ".DB::BOOK_COPY_TABLE.".edition_id = ".DB::EDITION_TABLE.".id".
+            " JOIN ". DB::PUBLISHER_TABLE. " ON ".DB::PUBLISHER_TABLE.".id = ".DB::EDITION_TABLE.".publisher_id".
+            " WHERE ".DB::OPUS_TABLE.".id = :opus_id".
+            " GROUP BY ".DB::BOOK_COPY_TABLE.".id, ".DB::EDITION_TABLE . ".id, ".DB::OPUS_TABLE.".id, ".DB::PUBLISHER_TABLE . ".name".
+            " ORDER BY ".DB::OPUS_TABLE.".title";
+        
+        $search = ['opus_id' => $opus_id];
+        $results = $db_man->fetch_complex_join_dql($dql, $search);
+        foreach ($results as &$row) {
+            if (isset($row['writers'])) {
+                $row['writers'] = json_decode($row['writers'], true); // Decode writers field into an array
+            }
+        }
+        return $results;
+    }
 
+    public static function fetch_edition_by_publishers_name(string $publisher): ?array { //OK
+        $db_man = new DAOManager();
+        $search = ['name' => "%$publisher%"];
+        $where_condition = [['field' => DB::PUBLISHER_TABLE.'.name', 'operator' => 'ILIKE']];
+        
+        $fetched_editions = $db_man -> 
+            fetch_jointed_records_from(
+                $search, DB::PUBLISHER_TABLE,
+                DB::PUBLISHER_TABLE, DB::EDITION_TABLE,
+                ['name AS publisher'], DB::EDITION_FIELDS,
+                [['field1' => DB::PUBLISHER_TABLE.'.id', 'field2' => 'publisher_id']], 'AND',  // ON logic
+                $where_condition, [], 'AND', 'AND');  //  WHERE logic
+        if (empty($fetched_editions)) return null;
+        foreach($fetched_editions as $e) $eds_instances[] = Edition::fromArray($e, true);
+        return $eds_instances;
+    }
+
+    public static function fetch_edition_by_collection_name(string $collection): ?array { //OK
+        $db_man = new DAOManager();
+        $search = ['name' => "%$collection%"];
+        $where_condition = [['field' => DB::COLLECTION_TABLE.'.name', 'operator' => 'ILIKE']];
+        
+        $fetched_editions = $db_man -> 
+            fetch_jointed_records_from(
+                $search, DB::COLLECTION_TABLE,
+                DB::COLLECTION_TABLE, DB::EDITION_TABLE,
+                ['name AS collection'], DB::EDITION_FIELDS,
+                [['field1' => DB::COLLECTION_TABLE.'.id', 'field2' => 'collection_id']], 'AND',  // ON logic
+                $where_condition, [], 'AND', 'AND');  //  WHERE logic
+        if (empty($fetched_editions)) return null;
+        foreach($fetched_editions as $e) $eds_instances[] = Edition::fromArray($e, true);
+        return $eds_instances;
+    }
+
+    public static function fetch_edition_by_cover_colors(string $colors): ?array { //OK
+        $db_man = new DAOManager();
+        $colors_list = explode(',', $colors);
+        
+        // Arrays to avoid duplicates
+        $eds_instances = array();
+        $eds_ids = array();
+        foreach($colors_list as $color){
+            $search = ['cover_colors' => "%$color%"];
+            $where_condition = [['field' => 'cover_colors', 'operator' => 'ILIKE']];
+        
+            $fetched_editions = $db_man -> 
+                fetch_records_from(
+                    $search, DB::EDITION_TABLE, DB::EDITION_FIELDS,
+                    $where_condition, 'AND', NULL, true);  //  WHERE logic
+            if (empty($fetched_editions)) return null;
+            
+            foreach($fetched_editions as $e){
+                // Test to avoid duplicates:
+                if (!in_array($e['id'], $eds_ids, true)){
+                    $eds_ids[] = $e['id'];
+                    $eds_instances[] = Edition::fromArray($e, true);
+                }
+            }    
+        }
+        return $eds_instances;
+    }
 
     // ----- UPDATING
     // Searching:
@@ -412,6 +577,6 @@ final class BookDAO{
 
 
 }
-
+// fetchOpusByAuthorAndTitle --> Ainda não...
 
 ?>

@@ -265,8 +265,8 @@ final class DAOManager{
         string $t1_where_logic = 'AND', string $t2_where_logic = 'AND',
         ?string $ordering_key = null, bool $distinct = false): string {
             $select_clause = ($distinct ? "DISTINCT " : "") .
-                (empty($t1_fields) ? "$t1_name.*" : implode(', ', $t1_fields)) . ", " .
-                (empty($t2_fields) ? "$t2_name.*" : implode(', ', $t2_fields));
+                (empty($t1_fields) ? "$t1_name.*" : "$t1_name.".implode(", $t1_name.", $t1_fields)) . ", " .
+                (empty($t2_fields) ? "$t2_name.*" : "$t2_name.".implode(", $t2_name.", $t2_fields));
         
             $t1_where_clause = $this->get_where_clause($t1_where_conditions, $t1_where_logic);
             $t2_where_clause = $this->get_where_clause($t2_where_conditions, $t2_where_logic, true);
@@ -278,30 +278,30 @@ final class DAOManager{
     }
     
     private function build_elements_relation_joint_query(
-        string $e1_table, string $e2_table, string $relation_table,
-        array $e1_fields, array $e2_fields, array $rt_fields,
+        string $container_table, string $element_table, string $relation_table,
+        array $container_fields, array $element_fields, array $rt_fields,
         string $grouping_key,
-        array $e1_where_conditions = [], array $e2_where_conditions = [],
-        string $e1_where_logic = 'AND', string $e2_where_logic = 'AND',
+        array $container_where_conditions = [], array $element_where_conditions = [],
+        string $container_where_logic = 'AND', string $element_where_logic = 'AND',
         ?string $ordering_key = null, bool $distinct = false): string {
             $select_clause = ($distinct ? "DISTINCT " : "").
-                (empty($e1_fields) ? '': "$e1_table." . implode(", $e1_table.", $e1_fields)).', '.
-                (empty($e1_fields) ? '':
+                (empty($container_fields) ? '': "$container_table." . implode(", $container_table.", $container_fields)).', '.
+                (empty($container_fields) ? '':
                 "json_agg(json_build_object(".
-                    implode(", ", array_map(fn($f) => "'$f', $e2_table.$f", $e2_fields)).")) AS $e2_table");
+                    implode(", ", array_map(fn($f) => "'$f', $element_table.$f", $element_fields)).")) AS $element_table");
 
-            $e1_where_clause = $this->get_where_clause($e1_where_conditions, $e1_where_logic);
-            $e2_where_clause = $this->get_where_clause($e2_where_conditions, $e2_where_logic, true);
+            $container_where_clause = $this->get_where_clause($container_where_conditions, $container_where_logic);
+            $element_where_clause = $this->get_where_clause($element_where_conditions, $element_where_logic, true);
 
-            $on_clause1 = "$relation_table.".$rt_fields['e1_id']." = $e1_table.id";
-            $on_clause2 = "$relation_table.".$rt_fields['e2_id']." = $e2_table.id";
+            $on_clause_container = "$relation_table.".$rt_fields['container_id']." = $container_table.id";
+            $on_clause_element = "$relation_table.".$rt_fields['element_id']." = $element_table.id";
             $grouping_clause = $this -> get_grouping_clause($grouping_key);
             $ordering_clause = $this -> get_ordering_clause($ordering_key);
             
             return "SELECT $select_clause FROM $relation_table
-                JOIN $e1_table ON $on_clause1
-                JOIN $e2_table ON $on_clause2
-                $e1_where_clause $e2_where_clause $grouping_clause $ordering_clause";
+                JOIN $container_table ON $on_clause_container
+                JOIN $element_table ON $on_clause_element
+                $container_where_clause $element_where_clause $grouping_clause $ordering_clause";
     }
     
 
@@ -322,7 +322,9 @@ final class DAOManager{
     }
 
     /**
-     * General purpose-searching in a single table.
+     * General purpose-searching in a single table. Be carefull to search for
+     * UNIQUE parameters, cause it returns a 2D array: in this case, pass
+     * $element_array[0] to fromArray static fabrics.
      */
     public function fetch_records_from( //OK
         array $search,    
@@ -331,15 +333,18 @@ final class DAOManager{
         array $where_conditions = [],
         string $logic = 'AND',
         ?string $ordering_key = null,
-        bool $distinct = false): array {
+        bool $distinct = false,
+        bool $unique = false): array {
         $dql = self::build_select_query($t_name, $t_fields, $where_conditions, $logic, $ordering_key, $distinct);
-        $stmt = $this->pdo->prepare($dql);
-
-        foreach ($search as $field => $value) $stmt->bindValue(":$field", $value);      
+        $stmt = $this->pdo->prepare($dql);     
     
-        try {$stmt->execute(); $stmt->setFetchMode(PDO::FETCH_ASSOC);}
-        catch (PDOException $e) {die("Connection failed: " . $e->getMessage() . '\nDQL Statement: '. $dql);}
-        return $stmt->fetchAll();
+        try {
+            foreach ($search as $field => $value) $stmt->bindValue(":$field", $value);
+            $stmt->execute(); $stmt->setFetchMode(PDO::FETCH_ASSOC);
+        }
+        catch (PDOException $e) {die("Connection failed: " . $e->getMessage() . "\nDQL Statement: \n". $dql);}
+        if(!$unique) return $stmt->fetchAll();
+        else return $stmt->fetch();
     }
     
 
@@ -347,7 +352,7 @@ final class DAOManager{
      * General purpose searching in two joined tables.
      */
     public function fetch_jointed_records_from(
-        array $search, string $t1_name, string $t2_name,
+        array $search, string $search_table, string $t1_name, string $t2_name,
         array $t1_fields = [], array $t2_fields = [],
         array $on_conditions, string $on_logic = 'AND',
         array $t1_where_conditions = [], array $t2_where_conditions = [],
@@ -359,43 +364,52 @@ final class DAOManager{
             $t1_where_logic, $t2_where_logic, $ordering_key, $distinct
         );
         $stmt = $this -> pdo -> prepare($dql);
-        foreach ($search as $f => $value) $stmt -> bindValue(":$f", $value);
-        $stmt -> execute(); $stmt->setFetchMode(PDO::FETCH_ASSOC);
-        return $stmt -> fetchAll();
+        try {
+            foreach ($search as $f => $value) $stmt -> bindValue(":".$search_table."_".$f, $value);
+            $stmt -> execute(); $stmt->setFetchMode(PDO::FETCH_ASSOC);
+            return $stmt -> fetchAll();
+        }
+        catch (PDOException $e) {die("Connection failed: " . $e->getMessage() . " SQL Statement: \n" . $stmt->queryString);}
     }
 
     public function fetch_elements_relation_joint(
-        array $search, string $e1_table, string $e2_table, string $relation_table,
-        array $e1_fields, array $e2_fields, array $rt_fields,
+        array $search, string $search_table, string $container_table, string $element_table, string $relation_table,
+        array $container_fields, array $element_fields, array $rt_fields,
         string $grouping_key,
-        array $e1_where_conditions = [], array $e2_where_conditions = [],
-        string $e1_where_logic = 'AND', string $e2_where_logic = 'AND',
+        array $container_where_conditions = [], array $element_where_conditions = [],
+        string $container_where_logic = 'AND', string $element_where_logic = 'AND',
         ?string $ordering_key = null, bool $distinct = false){
         $dql = self::build_elements_relation_joint_query(
-            $e1_table, $e2_table, $relation_table,
-            $e1_fields, $e2_fields, $rt_fields, $grouping_key,
-            $e1_where_conditions, $e2_where_conditions,
-            $e1_where_logic, $e2_where_logic,
+            $container_table, $element_table, $relation_table,
+            $container_fields, $element_fields, $rt_fields, $grouping_key,
+            $container_where_conditions, $element_where_conditions,
+            $container_where_logic, $element_where_logic,
             $ordering_key, $distinct);
         $stmt = $this -> pdo -> prepare($dql);
-        foreach ($search as $f => $value) $stmt -> bindValue(":$f", $value);
-        $stmt -> execute(); $stmt->setFetchMode(PDO::FETCH_ASSOC);
-        $results = $stmt -> fetchAll();
+        
+        try {
+            foreach ($search as $f => $value) $stmt -> bindValue(":".$search_table."_".$f, $value);
+            $stmt -> execute(); 
+            $results = $stmt -> fetchAll(PDO::FETCH_ASSOC);
+        }
+        catch (PDOException $e) {die("Connection failed: " . $e->getMessage() . '\nDQL Statement: '. $dql);}
+        
         foreach ($results as &$row) 
-            if (isset($row[$e2_table])) 
-                $row[$e2_table] = json_decode($row[$e2_table], true); // Decode writers field into an array
+            if (isset($row[$element_table])) 
+                $row[$element_table] = json_decode($row[$element_table], true); // Decode writers field into an array
         return $results;
         
     }
 
-    public function fetch_complex_join_dql(string $dql, array $search){
+    public function fetch_complex_join_dql(string $dql, array $search, bool $is_unique = false){
         $stmt = $this -> pdo -> prepare($dql);
-        foreach ($search as $f => $value) $stmt -> bindValue(":$f", $value);
         try {
+            foreach ($search as $f => $value) $stmt -> bindValue(":$f", $value);
             $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            if(!$is_unique) return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            else return $stmt->fetch(PDO::FETCH_ASSOC);
         }
-        catch (PDOException $e) {die("Connection failed: " . $e->getMessage() . ' SQL Statement: ' . $stmt->queryString);}
+        catch (PDOException $e) {die("Connection failed: " . $e->getMessage() . " SQL Statement: \n" . $stmt->queryString);}
     }
 }
 

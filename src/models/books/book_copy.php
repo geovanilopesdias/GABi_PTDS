@@ -15,7 +15,7 @@ final class BookCopy{
     private BookCopyStatus $status;
 
     private function __construct(
-        int $edition_id, string $asset_code, ?string $status = null, ?int $id = null) {
+        string $asset_code, ?int $edition_id = null, ?string $status = null, ?int $id = null) {
         $this->id = $id;
         $this->edition_id = $edition_id;
         $this->asset_code = $asset_code;
@@ -33,8 +33,8 @@ final class BookCopy{
     
     public static function fromArray(array $data, bool $for_insertion = false){
         $book = new BookCopy(
-            $data['edition_id'],
-            $data['asset_code']
+            $data['asset_code'],
+            $data['edition_id']
         );
         if(!$for_insertion) {
             $book -> set_status($data['status']);
