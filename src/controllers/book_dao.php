@@ -464,7 +464,9 @@ final class BookDAO{
         $db_man = new DAOManager();
         if (!$db_man->can_user_register($user_id)) return false;
 
-        $current_book_copy_data = self::fetch_bookcopy_by_id($id_to_update) -> toArray();
+        $current_book_copy = self::fetch_bookcopy_by_id($id_to_update);
+        if (!is_null($current_book_copy)) $current_book_copy_data = $current_book_copy -> toArray();
+        else return false;
         if (empty($current_book_copy_data)) return false;
         
         // Edit current book copy's status in order to scan if is a valid one:

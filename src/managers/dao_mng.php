@@ -29,7 +29,7 @@ final class DB {
     const BOOK_COPY_TABLE = 'bookshelf';
     const BOOK_COPY_FIELDS = ['id', 'edition_id', 'asset_code', 'status'];
     const LOAN_TABLE = 'loans';
-    const LOAN_FIELDS = ['id', 'copy_id', 'reader_id', 'opener_id', 'opening_date', 'closer_id', 'closing_date', 'loan_date', 'return_date', 'debt', 'debt_receiver_id'];
+    const LOAN_FIELDS = ['id', 'book_copy_id', 'loaner_id', 'opener_id', 'opening_date', 'closer_id', 'closing_date', 'loan_date', 'return_date', 'debt', 'debt_receiver_id'];
     const RECOMENDATION_TABLE = 'recomendations';
     const RECOMENDATION_FIELDS = ['opus_id', 'student_id', 'teacher_id', 'operation_date'];
     const RESERVATION_TABLE = 'reservations';
@@ -60,24 +60,16 @@ final class DAOManager{
 
     public function __construct(){$this -> pdo = Connection::connect();}
 
-    /**
-     * Test if the given id in the readers table is authorized to registrations. 
-     * @param int $id 
-     * @var Reader $u 
-     * @return bool
-     * */
     public function can_user_register(int $id): bool{ 
-        /** @var Reader $u  */
         $u = Reader::fromArray(
             $this -> fetch_record_by_id_from(DB::READER_TABLE, $id), 
             true); // Factory used truly for fetching
         return $u -> get_can_register();
     }
 
-    public static function can_teacher_loan(int $teacher_id): bool{ 
-        /** @var Reader $u  */
+    public function can_user_loan(int $id): bool{ 
         $u = Reader::fromArray(
-            self::fetch_record_by_id_from(DB::READER_TABLE, $teacher_id), 
+            $this -> fetch_record_by_id_from(DB::READER_TABLE, $id), 
             true); // Factory used truly for fetching
         return $u -> get_can_loan();
     }
@@ -111,7 +103,11 @@ final class DAOManager{
             try {
                 if (is_bool($data[$field])) {
                     $stmt->bindValue(":$field", $data[$field], PDO::PARAM_BOOL);
-                } else {
+                } 
+                else if ($data[$field] instanceof DateTime){
+                    $stmt->bindValue(":$field", $data[$field]->format('Y-m-d H:i:sP'), PDO::PARAM_STR);
+                }
+                else {
                     $stmt->bindValue(":$field", $data[$field]);
                 }
             }   
@@ -130,16 +126,18 @@ final class DAOManager{
         if (!isset($data['id'])) 
             throw new InvalidArgumentException("An entity ID is required for update.");
         
-        foreach ($data as $field => $value) $t_fields[] = $field;
+        foreach ($data as $f => $value) $t_fields[] = $f;
     
         $dml = self::get_dml_clause_for(DML_OPS::UPDATE, $t_name, $t_fields);
         $stmt = $this -> pdo -> prepare($dml);
         foreach ($data as $f => $value){
             if (is_bool($value)) $stmt->bindValue(":$f", $value, PDO::PARAM_BOOL);
+            else if ($data[$f] instanceof DateTime)
+                $stmt->bindValue(":$f", $data[$f]->format('Y-m-d H:i:sP'), PDO::PARAM_STR);
             else $stmt->bindValue(":$f", $value);
         }
         try {return $stmt->execute();}
-        catch (PDOException $e) {die("Connection failed: " . $e->getMessage(). "DML: $dml");}
+        catch (PDOException $e) {die("Connection failed: " . $e->getMessage(). "DML:\n $dml");}
     }
 
     /**
@@ -317,8 +315,12 @@ final class DAOManager{
     
     public function fetch_record_by_id_from(string $t_name, int $id): mixed{
         $stmt = $this->pdo->prepare("SELECT * FROM " . $t_name . " WHERE id = :id");
-        $stmt->execute([':id' => $id]); $stmt->setFetchMode(PDO::FETCH_ASSOC);
-        return $stmt->fetch();
+        try {
+            $stmt->execute([':id' => $id]); $stmt->setFetchMode(PDO::FETCH_ASSOC);
+            return $stmt->fetch();
+        }
+        catch (PDOException $e) {die("Connection failed: " . $e->getMessage() . ' SQL Statement: ' . $stmt->queryString);}
+        
     }
 
     /**

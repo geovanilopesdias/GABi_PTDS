@@ -1,49 +1,36 @@
 <?php 
 
-require('../../src/controllers/book_dao.php');
-require('../../src/controllers/people_dao.php');
+require_once('../../src/controllers/loan_dao.php');
+// require_once('../../src/controllers/book_dao.php');
+// require_once('../../src/controllers/people_dao.php');
 
 function insertion_test(){
-    // $data['isbn'] = '9788536300405';
-    // $data['opus_id'] = 3;
-    // $data['publisher_id'] = 1;
-    // $data['edition_number'] = 9;
-    // $data['pages'] = 685;
-    // $data['volume'] = null;
-    // $data['collection_id'] = null;
-    // $data['cover_colors'] = 'amarelo, laranja, roxo';
-    // $data['publishing_year'] = 2002;
-    // $data['translators'] = 'Trieste Freire Ricci, Maria Helena Gravina';
-    $data['edition_id'] = 1;
-    $data['asset_code'] = '127';
-    
-    return BookDAO::register_book_copy($data, 1);  // 1 should be the librarian id!
+    $data['book_copy_id'] = 2;
+    $data['loaner_id'] = 13;
+    // $data['opener_id'] = 1;
+    $data['loan_date'] = new DateTime('now', new DateTimeZone('America/Sao_Paulo'));
+        
+    return LoanDAO::register_loan($data, 1);  // 1 should be the librarian id!
 }
 
 function updating_test(){
-    // $data['name'] = 'Artmedi';
-    // $data['passphrase'] = 'brunocaio';
-    $w = array(BookDAO::fetch_writer_by_id(1));
-    return BookDAO::edit_all_opus_authorship($w, 3, 1);  // 1 should be the librarian id!
+    return LoanDAO::close_loan(9, 1);
 }
 
 function exclusion_test(){
-    return BookDAO::clear_opus_authorships(3, 1);  // 1 should be the librarian id!
+    // return BookDAO::clear_opus_authorships(3, 1);  // 1 should be the librarian id!
 }
 
 function fetching_test(){
-    // return BookDAO::fetch_all_opuses();
-    // return BookDAO::fetch_all_writers();
-    // return BookDAO::fetch_whole_bookshelf();
-    return BookDAO::fetch_edition_by_cover_colors('amarelo,azul');
+    return LoanDAO::fetch_all_loans(1);
 }
 
    
-// $i = insertion_test();
-// echo ($i) ? "Insertion sucessfull" : "Insertion failed";
+$i = insertion_test();
+echo ($i) ? "Insertion sucessfull" : "Insertion failed";
 
 // $u = updating_test();
-// echo ($u) ? "\nUpdating sucessfull" : "\nUpdating failed";
+// echo ($u) ? "\nUpdating sucessfull\n" : "\nUpdating failed\n";
 
 // $d = exclusion_test();
 // echo ($d) ? "Deleting sucessfull" : "Deleting failed";
