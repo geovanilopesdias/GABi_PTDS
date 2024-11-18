@@ -336,7 +336,7 @@ final class DAOManager{
         string $logic = 'AND',
         ?string $ordering_key = null,
         bool $distinct = false,
-        bool $unique = false): array {
+        bool $unique = false): mixed {
         $dql = self::build_select_query($t_name, $t_fields, $where_conditions, $logic, $ordering_key, $distinct);
         $stmt = $this->pdo->prepare($dql);     
     

@@ -1,0 +1,18 @@
+.login_container
+input {
+    font-family: Chakra Petch, sans-serif;
+    font-size: 1.1rem;
+    margin: .5rem;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.login_container{
+    margin: 1rem;
+    padding: .5em;
+    background-color: #f1f1f1;
+    border-radius: 50px 50px 0px 0px;
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.2), -4px -4px 8px rgba(255, 255, 255, 0.3);
+    border: 1px solid #ccc;
+}
+

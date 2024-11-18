@@ -1,0 +1,98 @@
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap');
+
+:root {
+  --bgc: #ab7b4f;
+  --title-size: 24px;
+  --general_font: Chakra Petch, sans-serif;
+  --text-size: 16px;
+  --general-pd: 10px;
+  /*Buttons*/
+  --btn-br: 20px;
+  
+  /*Tables*/
+  --table-mg: auto;
+  --table-bw: 2px;
+  --table-br: 5px;
+  --table-bgc: #511515;
+  --table-bs: solid;
+  
+  /*Footer*/
+  --footer-font: bold 15px "Chakra Petch", sans-serif;
+  --footer-bgc: #815225;
+}
+
+/*Elementos estruturais textuais*/
+html {
+  font-family: var(--general_font);
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-inline: auto;
+  background-color: var(--bgc);
+}
+
+h1 {
+  font-size: 50px;
+  margin: 0px;
+}
+
+h2 {
+  font-size: 30px;
+  margin: 0px;
+}
+
+/*Botões gerais de telas*/
+button {
+  font-family: Chakra Petch, sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 10px;
+  margin-top: 20px;
+  border-radius: 50px;
+  cursor: pointer;
+}
+
+footer {
+  font: var(--footer-font);
+  color: white;
+  background-color: var(--footer-bgc);
+  padding: var(--general-pd);
+  margin: 1rem;
+  border-radius: 0px 0px 50px 50px;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.2), -4px -4px 8px rgba(255, 255, 255, 0.3);
+}
+
+#back_to_menu {
+  color: beige;
+  background-color: #af2828;
+  margin-bottom: 20px;
+}
+
+#back_to_new {
+  color: beige;
+  background-color: #c87474;
+}
+
+#print_report {
+  color: black;
+  background-color: #e1bcbc;
+  border-radius: 10px;
+}
+
+#flaticon_reference {
+  font-size: 12px;
+  color: #af2828;
+  margin-top: 10px;
+}
+
+/*Configuração de imagens*/
+#gabi_logo_big {
+  max-height: 80%;
+  max-width: 80%;
+}
+
+#gabi_logo_medium {
+  max-height: 30vh;
+  max-width: 30vw;
+}

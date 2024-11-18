@@ -191,34 +191,9 @@ final class PeopleDAO{
     }
     
 
-
-    // Security: ===> Should this be in security maneger?
-    private function sanitize_passphrase(string $psw){}
-
-    private function encrypt_passphrase(string $psw){}
-
-    private function salt_passphrase(string $psw){}
-
-    public static function protect_passphrase(string $psw){
-        //Usa sanitize_passphrase, encrypt_passphrase e salt_passphrase
-    }
-
-    public static function generate_first_passphrase(string $psw){
-        //Usa sanitize_passphrase, encrypt_passphrase e salt_passphrase
-    }
-
-
-
-    // Reading:
-    public static function fetch_reader_for_access(int $login, string $psw) {
-        $db_man = new DAOManager();
-        // Fazer
-        //Sanitizar psw! ==> Escrever sanitize_passphrase() primeiro.
-    }
-
-    // Searching:
+    // ----- Reading:
+    // --- Searching:
     // ID-fetchers:
-    
     public static function fetch_reader_by_id(int $id, bool $is_for_search): ?Reader {  // OK
         $db_man = new DAOManager();
         $reader_array = $db_man -> fetch_record_by_id_from(DB::READER_TABLE, $id);
@@ -259,6 +234,20 @@ final class PeopleDAO{
         return $student_instances;
     }
 
+    public static function fetch_reader_by_login(string $cleaned_login): ?Reader { 
+        $db_man = new DAOManager();
+        $reader_instance = array();
+        $search = ['login' => "$cleaned_login"];
+        $where_conditions = [['field' => 'login', "operator" => '=']];
+        $reader_instance = $db_man -> fetch_records_from(
+            $search, DB::READER_TABLE, DB::READER_FIELDS,
+            $where_conditions, 'AND', null, false, true); // Call unique raw
+        
+        if (!$reader_instance) return null;
+        
+        return Reader::fromArray($reader_instance, true);
+    }
+
     public static function fetch_teachers_by_name(string $cleaned_name) { //OK
         $db_man = new DAOManager();
         $teacher_instances = array();
@@ -275,13 +264,13 @@ final class PeopleDAO{
         return $teacher_instances;
     }
 
-    public static function fetch_all_students_from_classroom(int $classroom_id) { //OK
+    public static function fetch_all_students_from_classroom(int $classroom_id) { //Test again
         $db_man = new DAOManager();
         $search = ["classroom_id" => $classroom_id];
         $on_conditions = [['field1' => DB::READER_TABLE.'.id', 'operator' => '=', 'field2' => DB::ENROLLMENT_TABLE.'.student_id']];
         $enrollment_where_conditions = [['field' => 'classroom_id', 'operator' => '=']];
         $fetched_students = $db_man->fetch_jointed_records_from(
-            $search,
+            $search, DB::ENROLLMENT_TABLE,
             DB::READER_TABLE, DB::ENROLLMENT_TABLE, DB::READER_FIELDS, DB::ENROLLMENT_FIELDS,
             $on_conditions, 'AND', array(),  // No conditions for READER_TABLE
             $enrollment_where_conditions, 'AND', 'AND',
@@ -299,7 +288,8 @@ final class PeopleDAO{
         $on_conditions = [['field1' => DB::READER_TABLE.'.id', 'operator' => '=', 'field2' => DB::TEACHING_TABLE.'.teacher_id']];
         $teaching_where_conditions = [['field' => 'classroom_id', 'operator' => '=']];
         $fetched_teachers = $db_man -> fetch_jointed_records_from(
-            $search, DB::READER_TABLE, DB::TEACHING_TABLE, DB::READER_FIELDS, DB::TEACHING_FIELDS,
+            $search, DB::TEACHING_TABLE,
+            DB::READER_TABLE, DB::TEACHING_TABLE, DB::READER_FIELDS, DB::TEACHING_FIELDS,
             $on_conditions, 'AND', array(), $teaching_where_conditions, 'AND', 'AND',
             DB::READER_TABLE.'.name', false);
         if (!$fetched_teachers) return null;
