@@ -4,6 +4,7 @@ require_once(__DIR__ . '/../../managers/interface_mng.php');
 require_once(__DIR__ . '/../../controllers/people_dao.php');
 
 session_start();
+    const PAGE_TYPE = 'login';
 
     function get_user(): ?Reader{
         return PeopleDAO::fetch_reader_by_login(trim(htmlspecialchars($_POST['login'] ?? '')));
@@ -21,6 +22,7 @@ session_start();
 
     function login_failed(string $error){
         InterfaceManager::echo_html_head('GABi | Login recusado', 'login');
+        echo InterfaceManager::system_logo(PAGE_TYPE);
         echo '<h2>Algo deu errado com sua tentativa de login!</h2>';
         echo "<h4>O que houve: $error<h4>";
         echo '<h3>Em instantes, serás redirecionado à tela de Login</h3>';
@@ -31,6 +33,7 @@ session_start();
 
     function login_succeed_for($user){
         InterfaceManager::echo_html_head("GABi | Login Autorizado", 'login');
+        echo InterfaceManager::system_logo(PAGE_TYPE);
         echo '<h2>Login Autorizado!</h2>';
         header('Location:'.$user -> get_role().'_menu.php');
         InterfaceManager::echo_html_tail();

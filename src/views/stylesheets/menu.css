@@ -1,0 +1,61 @@
+/*Menu Hat*/
+#menu_hat {
+    display: grid;
+    margin: auto;
+    padding-top: 20px;
+    grid-template-columns: 2fr 1fr;
+    grid-template-areas: "logo greeting";
+}
+
+#logo_menu_hat{
+    grid-area: logo;
+}
+
+#greeting_menu_hat{
+    grid-area: greeting;
+    text-align: left;
+    padding-left: 1px;
+}
+
+/*Table Menu*/
+.menu_table {
+    margin: auto;
+    border-width: 2px;
+    border-radius: 5px;
+    border-color: #511515;
+    background-color: #511515;
+    border-style: solid;
+}
+
+.menu_table caption{
+    font-size: 2rem;
+}
+
+.menu_table td {
+    padding: 5px 10px;
+    border-width: 1.5px;
+    border-color: #511515;
+    border-style: solid;
+    background-color: #c2c2c2;
+  }
+
+.menu_icon {
+    width: 90px;
+    height: 90px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+  
+.report_icon {
+    width: 45px;
+    height: 45px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+#flaticon_reference {
+    font-size: 12px;
+    color: #af2828;
+    margin-top: 10px;
+}

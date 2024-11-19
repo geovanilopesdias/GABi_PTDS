@@ -33,12 +33,12 @@ html {
 }
 
 h1 {
-  font-size: 50px;
+  font-size: 20px;
   margin: 0px;
 }
 
 h2 {
-  font-size: 30px;
+  font-size: 15px;
   margin: 0px;
 }
 
@@ -63,7 +63,7 @@ footer {
   box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.2), -4px -4px 8px rgba(255, 255, 255, 0.3);
 }
 
-#back_to_menu {
+#logout_button {
   color: beige;
   background-color: #af2828;
   margin-bottom: 20px;

@@ -10,14 +10,7 @@ enum PAGE_TYPE: string{
 }
 
 final class InterfaceManager{
-    private static function echo_system_logo(PAGE_TYPE $page_type){
-        $logo_path = "/code/src/views/images/gabi_logo.png";
-        if(in_array($page_type, [PAGE_TYPE::LOGIN, PAGE_TYPE::MENU]))
-            echo "<img id='gabi_logo_big' src='$logo_path'/></br>";
-        else
-            echo "<img id='gabi_logo_medium' src='$logo_path'/></br>";
-    }
-
+    // Echoers:
     public static function echo_html_head(string $title, string $page_type){
         try {
             $page_type = PAGE_TYPE::from($page_type);
@@ -29,7 +22,7 @@ final class InterfaceManager{
         
         echo "
             <!DOCTYPE html>
-                <html>
+                <html lang='pt-br'>
                     <head>
                         <title>$title</title>
                         <link href='$base_sheet_path' rel='stylesheet' page_type='text/css' />
@@ -40,12 +33,9 @@ final class InterfaceManager{
                     </head>
                     <body>
         ";
-        self::echo_system_logo($page_type);
     }
 
-    
-
-    public static function echo_html_tail(){
+    public static function echo_html_tail(): void{
         echo "
                 <footer>
                     GABi | Desenvolvido por Geovani L. Dias
@@ -55,15 +45,25 @@ final class InterfaceManager{
         ";
     }
 
-    public static function echo_menu_greetings(string $user_name){
-        echo "
+    // Special tags:
+    public static function system_logo(string $page_type): string{
+        $page_type = PAGE_TYPE::from($page_type);
+        $logo_path = "/code/src/views/images/gabi_logo.png";
+        if(in_array($page_type, [PAGE_TYPE::LOGIN, PAGE_TYPE::MENU]))
+            return "<img id='gabi_logo_big' src='$logo_path'/></br>";
+        else
+            return "<img id='gabi_logo_medium' src='$logo_path'/></br>";
+    }
+    
+    public static function menu_greetings(string $user_name): string{
+        return "
             <h1>Olá, $user_name!<h1>
-            <p><em>Hoje é ".date("m.d.y")."</em></p>
+            <h2><em>Hoje é ".date("d/m/y")."</em></h2>
         ";
     }
 
-    public static function echo_logout_button(){
-        echo "
+    public static function logout_button(): string{
+        return "
             <a href='logout.php'>
                 <button id='logout_button' type='button'>
                     &#x25c0; | SAIR
@@ -72,7 +72,7 @@ final class InterfaceManager{
         ";
     }
 
-    public static function echo_return_button(){
+    public static function return_to_menu_button(){
         
     }
 }

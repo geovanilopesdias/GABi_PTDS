@@ -1,8 +1,8 @@
 <?php 
 
-require_once('../../src/controllers/loan_dao.php');
+// require_once('../../src/controllers/loan_dao.php');
 // require_once('../../src/controllers/book_dao.php');
-// require_once('../../src/controllers/people_dao.php');
+require_once('../../src/controllers/people_dao.php');
 
 function insertion_test(){
     $data['book_copy_id'] = 2;
@@ -14,7 +14,8 @@ function insertion_test(){
 }
 
 function updating_test(){
-    return LoanDAO::close_loan(9, 1);
+    $data['passphrase'] = 'valfenda';
+    return PeopleDAO::edit_reader(1, $data, 1);
 }
 
 function exclusion_test(){
@@ -26,8 +27,8 @@ function fetching_test(){
 }
 
    
-$i = insertion_test();
-echo ($i) ? "Insertion sucessfull" : "Insertion failed";
+// $i = insertion_test();
+// echo ($i) ? "Insertion sucessfull" : "Insertion failed";
 
 // $u = updating_test();
 // echo ($u) ? "\nUpdating sucessfull\n" : "\nUpdating failed\n";
@@ -35,8 +36,8 @@ echo ($i) ? "Insertion sucessfull" : "Insertion failed";
 // $d = exclusion_test();
 // echo ($d) ? "Deleting sucessfull" : "Deleting failed";
 
-$f = fetching_test();
-echo ($f) ? "\n".print_r($f) : "\nNo results";
+// $f = fetching_test();
+// echo ($f) ? "\n".print_r($f) : "\nNo results";
 
 
 ?>
