@@ -1,23 +1,43 @@
-/*Menu Hat*/
-#menu_hat {
+/* ----- Menu Sctructure ----- */
+
+#menu_grid{
     display: grid;
     margin: auto;
-    padding-top: 20px;
-    grid-template-columns: 2fr 1fr;
-    grid-template-areas: "logo greeting";
+    grid-template-columns: var(--gabi-logo-menu-width) 75vh;
+    margin: 1rem;
+    padding: .7em;
+    background-color: var(--login-menu-bgc);
+    border-radius: 50px 50px 0px 0px;
+    filter: var(--login-menu-filter);
+    border: 1px solid #ccc;
 }
 
-#logo_menu_hat{
-    grid-area: logo;
+#logo{
+    grid-column: 1;
+    grid-row: 1;
+    align-self: end;
 }
 
-#greeting_menu_hat{
-    grid-area: greeting;
-    text-align: left;
-    padding-left: 1px;
+#greeting{
+    grid-column: 1;
+    grid-row: 2;
+    text-align: right;
+    padding-right: 10px;
+    align-self: start;
 }
 
-/*Table Menu*/
+#logout{
+    grid-column: 1;
+    grid-row: 3;
+    align-self: start;
+}
+
+#table{
+    grid-column: 2;
+    grid-row: 1 / span 3;
+}
+
+/* ----- Table Menu ----- */
 .menu_table {
     margin: auto;
     border-width: 2px;
@@ -31,25 +51,35 @@
     font-size: 2rem;
 }
 
+.super_label {
+    font-size: 1.5rem;
+}
+
+.sub_labels {
+    font-size: 1rem;
+    font-weight: bold;
+}
+
 .menu_table td {
-    padding: 5px 10px;
+    padding: 1px 3px;
     border-width: 1.5px;
     border-color: #511515;
     border-style: solid;
     background-color: #c2c2c2;
-  }
+}
 
 .menu_icon {
-    width: 90px;
-    height: 90px;
-    margin-top: 10px;
-    margin-bottom: 10px;
+    width: 10vh;
+    height: 10vh;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    filter: var(--login-menu-filter);
     cursor: pointer;
 }
   
 .report_icon {
-    width: 45px;
-    height: 45px;
+    width: 5vh;
+    height: 5vh;
     margin-top: 5px;
     margin-bottom: 5px;
 }

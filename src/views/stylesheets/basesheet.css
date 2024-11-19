@@ -16,9 +16,10 @@
   --table-bgc: #511515;
   --table-bs: solid;
   
-  /*Footer*/
-  --footer-font: bold 15px "Chakra Petch", sans-serif;
-  --footer-bgc: #815225;
+  /*Logins and menus*/
+  --login-menu-filter: drop-shadow(black .2rem .2rem 5px);
+  --login-menu-bgc: #b99069;
+  --gabi-logo-menu-width: 40vh;
 }
 
 /*Elementos estruturais textuais*/
@@ -33,17 +34,17 @@ html {
 }
 
 h1 {
-  font-size: 20px;
+  font-size: 1rem;
   margin: 0px;
 }
 
 h2 {
-  font-size: 15px;
+  font-size: .8rem;
   margin: 0px;
 }
 
 /*Botões gerais de telas*/
-button {
+.back_buttons {
   font-family: Chakra Petch, sans-serif;
   font-size: 12px;
   font-weight: bold;
@@ -54,24 +55,26 @@ button {
 }
 
 footer {
-  font: var(--footer-font);
+  font: bold 15px "Chakra Petch", sans-serif;
   color: white;
-  background-color: var(--footer-bgc);
+  background-color: #815225;
   padding: var(--general-pd);
   margin: 1rem;
   border-radius: 0px 0px 50px 50px;
-  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.2), -4px -4px 8px rgba(255, 255, 255, 0.3);
+  filter: 4px 4px 8px rgba(0, 0, 0, 0.2), -4px -4px 8px rgba(255, 255, 255, 0.3);
 }
 
+/* ----- Buttons ----- */
 #logout_button {
   color: beige;
   background-color: #af2828;
   margin-bottom: 20px;
 }
 
-#back_to_new {
+#back_to_menu_button {
   color: beige;
   background-color: #c87474;
+  margin-bottom: 20px;
 }
 
 #print_report {
@@ -80,19 +83,28 @@ footer {
   border-radius: 10px;
 }
 
-#flaticon_reference {
-  font-size: 12px;
-  color: #af2828;
-  margin-top: 10px;
+/* ----- Gabi Logo ----- */
+.gabi_logo{
+  filter: drop-shadow(grey .2rem .2rem 5px);;
 }
 
-/*Configuração de imagens*/
-#gabi_logo_big {
+#gabi_logo_login,
+#gabi_logo_searching {
   max-height: 80%;
   max-width: 80%;
 }
 
-#gabi_logo_medium {
-  max-height: 30vh;
-  max-width: 30vw;
+#gabi_logo_menu{
+  max-width: var(--gabi-logo-menu-width);
+}
+
+#gabi_logo_registration,
+#gabi_logo_element_detail {
+  max-height: 70%;
+  max-width: 70%;
+}
+
+#gabi_logo_result_list {
+  max-height: 20%;
+  max-width: 20%;
 }

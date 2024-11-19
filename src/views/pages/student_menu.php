@@ -16,9 +16,9 @@ final class StudentMenu{
         }
         $title = "GABi | Menu Estudante";
         InterfaceManager::echo_html_head($title, 'menu');
-        InterfaceManager::echo_menu_greetings($_SESSION['user_id']);
+        echo InterfaceManager::menu_greetings($_SESSION['user_id']);
         self::echo_menu_table();
-        InterfaceManager::echo_logout_button();
+        echo InterfaceManager::logout_button();
         InterfaceManager::echo_html_tail();
     }
 

@@ -30,130 +30,133 @@ final class LibrarianMenu{
         'report_outdate_user' => self::IMAGE_DIR.'report_outdate_user.png'];
 
     
-    static function echo_menu_hat(){
+    static function echo_logo_greeting(){
         echo "
-            <div id='menu_hat'>
-                <div id='logo_menu_hat'>".
+                <div id='logo'>".
                     InterfaceManager::system_logo(self::PAGE_TYPE).
                 "</div>
-                <div id='greeting_menu_hat'>".
+                <div id='greeting'>".
                     InterfaceManager::menu_greetings($_SESSION['user_name']).
+                "</div>
+                <div id='logout'>".
                     InterfaceManager::logout_button().
                 "</div>
-            </div>
         ";
         
     }
 
     static function echo_menu_table(){
-        echo "
-        <table class='menu_table'>
-            <caption>
-                Menu Bibliotecário
-            </caption>
-            <tr>
-                <td class='fields' colspan='2'>Empréstimos</td>
-                <td class='fields' colspan='2'>Livros</td>
-            </tr>
+        echo "<div id='table'>
+            <table class='menu_table'>
+                <caption>
+                    Menu Bibliotecário
+                </caption>
+                <tr>
+                    <td class='super_label' colspan='2'>Empréstimos</td>
+                    <td class='super_label' colspan='2'>Livros</td>
+                </tr>
 
-            <tr>
-                <td class='labels'>Novos</td>
-                <td class='labels'>Consulta</td>
-                <td class='labels'>Cadastro</td>
-                <td class='labels'>Consulta</td>
-            </tr>
-      
-            <tr>
-                <td>
-                <a href='".self::MENU_HREF['loan_registration']."'>
-                    <img class='menu_icon' src='".self::MENU_ICON_SRC['loan_registration']."' />
-                </a>
-                </td>
+                <tr>
+                    <td class='sub_labels'>Novos</td>
+                    <td class='sub_labels'>Consulta</td>
+                    <td class='sub_labels'>Cadastro</td>
+                    <td class='sub_labels'>Consulta</td>
+                </tr>
+        
+                <tr>
+                    <td>
+                    <a href='".self::MENU_HREF['loan_registration']."'>
+                        <img class='menu_icon' src='".self::MENU_ICON_SRC['loan_registration']."' />
+                    </a>
+                    </td>
 
-                <td>
-                <a href='".self::MENU_HREF['loan_search']."'>
-                    <img class='menu_icon' src='".self::MENU_ICON_SRC['loan_search']."' />
-                </a>
-                </td>
-                
-                <td>
-                <a href='".self::MENU_HREF['book_registration']."'>
-                    <img class='menu_icon' src='".self::MENU_ICON_SRC['book_registration']."' />
-                </a>
-                </td>
-                
-                <td>
-                <a href='".self::MENU_HREF['book_search']."'>
-                    <img class='menu_icon' src='".self::MENU_ICON_SRC['book_search']."' />
-                </a>
-                </td>
-            </tr>
+                    <td>
+                    <a href='".self::MENU_HREF['loan_search']."'>
+                        <img class='menu_icon' src='".self::MENU_ICON_SRC['loan_search']."' />
+                    </a>
+                    </td>
+                    
+                    <td>
+                    <a href='".self::MENU_HREF['book_registration']."'>
+                        <img class='menu_icon' src='".self::MENU_ICON_SRC['book_registration']."' />
+                    </a>
+                    </td>
+                    
+                    <td>
+                    <a href='".self::MENU_HREF['book_search']."'>
+                        <img class='menu_icon' src='".self::MENU_ICON_SRC['book_search']."' />
+                    </a>
+                    </td>
+                </tr>
 
-            <tr>
-                <td class='fields' colspan='2'>Usuários</td>
-                <td class='fields' colspan='2'>Relatórios</td>
-            </tr>
+                <tr>
+                    <td class='super_label' colspan='2'>Usuários</td>
+                    <td class='super_label' colspan='2'>Relatórios</td>
+                </tr>
 
-            <tr>
-                <td class='labels'>Cadastro</td>
-                <td class='labels'>Busca</td>
-                <td class='labels'>Débitos</td>
-                <td class='labels'>Empréstimos</td>
-            </tr>
-            <tr>
-                <td rowspan='3'>
-                <a href='".self::MENU_HREF['user_registration']."'>
-                    <img class='menu_icon' src='".self::MENU_ICON_SRC['user_registration']."' />
-                </a>
-                </td>
-                
-                <td rowspan='3'>
-                <a href='".self::MENU_HREF['user_search']."'>
-                    <img class='menu_icon' src='".self::MENU_ICON_SRC['user_search']."' />
-                </td>
-                
-                <td>
-                <a href='".self::MENU_HREF['report_debt']."'>
-                    <img class='report_icon' src='".self::MENU_ICON_SRC['report_debt']."' />
-                </a>
-                </td>
-                <td>
-                <a href='".self::MENU_HREF['report_open_loans']."'>
-                <img class='report_icon' src='".self::MENU_ICON_SRC['report_open_loans']."' />
-                </td>
-            </tr>
-            <tr>
-                <td class='labels'>Históricos</td>
-                <td class='labels'>Desatualizações</td>
-            </tr>
-            <tr>
-                <td>
-                <a href='".self::MENU_HREF['report_user_loan_history']."'>
-                <img class='report_icon' src='".self::MENU_ICON_SRC['report_user_loan_history']."' />
-                </td>
-                <td>
-                <a href='' title='NÃO IMPLEMENTADO'>
-                <img class='report_icon' src='".self::MENU_ICON_SRC['report_outdate_user']."' />
-                </td>
-            </tr>
-        </table>
-        <a
-            id='flaticon_reference'
-            href='https://www.flaticon.com/'
-            title='Flaticon Website'
-        >Ícones do Portal Flaticon</a></br>
+                <tr>
+                    <td class='sub_labels'>Cadastro</td>
+                    <td class='sub_labels'>Busca</td>
+                    <td class='sub_labels'>Débitos</td>
+                    <td class='sub_labels'>Empréstimos</td>
+                </tr>
+                <tr>
+                    <td rowspan='3'>
+                    <a href='".self::MENU_HREF['user_registration']."'>
+                        <img class='menu_icon' src='".self::MENU_ICON_SRC['user_registration']."' />
+                    </a>
+                    </td>
+                    
+                    <td rowspan='3'>
+                    <a href='".self::MENU_HREF['user_search']."'>
+                        <img class='menu_icon' src='".self::MENU_ICON_SRC['user_search']."' />
+                    </td>
+                    
+                    <td>
+                    <a href='".self::MENU_HREF['report_debt']."'>
+                        <img class='report_icon' src='".self::MENU_ICON_SRC['report_debt']."' />
+                    </a>
+                    </td>
+                    <td>
+                    <a href='".self::MENU_HREF['report_open_loans']."'>
+                    <img class='report_icon' src='".self::MENU_ICON_SRC['report_open_loans']."' />
+                    </td>
+                </tr>
+                <tr>
+                    <td class='sub_labels'>Históricos</td>
+                    <td class='sub_labels'>Desatualizações</td>
+                </tr>
+                <tr>
+                    <td>
+                    <a href='".self::MENU_HREF['report_user_loan_history']."'>
+                    <img class='report_icon' src='".self::MENU_ICON_SRC['report_user_loan_history']."' />
+                    </td>
+                    <td>
+                    <a href='' title='NÃO IMPLEMENTADO'>
+                    <img class='report_icon' src='".self::MENU_ICON_SRC['report_outdate_user']."' />
+                    </td>
+                </tr>
+            </table>
+            <a
+                id='flaticon_reference'
+                href='https://www.flaticon.com/'
+                title='Flaticon Website'
+            >Ícones do Portal Flaticon</a>
+        </div>
         ";
     }
 
     static function echo_structure(){
         session_start();
-        if (!isset($_SESSION['user_id']) or $_SESSION['user_role'] !== 'librarian') {
+        if (!isset($_SESSION['user_id']) and $_SESSION['user_role'] !== 'librarian') {
             header('Location: login.php'); exit;
         }
         $title = "GABi | Menu Bibliotecário";
         InterfaceManager::echo_html_head($title, self::PAGE_TYPE);
-        self::echo_menu_hat();
+        echo "<div id='menu_grid'>";
+        self::echo_logo_greeting();
         self::echo_menu_table();
+        echo "</div>";
         InterfaceManager::echo_html_tail();
     }
 

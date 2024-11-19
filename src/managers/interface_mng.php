@@ -1,24 +1,28 @@
 <?php
 
-enum PAGE_TYPE: string{
-    case LOGIN = 'login';
-    case MENU = 'menu';
-    case REGISTRATION = 'registration';
-    case SEARCHING = 'searching';
-    case ELEMENT_DETAIL = 'element detail';
-    case RESULT_LIST = 'result list';
-}
-
 final class InterfaceManager{
+    const PAGE_TYPE = [
+        'login',
+        'menu',
+        'registration',
+        'searching',
+        'element_detail',
+        'result_list'
+    ];
+    
+    private static function is_page_type_valid($page_type): bool{
+        return in_array($page_type, self::PAGE_TYPE, true);
+    }
+
     // Echoers:
     public static function echo_html_head(string $title, string $page_type){
-        try {
-            $page_type = PAGE_TYPE::from($page_type);
-            $base_sheet_path = "/code/src/views/stylesheets/basesheet.css";
-            $stylesheet_path = "/code/src/views/stylesheets/$page_type->value.css";
-            $script_path = "/code/src/views/scripts/$page_type->value.js";
-        }
-        catch (Exception $e) {die("Echo HTML Head Tag failed: " . $e->getMessage());}
+        if (!self::is_page_type_valid($page_type))
+            throw new Exception('Page type should be one of the following: '.
+                implode(',', self::PAGE_TYPE));
+
+        $base_sheet_path = "/code/src/views/stylesheets/basesheet.css";
+        $stylesheet_path = "/code/src/views/stylesheets/$page_type.css";
+        $script_path = "/code/src/views/scripts/$page_type.js";
         
         echo "
             <!DOCTYPE html>
@@ -47,41 +51,48 @@ final class InterfaceManager{
 
     // Special tags:
     public static function system_logo(string $page_type): string{
-        $page_type = PAGE_TYPE::from($page_type);
+        if (!self::is_page_type_valid($page_type))
+            throw new Exception('Page type should be one of the following: '.
+                implode(',', self::PAGE_TYPE));
+        
         $logo_path = "/code/src/views/images/gabi_logo.png";
-        if(in_array($page_type, [PAGE_TYPE::LOGIN, PAGE_TYPE::MENU]))
-            return "<img id='gabi_logo_big' src='$logo_path'/></br>";
-        else
-            return "<img id='gabi_logo_medium' src='$logo_path'/></br>";
+        return "<img id='gabi_logo_$page_type' class='gabi_logo' src='$logo_path'/></br>";
     }
     
     public static function menu_greetings(string $user_name): string{
+        $today = new DateTime("now", new DateTimeZone("America/Sao_Paulo"));
+        $today = $today -> format('d/m/y');
         return "
             <h1>Olá, $user_name!<h1>
-            <h2><em>Hoje é ".date("d/m/y")."</em></h2>
+            <h2><em>Hoje é $today</em></h2>
         ";
     }
 
     public static function logout_button(): string{
         return "
-            <a href='logout.php'>
-                <button id='logout_button' type='button'>
-                    &#x25c0; | SAIR
-                </button>
-            </a>
+            <form method='post' action='logout.php'>
+                <input 
+                id='logout_button' 
+                class='back_buttons'
+                type='submit' 
+                value='&#x25c0; | SAIR'>
+            </form>
         ";
     }
 
-    public static function return_to_menu_button(){
-        
+    public static function back_to_menu_button(){
+        return "
+            <form method='post' action='logout.php'>
+                <input 
+                    id='back_to_menu_button' 
+                    class='back_buttons'
+                    type='submit' 
+                    value='&#x25c0; | MENU'>
+            </form>
+        ";
     }
 }
 
-// echoHtmlHead
-// echoSystemLogo
-// echoHtmlTail
-// echoLogoutButton
-// echoReturnButton
 // echoReaderTypeSelector
 // echoClsrmSelectorForRegistration
 // echoClsrmSelectorForStudent

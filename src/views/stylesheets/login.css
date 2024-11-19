@@ -12,7 +12,7 @@ input {
     padding: .5em;
     background-color: #f1f1f1;
     border-radius: 50px 50px 0px 0px;
-    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.2), -4px -4px 8px rgba(255, 255, 255, 0.3);
+    box-shadow: var(--login-menu-box-shadow);
     border: 1px solid #ccc;
 }
 
