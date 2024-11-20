@@ -367,7 +367,7 @@ final class DAOManager{
         );
         $stmt = $this -> pdo -> prepare($dql);
         try {
-            foreach ($search as $f => $value) $stmt -> bindValue(":".$search_table."_".$f, $value);
+            foreach ($search as $f => $value) $stmt -> bindValue(":".$f, $value);
             $stmt -> execute(); $stmt->setFetchMode(PDO::FETCH_ASSOC);
             return $stmt -> fetchAll();
         }

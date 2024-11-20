@@ -1,0 +1,47 @@
+.search_grid{
+    display: grid;
+    margin: auto;
+    grid-template-columns: .8fr .2fr; /*Logo | Back to menu button*/
+    grid-template-rows: .3fr 1fr; /*Logo-Button | Search form*/
+    margin: 1rem;
+    padding: .7em;
+    background-color: var(--login-menu-bgc);
+    border-radius: 50px 50px 0px 0px;
+    filter: var(--login-menu-filter);
+    border: 1px solid #ccc;
+}
+
+#logo {
+    grid-row: 1;
+    grid-column: 1;
+    align-self: center;
+}
+
+#back_to_menu {
+    grid-row: 1;
+    grid-column: 2;
+    text-align: center;
+    padding-left: 10px;
+    align-self: center;
+}
+
+#user_search_form{
+    grid-row: 2;
+    grid-column: 1 / span 2;
+}
+
+
+.search_button {
+    font-family: Chakra Petch, sans-serif;
+    font-size: 20px;
+    color: var(--dark-font_color);
+    padding: 10px;
+    margin: 0px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: filter 0.7s ease;
+}
+
+.search_button:hover {
+    filter: brightness(0.8);
+}

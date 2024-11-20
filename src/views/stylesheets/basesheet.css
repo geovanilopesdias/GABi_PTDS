@@ -6,6 +6,8 @@
   --general_font: Chakra Petch, sans-serif;
   --text-size: 16px;
   --general-pd: 10px;
+  --light-font_color: beige;
+  --dark-font_color: #511515;
   /*Buttons*/
   --btn-br: 20px;
   
@@ -17,6 +19,8 @@
   --table-bs: solid;
   
   /*Logins and menus*/
+  --darker-div-bgc: #815225;
+  --darker-div-filter: drop-shadow(black .2rem .2rem 5px);
   --login-menu-filter: drop-shadow(black .2rem .2rem 5px);
   --login-menu-bgc: #b99069;
   --gabi-logo-menu-width: 40vh;
@@ -43,44 +47,67 @@ h2 {
   margin: 0px;
 }
 
-/*Botões gerais de telas*/
+footer {
+  font: bold 15px "Chakra Petch", sans-serif;
+  color: var(--light-font_color);
+  background-color: var(--darker-div-bgc);
+  padding: var(--general-pd);
+  margin: 1rem;
+  border-radius: 0px 0px 50px 50px;
+  filter: var(--darker-div-filter);
+}
+
+/*----- Forms in General ----- */
+input, select {
+  font-family: Chakra Petch, sans-serif;
+  font-size: 1.1rem;
+  margin: .5rem auto .5rem auto;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+#radio fieldset{
+  padding: 0px;
+  margin: 5px;
+  font-weight: bold;
+  color: var(--light-font_color);
+  background-color: var(--darker-div-bgc);
+  filter: var(--darker-div-filter);
+}
+
+.search_disclaimer{
+  font-family: Chakra Petch, sans-serif;
+  font-size: .8rem;
+  margin: 0px;
+  padding: 0px;
+}
+
+/*----- Page Buttons in General ----- */
 .back_buttons {
   font-family: Chakra Petch, sans-serif;
   font-size: 12px;
   font-weight: bold;
+  color: var(--light-font_color);
   padding: 10px;
   margin-top: 20px;
-  border-radius: 50px;
+  border-radius: 5px;
   cursor: pointer;
+  transition: border-radius 0.5s ease, filter 0.7s ease;
 }
 
-footer {
-  font: bold 15px "Chakra Petch", sans-serif;
-  color: white;
-  background-color: #815225;
-  padding: var(--general-pd);
-  margin: 1rem;
-  border-radius: 0px 0px 50px 50px;
-  filter: 4px 4px 8px rgba(0, 0, 0, 0.2), -4px -4px 8px rgba(255, 255, 255, 0.3);
+.back_buttons:hover {
+  border-radius: 50px;
+  filter: brightness(0.8);
 }
 
-/* ----- Buttons ----- */
 #logout_button {
-  color: beige;
   background-color: #af2828;
   margin-bottom: 20px;
 }
 
 #back_to_menu_button {
-  color: beige;
-  background-color: #c87474;
-  margin-bottom: 20px;
-}
-
-#print_report {
-  color: black;
-  background-color: #e1bcbc;
-  border-radius: 10px;
+  background-color: #024e58;
+  margin: 5px;
 }
 
 /* ----- Gabi Logo ----- */
@@ -88,10 +115,16 @@ footer {
   filter: drop-shadow(grey .2rem .2rem 5px);;
 }
 
-#gabi_logo_login,
-#gabi_logo_searching {
+#gabi_logo_login {
   max-height: 80%;
   max-width: 80%;
+}
+
+#gabi_logo_searching {
+  margin: 0px;
+  padding: 0px;
+  max-height: 60%;
+  max-width: 60%;
 }
 
 #gabi_logo_menu{

@@ -209,29 +209,12 @@ final class PeopleDAO{
         return Classroom::fromArray($class_array);
     }
 
-    public static function fetch_all_classrooms() {  //OK
+    public static function fetch_all_classrooms(): ?array {  //OK
         $db_man = new DAOManager();
         $classroom_instances = array();
         $fetched_classrooms = $db_man -> fetch_all_records_from(DB::CLASSROOM_TABLE);
         foreach($fetched_classrooms as $c) $classroom_instances[] = Classroom::fromArray($c);
         return $classroom_instances;
-    }
-
-    public static function fetch_students_by_name(string $cleaned_name) { //OK
-        $db_man = new DAOManager();
-        $student_instances = array();
-        $search = ['name' => "%$cleaned_name%", 'role' => 'student'];
-        $where_conditions = [
-            ['field' => 'name', "operator" => 'ILIKE'],
-            ['field' => 'role', "operator" => '=']];
-        $fetched_students = $db_man -> fetch_records_from(
-            $search, DB::READER_TABLE, DB::READER_FIELDS,
-            $where_conditions, 'AND', 'name', false);
-        
-        if (!$fetched_students) return null;
-        
-        foreach($fetched_students as $s) $student_instances[] = Reader::fromArray($s, true);
-        return $student_instances;
     }
 
     public static function fetch_reader_by_login(string $cleaned_login): ?Reader { 
@@ -248,20 +231,51 @@ final class PeopleDAO{
         return Reader::fromArray($reader_instance, true);
     }
 
+    public static function fetch_readers_by_name(string $cleaned_name) { //OK
+        $db_man = new DAOManager();
+        $reader_instances = array();
+        $search = ['name' => "%$cleaned_name%"];
+        $where_conditions = [['field' => 'name', "operator" => 'ILIKE']];
+        return $db_man -> fetch_records_from(
+            $search, DB::READER_TABLE, DB::READER_FIELDS,
+            $where_conditions, 'AND', 'name', false);
+        
+        // if (!$fetched_readers) return null;
+        
+        // foreach($fetched_readers as $r) $reader_instances[] = Reader::fromArray($r, true);
+        // return $reader_instances;
+    }
+
+    public static function fetch_students_by_name(string $cleaned_name) { //OK
+        $db_man = new DAOManager();
+        $student_instances = array();
+        $search = ['name' => "%$cleaned_name%", 'role' => 'student'];
+        $where_conditions = [
+            ['field' => 'name', "operator" => 'ILIKE'],
+            ['field' => 'role', "operator" => '=']];
+        return $db_man -> fetch_records_from(
+            $search, DB::READER_TABLE, DB::READER_FIELDS,
+            $where_conditions, 'AND', 'name', false);
+        
+        // if (!$fetched_students) return null;
+        
+        // foreach($fetched_students as $s) $student_instances[] = Reader::fromArray($s, true);
+        // return $student_instances;
+    }
+
     public static function fetch_teachers_by_name(string $cleaned_name) { //OK
         $db_man = new DAOManager();
-        $teacher_instances = array();
         $search = ['name' => "%$cleaned_name%", 'role' => 'teacher'];
         $where_conditions = [
             ['field' => 'name', "operator" => 'ILIKE'],
             ['field' => 'role', "operator" => '=']];
-        $fetched_teachers = $db_man -> fetch_records_from(
+        return $db_man -> fetch_records_from(
             $search, DB::READER_TABLE, DB::READER_FIELDS,
             $where_conditions, 'AND', 'name', false);
 
-        if (!$fetched_teachers) return null;
-        foreach($fetched_teachers as $t) $teacher_instances[] = Reader::fromArray($t, true);
-        return $teacher_instances;
+        // if (!$fetched_teachers) return null;
+        // foreach($fetched_teachers as $t) $teacher_instances[] = Reader::fromArray($t, true);
+        // return $teacher_instances;
     }
 
     public static function fetch_all_students_from_classroom(int $classroom_id) { //Test again
@@ -269,16 +283,16 @@ final class PeopleDAO{
         $search = ["classroom_id" => $classroom_id];
         $on_conditions = [['field1' => DB::READER_TABLE.'.id', 'operator' => '=', 'field2' => DB::ENROLLMENT_TABLE.'.student_id']];
         $enrollment_where_conditions = [['field' => 'classroom_id', 'operator' => '=']];
-        $fetched_students = $db_man->fetch_jointed_records_from(
+        return $db_man->fetch_jointed_records_from(
             $search, DB::ENROLLMENT_TABLE,
             DB::READER_TABLE, DB::ENROLLMENT_TABLE, DB::READER_FIELDS, DB::ENROLLMENT_FIELDS,
             $on_conditions, 'AND', array(),  // No conditions for READER_TABLE
             $enrollment_where_conditions, 'AND', 'AND',
             DB::READER_TABLE.'.name', false // Order by reader's names
         );
-        if (!$fetched_students) return null;
-        foreach($fetched_students as $s) $student_instances[] = Reader::fromArray($s, true);
-        return $student_instances;
+        // if (!$fetched_students) return null;
+        // foreach($fetched_students as $s) $student_instances[] = Reader::fromArray($s, true);
+        // return $student_instances;
     }
     
 

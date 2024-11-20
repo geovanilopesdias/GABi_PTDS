@@ -40,8 +40,8 @@
 /* ----- Table Menu ----- */
 .menu_table {
     margin: auto;
-    border-width: 2px;
-    border-radius: 5px;
+    border-width: 5px 5px 10px 5px;
+    border-radius: 10px 10px 0px 0px;
     border-color: #511515;
     background-color: #511515;
     border-style: solid;
@@ -61,11 +61,12 @@
 }
 
 .menu_table td {
+    color: var(--light-font_color);;
     padding: 1px 3px;
     border-width: 1.5px;
     border-color: #511515;
     border-style: solid;
-    background-color: #c2c2c2;
+    background-color: #4e2e0f;
 }
 
 .menu_icon {
