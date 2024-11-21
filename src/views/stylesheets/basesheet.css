@@ -101,7 +101,7 @@ input, select {
 }
 
 #logout_button {
-  background-color: #af2828;
+  background-color: var(--dark-font_color);
   margin-bottom: 20px;
 }
 
@@ -110,9 +110,16 @@ input, select {
   margin: 5px;
 }
 
+#back_to_user_search_button {
+  background-color: var(--dark-font_color);
+  margin: 5px;
+}
+
 /* ----- Gabi Logo ----- */
 .gabi_logo{
   filter: drop-shadow(grey .2rem .2rem 5px);;
+  margin: 0px;
+  padding: 0px;
 }
 
 #gabi_logo_login {
@@ -121,8 +128,6 @@ input, select {
 }
 
 #gabi_logo_searching {
-  margin: 0px;
-  padding: 0px;
   max-height: 60%;
   max-width: 60%;
 }
@@ -132,12 +137,8 @@ input, select {
 }
 
 #gabi_logo_registration,
-#gabi_logo_element_detail {
+#gabi_logo_element_detail,
+#gabi_logo_result_list {
   max-height: 70%;
   max-width: 70%;
-}
-
-#gabi_logo_result_list {
-  max-height: 20%;
-  max-width: 20%;
 }

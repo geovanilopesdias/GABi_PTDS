@@ -233,82 +233,72 @@ final class PeopleDAO{
 
     public static function fetch_readers_by_name(string $cleaned_name) { //OK
         $db_man = new DAOManager();
-        $reader_instances = array();
-        $search = ['name' => "%$cleaned_name%"];
-        $where_conditions = [['field' => 'name', "operator" => 'ILIKE']];
-        return $db_man -> fetch_records_from(
-            $search, DB::READER_TABLE, DB::READER_FIELDS,
-            $where_conditions, 'AND', 'name', false);
-        
-        // if (!$fetched_readers) return null;
-        
-        // foreach($fetched_readers as $r) $reader_instances[] = Reader::fromArray($r, true);
-        // return $reader_instances;
+        $search = ["name" => "%$cleaned_name%"];        
+        $dql = "
+            SELECT r.name AS nome, r.phone AS telefone,
+            r.debt AS dívida, last_login AS \"último acesso\" 
+            FROM ". DB::READER_TABLE. " r 
+            WHERE r.name ILIKE :name 
+            ORDER BY r.role, r.name;
+        ";
+        return $db_man->fetch_flex_dql($dql, $search);
     }
 
     public static function fetch_students_by_name(string $cleaned_name) { //OK
         $db_man = new DAOManager();
-        $student_instances = array();
-        $search = ['name' => "%$cleaned_name%", 'role' => 'student'];
-        $where_conditions = [
-            ['field' => 'name', "operator" => 'ILIKE'],
-            ['field' => 'role', "operator" => '=']];
-        return $db_man -> fetch_records_from(
-            $search, DB::READER_TABLE, DB::READER_FIELDS,
-            $where_conditions, 'AND', 'name', false);
-        
-        // if (!$fetched_students) return null;
-        
-        // foreach($fetched_students as $s) $student_instances[] = Reader::fromArray($s, true);
-        // return $student_instances;
+        $search = ["name" => "%$cleaned_name%"];        
+        $dql = "
+            SELECT r.name AS nome, r.phone AS telefone,
+            r.debt AS dívida, last_login AS \"último acesso\" 
+            FROM ". DB::READER_TABLE. " r 
+            WHERE r.name ILIKE :name AND r.role = student
+            ORDER BY r.name;
+        ";
+        return $db_man->fetch_flex_dql($dql, $search);
     }
 
     public static function fetch_teachers_by_name(string $cleaned_name) { //OK
         $db_man = new DAOManager();
-        $search = ['name' => "%$cleaned_name%", 'role' => 'teacher'];
-        $where_conditions = [
-            ['field' => 'name', "operator" => 'ILIKE'],
-            ['field' => 'role', "operator" => '=']];
-        return $db_man -> fetch_records_from(
-            $search, DB::READER_TABLE, DB::READER_FIELDS,
-            $where_conditions, 'AND', 'name', false);
-
-        // if (!$fetched_teachers) return null;
-        // foreach($fetched_teachers as $t) $teacher_instances[] = Reader::fromArray($t, true);
-        // return $teacher_instances;
+        $search = ["name" => "%$cleaned_name%"];        
+        $dql = "
+            SELECT r.name AS nome, r.phone AS telefone,
+            r.debt AS dívida, last_login AS \"último acesso\" 
+            FROM ". DB::READER_TABLE. " r 
+            WHERE r.name ILIKE :name  AND r.role = teacher
+            ORDER BY r.name;
+        ";
+        return $db_man->fetch_flex_dql($dql, $search);
     }
 
-    public static function fetch_all_students_from_classroom(int $classroom_id) { //Test again
+    public static function fetch_all_students_from_classroom(int $classroom_id) { //OK
         $db_man = new DAOManager();
-        $search = ["classroom_id" => $classroom_id];
-        $on_conditions = [['field1' => DB::READER_TABLE.'.id', 'operator' => '=', 'field2' => DB::ENROLLMENT_TABLE.'.student_id']];
-        $enrollment_where_conditions = [['field' => 'classroom_id', 'operator' => '=']];
-        return $db_man->fetch_jointed_records_from(
-            $search, DB::ENROLLMENT_TABLE,
-            DB::READER_TABLE, DB::ENROLLMENT_TABLE, DB::READER_FIELDS, DB::ENROLLMENT_FIELDS,
-            $on_conditions, 'AND', array(),  // No conditions for READER_TABLE
-            $enrollment_where_conditions, 'AND', 'AND',
-            DB::READER_TABLE.'.name', false // Order by reader's names
-        );
-        // if (!$fetched_students) return null;
-        // foreach($fetched_students as $s) $student_instances[] = Reader::fromArray($s, true);
-        // return $student_instances;
+        $search = ["classroom_id" => $classroom_id];        
+        $dql = "
+            SELECT r.name AS nome, r.phone AS telefone,
+            r.debt AS dívida, last_login AS  \"último acesso\", c.name AS turma 
+            FROM ". DB::READER_TABLE. " r 
+            JOIN ".DB::ENROLLMENT_TABLE." e ON e.student_id = r.id 
+            JOIN ".DB::CLASSROOM_TABLE." c ON c.id = e.classroom_id 
+            WHERE c.id = :classroom_id 
+            ORDER BY r.name;
+        ";
+        return $db_man->fetch_flex_dql($dql, $search);
     }
     
 
     public static function fetch_all_teachers_from_classroom(int $classroom_id) {//OK
         $db_man = new DAOManager();
-        $search = ["classroom_id" => $classroom_id];
-        $on_conditions = [['field1' => DB::READER_TABLE.'.id', 'operator' => '=', 'field2' => DB::TEACHING_TABLE.'.teacher_id']];
-        $teaching_where_conditions = [['field' => 'classroom_id', 'operator' => '=']];
-        $fetched_teachers = $db_man -> fetch_jointed_records_from(
-            $search, DB::TEACHING_TABLE,
-            DB::READER_TABLE, DB::TEACHING_TABLE, DB::READER_FIELDS, DB::TEACHING_FIELDS,
-            $on_conditions, 'AND', array(), $teaching_where_conditions, 'AND', 'AND',
-            DB::READER_TABLE.'.name', false);
-        if (!$fetched_teachers) return null;
-        foreach($fetched_teachers as $t) $teacher_instances[] = Reader::fromArray($t, true);
-        return $teacher_instances;
+        $search = ["classroom_id" => $classroom_id];        
+        $dql = "
+            SELECT r.name AS nome, r.phone AS telefone,
+            r.debt AS dívida, last_login AS acesso 
+            FROM ". DB::READER_TABLE. " r 
+            JOIN ".DB::TEACHING_TABLE." t ON t.teacher_id = r.id 
+            JOIN ".DB::CLASSROOM_TABLE." c ON c.id = t.classroom_id 
+            WHERE c.id = :classroom_id 
+            ORDER BY r.name;
+        ";
+        return $db_man->fetch_flex_dql($dql, $search);
     }
      
 }

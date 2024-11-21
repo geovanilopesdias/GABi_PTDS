@@ -8,14 +8,17 @@ session_start();
 final class UserSearchResults{
     const PAGE_TYPE = 'result_list';
 
-    static function echo_logo_back(){
+    static function echo_logo_back_buttons(){
         echo "
             <div id='logo'>".
-                InterfaceManager::system_logo(self::PAGE_TYPE).
-            "</div>
+                InterfaceManager::system_logo(self::PAGE_TYPE)."
+            </div>
             <div id='back_to_menu'>".
-                InterfaceManager::back_to_menu_button().
-            "</div>
+            InterfaceManager::back_to_user_search_button()."
+            </div>
+            <div id='back_to_search'>".
+                InterfaceManager::back_to_menu_button()."
+            </div>
         ";
     }
 
@@ -23,7 +26,7 @@ final class UserSearchResults{
         $results = array();
         // Search by name:
         if (!empty($_GET['name'])){
-            $search = "por: ".htmlspecialchars($_GET['name']);
+            $search = htmlspecialchars(trim($_GET['name']));
             $results = match (htmlspecialchars($_GET['radio_search_for'])){
                 'all' => PeopleDAO::fetch_readers_by_name($search),
                 'stu' => PeopleDAO::fetch_students_by_name($search),
@@ -43,14 +46,14 @@ final class UserSearchResults{
         
         // Disclaimer to no results:
         if (empty($results)){
-            $disclaimer = "A busca por ".htmlspecialchars($_GET['name'])."
+            $disclaimer = "A busca por '".htmlspecialchars($_GET['name'])."'
                   não retornou qualquer resultado" ;
             echo InterfaceManager::no_results_disclaimer($disclaimer);
         }
         
         // Table build:
-        else {
-            $caption = "Resultados da busca $search";
+        else{
+            $caption = "Resultados da busca por '$search'";
             echo InterfaceManager::table_of_results($caption, $results);
         }
     }
@@ -63,8 +66,8 @@ final class UserSearchResults{
         $search = htmlspecialchars($_GET['name']).htmlspecialchars($_GET['classroom']);
         $title = "GABi | Busca por: $search";
         InterfaceManager::echo_html_head($title, self::PAGE_TYPE);
-        echo "<div class='results_grid'>";
-        self::echo_logo_back();
+        echo "<div id='results_grid'>";
+        self::echo_logo_back_buttons();
         self::echo_table_results();
         echo "</div>";
         InterfaceManager::echo_html_tail();

@@ -14,6 +14,20 @@ final class InterfaceManager{
         return in_array($page_type, self::PAGE_TYPE, true);
     }
 
+    // String transformers:
+    public static function mask_phone(string $phone): string{
+        return sprintf('(%s) %s.%s', 
+            substr($phone, 0, 2),
+            substr($phone, 2, 5),
+            substr($phone, 7)
+        );
+    }
+
+    public static function mask_timestamp(string $timestampz): string{
+        $datetime = new DateTime($timestampz);
+        return $datetime->format('d/m/y às H:i');
+    }
+
     // Echoers:
     public static function echo_html_head(string $title, string $page_type){
         if (!self::is_page_type_valid($page_type))
@@ -93,6 +107,18 @@ final class InterfaceManager{
         ";
     }
 
+    public static function back_to_user_search_button(): string{
+        return "
+            <form method='post' action='user_search.php'>
+                <input 
+                    id='back_to_user_search_button' 
+                    class='back_buttons'
+                    type='submit' 
+                    value='&#x25c0; | NOVA BUSCA'>
+            </form>
+        ";
+    }
+
     public static function search_button(): string {
         return "<input class='search_button' type='submit' value='&#x1F50D;'>";
     }
@@ -107,8 +133,8 @@ final class InterfaceManager{
      * com a mensagem acima da div de busca.
      */
     public static function no_results_disclaimer($disclaimer): string{
-        return "<p class='no_results_disclaimer'>".
-            htmlspecialchars($disclaimer)."</p></br>";
+        return "<div class='no_results_disclaimer'><p>".
+            htmlspecialchars($disclaimer)."</p></br></div>";
     }
 
     /**
@@ -194,20 +220,25 @@ final class InterfaceManager{
         
         // Caption and header
         $headers = array_keys($results[0]);
-        $table = "<table>\n<caption>" . htmlspecialchars($caption) . "</caption>\n<thead>\n<tr>";
-        foreach ($headers as $header) $table .= "<th>" . htmlspecialchars($header) . "</th>";
+        $table = "<div class='results'><table>\n<caption>" . htmlspecialchars($caption) . "</caption>\n<thead>\n<tr>";
+        foreach ($headers as $header) $table .= "<th>" . ucfirst(htmlspecialchars($header)) . "</th>";
         $table .= "</tr>\n</thead>\n<tbody>";
 
         // Rows
+        $tr_class = 'odd';
         foreach ($results as $row) {
-            $table .= "\n<tr>";
+            $table .= "\n<tr class='$tr_class'>";
             foreach ($headers as $header) {
-                $table .= "<td>" . htmlspecialchars($row[$header]) . "</td>";
+                if ($header == 'telefone') $table .= "<td>" . self::mask_phone(htmlspecialchars($row[$header])) . "</td>";
+                else if ($header == 'último acesso') $table .= "<td>" . self::mask_timestamp(htmlspecialchars($row[$header])) . "</td>";
+                else if($header == 'dívida') $table .= "<td>R$ " . number_format(trim(htmlspecialchars($row[$header])), 2, ',', '.') . "</td>";
+                else $table .= "<td>" . ucfirst(htmlspecialchars($row[$header])) . "</td>";
             }
             $table .= "</tr>";
+            $tr_class = ($tr_class === 'odd') ? 'even' : 'odd';
         }
 
-        $table .= "\n</tbody>\n</table>";
+        $table .= "\n</tbody>\n</table></div>";
 
         return $table;
     }

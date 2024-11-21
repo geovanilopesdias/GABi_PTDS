@@ -23,7 +23,7 @@ function exclusion_test(){
 }
 
 function fetching_test(){
-    return LoanDAO::fetch_all_loans(1);
+    return PeopleDAO::fetch_all_students_from_classroom(2);
 }
 
    
@@ -36,8 +36,8 @@ function fetching_test(){
 // $d = exclusion_test();
 // echo ($d) ? "Deleting sucessfull" : "Deleting failed";
 
-// $f = fetching_test();
-// echo ($f) ? "\n".print_r($f) : "\nNo results";
+$f = fetching_test();
+echo ($f) ? "\n".print_r($f) : "\nNo results";
 
 
 ?>

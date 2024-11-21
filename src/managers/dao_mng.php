@@ -367,8 +367,9 @@ final class DAOManager{
         );
         $stmt = $this -> pdo -> prepare($dql);
         try {
-            foreach ($search as $f => $value) $stmt -> bindValue(":".$f, $value);
+            foreach ($search as $f => $value) $stmt -> bindValue(":$f", $value);
             $stmt -> execute(); $stmt->setFetchMode(PDO::FETCH_ASSOC);
+            echo $stmt->queryString;
             return $stmt -> fetchAll();
         }
         catch (PDOException $e) {die("Connection failed: " . $e->getMessage() . " SQL Statement: \n" . $stmt->queryString);}
@@ -403,7 +404,7 @@ final class DAOManager{
         
     }
 
-    public function fetch_complex_join_dql(string $dql, array $search, bool $is_unique = false){
+    public function fetch_flex_dql(string $dql, array $search, bool $is_unique = false){
         $stmt = $this -> pdo -> prepare($dql);
         try {
             foreach ($search as $f => $value) $stmt -> bindValue(":$f", $value);
