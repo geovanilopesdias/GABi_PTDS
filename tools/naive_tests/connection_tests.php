@@ -1,8 +1,8 @@
 <?php 
 
 // require_once('../../src/controllers/loan_dao.php');
-// require_once('../../src/controllers/book_dao.php');
-require_once('../../src/controllers/people_dao.php');
+require_once('../../src/controllers/book_dao.php');
+// require_once('../../src/controllers/people_dao.php');
 
 function insertion_test(){
     $data['book_copy_id'] = 2;
@@ -23,7 +23,7 @@ function exclusion_test(){
 }
 
 function fetching_test(){
-    return PeopleDAO::fetch_all_students_from_classroom(2);
+    return BookDAO::fetch_bookcopy_holistically_by('title', 'conc');
 }
 
    

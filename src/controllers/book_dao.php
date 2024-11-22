@@ -210,9 +210,13 @@ final class BookDAO{
         return $results;
     }
 
-    public static function fetch_bookcopy_holistically_by(string $field, $value): ?array {
-        if($field === 'asset_code') throw new InvalidArgumentException('Use method BookDAO::fetch_bookcopy_by_asset_code() instead.');
-        
+    public static function fetch_bookcopy_holistically_by(string $field, mixed $value): ?array {
+        if($field === 'asset_code')
+            throw new InvalidArgumentException('Use method BookDAO::fetch_bookcopy_holistically_by_asset_code() instead.');
+
+        if (!in_array($field, ['title', 'author', 'publisher', 'collection', 'cover_colors'], true))
+            throw new InvalidArgumentException("It isn't possible to search by $field");
+
         $db_man = new DAOManager();
         $field_search = match ($field) {
             'title' => 'o.title', 'author' => 'w.name',
@@ -220,14 +224,14 @@ final class BookDAO{
             'cover_colors' => 'e.cover_colors'
         };
 
-        $search = [$field => "'%$value%'"];
+        $search = [$field => "%$value%"];
         $book_copy_fields = ['b.id AS id', 'b.asset_code AS patrimônio', 'b.status AS situação'];
         $edition_fields = ['e.volume', 'e.edition_number AS edição', 'e.publishing_year AS ano', 'e.pages AS páginas', 'e.cover_colors AS capa', 'e.translators AS tradutores'];
-        $opus_fields = ['o.title AS título', 'o.original_year AS origem', 'o.alternative_url AS Link', 'o.ddc', 'o.cutter_sanborn AS cutter'];
+        $opus_fields = ['o.title AS título', 'o.original_year AS origem', 'o.alternative_url AS link', 'o.ddc', 'o.cutter_sanborn AS cutter'];
         $dql = "SELECT ".
-            implode(", ", $book_copy_fields) . ", ".
+            implode(", ", $opus_fields) . ", ".    
             implode(", ", $edition_fields) . ", ".
-            implode(", ", $opus_fields) . ", ".
+            implode(", ", $book_copy_fields) . ", ".
             " p.name AS editora,".
             " json_agg(json_build_object('name', w.name, 'birth_year', w.birth_year)) AS autores ".
             " FROM ". DB::AUTHORSHIP_TABLE. " a JOIN ".
@@ -245,7 +249,7 @@ final class BookDAO{
         return $db_man->fetch_flex_dql($dql, $search);
     }
 
-    public static function fetch_bookcopy_with_edition_opus_writer_data(string $bookcopy_asset_code): ?array {
+    public static function fetch_bookcopy_holistically_by_asset_code(string $bookcopy_asset_code): ?array {
         $db_man = new DAOManager();
         
         // Fetch the edition details first

@@ -21,8 +21,8 @@ final class BookSearchResults extends SearchResults{
         // Edit fetchers so always return bookcopy with opus and writer and editin
         // data by any field.
         if (!empty($_GET['asset_code'])){
-            $search = htmlspecialchars(trim($_GET['asset_code']));
-            $_SESSION['bookcopy'] = BookDAO::fetch_bookcopy_with_edition_opus_writer_data($search);
+            $code = htmlspecialchars(trim($_GET['asset_code']));
+            $_SESSION['bookcopy'] = BookDAO::fetch_bookcopy_holistically_by_asset_code($code);
             header('Location: book_detail.php'); exit;
         }
         
@@ -32,8 +32,9 @@ final class BookSearchResults extends SearchResults{
             if(!empty($_GET[$f])){
                 if ($f === 'cover_colors'){
                     $colors_list = explode(',', htmlspecialchars(trim($_GET[$f])));
-                    $keywords .= $colors_list;
-                    foreach($colors_list as $color) $copies = BookDAO::fetch_bookcopy_holistically_by($f, $color);
+                    $keywords .= implode(',', $colors_list);
+                    foreach($colors_list as $color)
+                        $copies = BookDAO::fetch_bookcopy_holistically_by($f, $color);
                 }
 
                 else {

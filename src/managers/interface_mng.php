@@ -35,6 +35,16 @@ final class InterfaceManager{
         }
     }
 
+    public static function translate_book_status(string $status): string{
+        return match ($status){
+            'available' => 'Disponível',
+            'loaned' => 'Emprestado',
+            'reserved' => 'Reservado',
+            'damaged' => 'Avariado',
+            'lost' => 'Extraviado',
+        };
+    }
+
     // Echoers:
     public static function echo_html_head(string $title, string $page_type){
         if (!self::is_page_type_valid($page_type))
@@ -227,24 +237,35 @@ final class InterfaceManager{
         
         // Caption and header
         $headers = array_keys($results[0]);
+        $hidden_headers = ['origem', 'tradutores', 'ddc', 'volume'];
         $table = "<div class='results'><table>\n<caption>" . htmlspecialchars($caption) . "</caption>\n<thead>\n<tr>";
-        foreach ($headers as $header) $table .= "<th>" . ucfirst(htmlspecialchars($header)) . "</th>";
+        foreach ($headers as $header) $table .= (!in_array($header, $hidden_headers, true))? "<th>" . ucfirst(htmlspecialchars($header)) . "</th>" : '';
         $table .= "</tr>\n</thead>\n<tbody>";
 
         // Rows
         $tr_class = 'odd';
         foreach ($results as $row) {
             $table .= "\n<tr class='$tr_class'>";
-            foreach ($headers as $header) {
-                if ($header == 'telefone') $table .= "<td>" . self::mask_phone(htmlspecialchars($row[$header])) . "</td>";
-                else if($header == 'tipo') {
-                    if ($row[$header] === 'student') $table .= "<td>Discente</td>";
-                    else $table .= "<td>Docente</td>";
-                }
-                else if ($header == 'último acesso') $table .= "<td>" . self::mask_timestamp(htmlspecialchars($row[$header])) . "</td>";
-                else if($header == 'dívida') $table .= "<td>R$ " . number_format(trim(htmlspecialchars($row[$header])), 2, ',', '.') . "</td>";
-                else $table .= "<td>" . ucfirst(htmlspecialchars($row[$header])) . "</td>";
-            }
+            foreach ($headers as $header) $table .= match($header){
+                // Readers
+                'telefone' => "<td>" . self::mask_phone(htmlspecialchars($row[$header])) . "</td>",
+                'tipo' => ($row[$header] === 'student') ? "<td>Discente</td>" : "<td>Docente</td>",
+                'último acesso' => "<td>" . self::mask_timestamp(htmlspecialchars($row[$header])) . "</td>",
+                'dívida' => "<td>R$ " . number_format(trim(htmlspecialchars($row[$header])), 2, ',', '.') . "</td>",
+
+                // Books
+                'origem', 'tradutores', 'ddc', 'volume' => "", // Hidden headers!
+                'título' => "<td>" . htmlspecialchars($row[$header]) .
+                    " (" . htmlspecialchars($row['origem']) . ") | " . (($row['volume'] != 1) ? "vol. ".htmlspecialchars($row['volume']) : "") . "</td>",
+                
+                'autores' => "<td>" . implode(', ', array_map(function($author) {
+                    return htmlspecialchars($author['name']) . " (" . htmlspecialchars($author['birth_year']) . ")";},
+                    json_decode($row[$header], true))) . "</td>",
+                'situação' => "<td>" . self::translate_book_status(htmlspecialchars($row[$header])) . "</td>",
+                
+                'link' => "<td><a id='opus_link' href='" . htmlspecialchars($row[$header]) . "'>&#128279;</a></td>",
+                default => "<td>" . ucfirst(htmlspecialchars($row[$header])) . "</td>"
+            };
             $table .= "</tr>";
             $tr_class = ($tr_class === 'odd') ? 'even' : 'odd';
         }
