@@ -201,13 +201,48 @@ final class BookDAO{
             " ORDER BY ".DB::OPUS_TABLE.".title";
         
         $search = ['edition_id' => $edition_id];
-        $results = $db_man->fetch_complex_join_dql($dql, $search);
+        $results = $db_man->fetch_flex_dql($dql, $search);
         foreach ($results as &$row) {
             if (isset($row['writers'])) {
                 $row['writers'] = json_decode($row['writers'], true); // Decode writers field into an array
             }
         }
         return $results;
+    }
+
+    public static function fetch_bookcopy_holistically_by(string $field, $value): ?array {
+        if($field === 'asset_code') throw new InvalidArgumentException('Use method BookDAO::fetch_bookcopy_by_asset_code() instead.');
+        
+        $db_man = new DAOManager();
+        $field_search = match ($field) {
+            'title' => 'o.title', 'author' => 'w.name',
+            'publisher' => 'p.name', 'collection' => 'c.name',
+            'cover_colors' => 'e.cover_colors'
+        };
+
+        $search = [$field => "'%$value%'"];
+        $book_copy_fields = ['b.id AS id', 'b.asset_code AS patrimônio', 'b.status AS situação'];
+        $edition_fields = ['e.volume', 'e.edition_number AS edição', 'e.publishing_year AS ano', 'e.pages AS páginas', 'e.cover_colors AS capa', 'e.translators AS tradutores'];
+        $opus_fields = ['o.title AS título', 'o.original_year AS origem', 'o.alternative_url AS Link', 'o.ddc', 'o.cutter_sanborn AS cutter'];
+        $dql = "SELECT ".
+            implode(", ", $book_copy_fields) . ", ".
+            implode(", ", $edition_fields) . ", ".
+            implode(", ", $opus_fields) . ", ".
+            " p.name AS editora,".
+            " json_agg(json_build_object('name', w.name, 'birth_year', w.birth_year)) AS autores ".
+            " FROM ". DB::AUTHORSHIP_TABLE. " a JOIN ".
+            DB::OPUS_TABLE. " o ON a.opus_id = o.id".
+            " JOIN ". DB::WRITER_TABLE. " w ON a.writer_id = w.id".
+            " JOIN ". DB::EDITION_TABLE. " e ON e.opus_id = o.id".
+            " JOIN ". DB::BOOK_COPY_TABLE. " b ON b.edition_id = e.id".
+            " JOIN ". DB::PUBLISHER_TABLE. " p ON p.id = e.publisher_id".
+            " WHERE $field_search ILIKE :$field 
+            GROUP BY b.id, b.asset_code, b.status, e.volume, e.edition_number,
+                e.publishing_year, e.pages, e.cover_colors, e.translators,
+                o.title, o.original_year, o.alternative_url, o.ddc,
+                o.cutter_sanborn, p.name 
+            ORDER BY o.title";
+        return $db_man->fetch_flex_dql($dql, $search);
     }
 
     public static function fetch_bookcopy_with_edition_opus_writer_data(string $bookcopy_asset_code): ?array {
@@ -243,7 +278,7 @@ final class BookDAO{
         $search = ['asset_code' => $bookcopy_asset_code];
     
         // Execute the query
-        $results = $db_man->fetch_complex_join_dql($dql, $search, true); // Fetch for uniqueness
+        $results = $db_man->fetch_flex_dql($dql, $search, true); // Fetch for uniqueness
         
         // Decode the 'writers' field from JSON to an array
         foreach ($results as &$row) {
@@ -327,7 +362,7 @@ final class BookDAO{
             " ORDER BY ".DB::OPUS_TABLE.".title";
         
         $search = ['opus_id' => $opus_id];
-        $results = $db_man->fetch_complex_join_dql($dql, $search);
+        $results = $db_man->fetch_flex_dql($dql, $search);
         foreach ($results as &$row) {
             if (isset($row['writers'])) {
                 $row['writers'] = json_decode($row['writers'], true); // Decode writers field into an array

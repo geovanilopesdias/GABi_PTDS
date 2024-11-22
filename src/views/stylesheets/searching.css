@@ -1,8 +1,9 @@
 .search_grid{
     display: grid;
     margin: auto;
-    grid-template-columns: .8fr .2fr; /*Logo | Back to menu button*/
-    grid-template-rows: .3fr 1fr; /*Logo-Button | Search form*/
+    width: 100vh;
+    grid-template-columns: 3fr 1fr; /*Logo | Back to menu button*/
+    grid-template-rows: 1fr auto; /*Logo-Button | Search form*/
     margin: 1rem;
     padding: .7em;
     background-color: var(--login-menu-bgc);
@@ -14,18 +15,19 @@
 #logo {
     grid-row: 1;
     grid-column: 1;
+    justify-self: right;
     align-self: center;
 }
 
 #back_to_menu {
     grid-row: 1;
     grid-column: 2;
-    text-align: center;
+    justify-self: left;
     padding-left: 10px;
     align-self: center;
 }
 
-#user_search_form{
+#search_form{
     grid-row: 2;
     grid-column: 1 / span 2;
 }

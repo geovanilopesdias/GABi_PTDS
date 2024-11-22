@@ -8,12 +8,20 @@ require_once (__DIR__ . '/../models/people/enrollment.php');
 // require_once ('book_dao.php');
 
 final class PeopleDAO{
+    private static  ?DateTime $now = null;
+
+    public static function get_now(): DateTime {
+        if (self::$now === null) 
+            self::$now = new DateTime('now', new DateTimeZone('America/Sao_Paulo'));
+        return self::$now;
+    }
+    
     // Registration:
     public static function register_student(array $data, int $user_id){ //OK
         $db_man = new DAOManager();
         if (!$db_man -> can_user_register($user_id)) return false;
         $s = Reader::Student($data['login'], $data['passphrase'], $data['name'], $data['phone']);
-        $s -> set_last_login((new DateTimeImmutable())->format('Y-m-d H:i:s'));
+        $s -> set_last_login(self::get_now());
         return $db_man -> insert_record_in(DB::READER_TABLE, $s -> toArray());
         
     }
@@ -22,7 +30,7 @@ final class PeopleDAO{
         $db_man = new DAOManager();
         if ($db_man -> can_user_register($user_id)){
             $s = Reader::TeacherLoaner($data['login'], $data['passphrase'], $data['name'], $data['phone']);
-            $s -> set_last_login((new DateTimeImmutable())->format('Y-m-d H:i:s'));
+            $s -> set_last_login(self::get_now());
             return $db_man -> insert_record_in(DB::READER_TABLE, $s -> toArray());
         }
         else return false;
@@ -32,7 +40,7 @@ final class PeopleDAO{
         $db_man = new DAOManager();
         if ($db_man -> can_user_register($user_id)){
             $s = Reader::TeacherNonLoaner($data['login'], $data['passphrase'], $data['name'], $data['phone']);
-            $s -> set_last_login((new DateTimeImmutable())->format('Y-m-d H:i:s'));
+            $s -> set_last_login(self::get_now());
             return $db_man -> insert_record_in(DB::READER_TABLE, $s -> toArray());
         }
         else return false;
@@ -199,6 +207,7 @@ final class PeopleDAO{
         $reader_array = $db_man -> fetch_record_by_id_from(DB::READER_TABLE, $id);
         if (empty($reader_array)) return null;
         if ($is_for_search) $reader_array['passphrase'] = ''; // Clear passphrase field for search or linking
+        $reader_array['last_login'] = isset($reader_array['last_login']) ? new DateTime($reader_array['last_login'], new DateTimeZone('America/Sao_Paulo')) : null;
         return Reader::fromArray($reader_array, true); // Factory used truly for fetching
     }
 
@@ -219,16 +228,15 @@ final class PeopleDAO{
 
     public static function fetch_reader_by_login(string $cleaned_login): ?Reader { 
         $db_man = new DAOManager();
-        $reader_instance = array();
         $search = ['login' => "$cleaned_login"];
         $where_conditions = [['field' => 'login', "operator" => '=']];
-        $reader_instance = $db_man -> fetch_records_from(
+        $reader = $db_man -> fetch_records_from(
             $search, DB::READER_TABLE, DB::READER_FIELDS,
             $where_conditions, 'AND', null, false, true); // Call unique raw
         
-        if (!$reader_instance) return null;
-        
-        return Reader::fromArray($reader_instance, true);
+        if (!$reader) return null;
+        $reader['last_login'] = isset($reader['last_login']) ? new DateTime($reader['last_login'], new DateTimeZone('America/Sao_Paulo')) : null;
+        return Reader::fromArray($reader, true);
     }
 
     public static function fetch_readers_by_name(string $cleaned_name) { //OK
@@ -236,6 +244,7 @@ final class PeopleDAO{
         $search = ["name" => "%$cleaned_name%"];        
         $dql = "
             SELECT r.name AS nome, r.phone AS telefone,
+            r.role AS tipo, 
             r.debt AS dívida, last_login AS \"último acesso\" 
             FROM ". DB::READER_TABLE. " r 
             WHERE r.name ILIKE :name 
@@ -251,7 +260,7 @@ final class PeopleDAO{
             SELECT r.name AS nome, r.phone AS telefone,
             r.debt AS dívida, last_login AS \"último acesso\" 
             FROM ". DB::READER_TABLE. " r 
-            WHERE r.name ILIKE :name AND r.role = student
+            WHERE r.name ILIKE :name AND r.role = 'student'
             ORDER BY r.name;
         ";
         return $db_man->fetch_flex_dql($dql, $search);
@@ -264,7 +273,7 @@ final class PeopleDAO{
             SELECT r.name AS nome, r.phone AS telefone,
             r.debt AS dívida, last_login AS \"último acesso\" 
             FROM ". DB::READER_TABLE. " r 
-            WHERE r.name ILIKE :name  AND r.role = teacher
+            WHERE r.name ILIKE :name  AND r.role = 'teacher'
             ORDER BY r.name;
         ";
         return $db_man->fetch_flex_dql($dql, $search);

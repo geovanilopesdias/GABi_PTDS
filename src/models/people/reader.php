@@ -8,7 +8,8 @@ enum ReaderRole : string{
 
 final class Reader{
     private ?int $id;
-    private string $name, $login, $passphrase, $phone, $last_login;
+    private string $name, $login, $passphrase, $phone;
+    private ?DateTime $last_login;
     private ReaderRole $role;
     private bool $can_borrow, $can_register;
     private ?float $debt;
@@ -108,7 +109,6 @@ final class Reader{
         return $r;
     }
 
-
     private function isNameValid($nameToTest): bool{
         return preg_match("/^[A-zÀ-ÿ][A-zÀ-ÿ']+\s([A-zÀ-ÿ']\s?)*[A-zÀ-ÿ][A-zÀ-ÿ']+$/", $nameToTest);
     }
@@ -126,11 +126,11 @@ final class Reader{
     public function get_can_loan(){return $this->can_borrow;}
     public function get_can_register(){return $this->can_register;}
     public function get_debt(){return $this->debt;}
-    public function get_last_login(){return $this->last_login;}
+    public function get_last_login(): DateTime{return $this->last_login;}
     
     public function set_login($login){$this->login = $login;}
     public function set_can_loan(bool $can_borrow){$this->can_borrow = $can_borrow;}
-    public function set_last_login($last_login){$this->last_login = $last_login;}
+    public function set_last_login(DateTime $last_login){$this->last_login = $last_login;}
 
     // Modificar para inserir salga etc.
     public function set_passphrase(string $passphrase): void {

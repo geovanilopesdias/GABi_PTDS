@@ -110,7 +110,7 @@ input, select {
   margin: 5px;
 }
 
-#back_to_user_search_button {
+#back_to_search_button {
   background-color: var(--dark-font_color);
   margin: 5px;
 }

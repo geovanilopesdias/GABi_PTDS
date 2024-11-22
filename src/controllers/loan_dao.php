@@ -61,7 +61,7 @@ final class LoanDAO{
             if (!$db_man -> can_user_loan($user_id)) return null;
                 
         foreach(self::DATE_FIELDS as $f)
-            $loan_array[$f] = isset($loan_array[$f]) ? new DateTime($loan_array[$f], new DateTimeZone('UTC')) : null;
+            $loan_array[$f] = isset($loan_array[$f]) ? new DateTime($loan_array[$f], new DateTimeZone('America/Sao_Paulo')) : null;
 
         return Loan::fromArray($loan_array, true); // Factory used truly for fetching
     }
@@ -74,7 +74,7 @@ final class LoanDAO{
         $loan_instances = array();
         foreach($fetched_loans as $loan){
             foreach(self::DATE_FIELDS as $f)
-                $loan[$f] = isset($loan[$f]) ? new DateTime($loan[$f], new DateTimeZone('UTC')) : null;
+                $loan[$f] = isset($loan[$f]) ? new DateTime($loan[$f], new DateTimeZone('America/Sao_Paulo')) : null;
             $loan_instances[] = Loan::fromArray($loan, true); // Factory calling TRULY for fetching
         }
         return $loan_instances;

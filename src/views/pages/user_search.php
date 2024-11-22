@@ -1,25 +1,19 @@
 <?php
 
 require_once(__DIR__ . '/../../managers/interface_mng.php');
-require_once(__DIR__ . '/../../controllers/people_dao.php');
+require_once(__DIR__ . '/search.php');
 
-session_start();
-
-final class UserSearch{
-    const PAGE_TYPE = 'searching';
+final class UserSearch extends Search{
+    const SEARCH_TYPE = 'user';
     
-    static function echo_logo_back(){
-        echo "
-            <div id='logo'>".
-                InterfaceManager::system_logo(self::PAGE_TYPE).
-            "</div>
-            <div id='back_to_menu'>".
-                InterfaceManager::back_to_menu_button().
-            "</div>
-        ";
+    function __construct(){}
+    
+    public function echo_structure(
+        string $search_type = self::SEARCH_TYPE){
+            parent::echo_structure($search_type);
     }
 
-    static function echo_search_form(){
+    protected function echo_search_form(){
         $radio_options = [
             ['id' => 'all', 'content' => 'Todos'],
             ['id' => 'stu', 'content' => 'Estudantes'],
@@ -27,8 +21,8 @@ final class UserSearch{
         ];
 
         echo "
-            <div id='user_search_form'>
-                <form class='search' action='user_search_result.php' method='get'>".
+            <div id='search_form'>
+                <form class='search' action='".self::SEARCH_TYPE."_search_result.php' method='get'>".
                     InterfaceManager::input_radio_group(
                         $radio_options, 'radio_search_for', 'Buscar por:', 'radio')."
                     <input type='text' name='name' placeholder='Nome' autofocus/><br>".
@@ -40,22 +34,10 @@ final class UserSearch{
             </div>
         ";
     }
-
-    static function echo_structure(){
-        session_start();
-        if (!isset($_SESSION['user_id']) and $_SESSION['user_role'] !== 'librarian') {
-            header('Location: login.php'); exit;
-        }
-        $title = "GABi | Busca de Usuários";
-        InterfaceManager::echo_html_head($title, self::PAGE_TYPE);
-        echo "<div class='search_grid'>";
-        self::echo_logo_back();
-        self::echo_search_form();
-        echo "</div>";
-        InterfaceManager::echo_html_tail();
-    }
-
     
 }
 
-UserSearch::echo_structure();
+$search = new UserSearch();
+$search -> echo_structure();
+
+?>

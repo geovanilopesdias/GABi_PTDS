@@ -48,7 +48,8 @@ session_start();
     if (is_null($user)) login_failed('usuário informado não foi encontrado!');
     if (!check_password($user)) login_failed('senha informada está incorreta!');
     
-    // Creating the session and redirecting:
+    // Update the last login date, create the session and redirect:
+    $user -> set_last_login(new DateTime('now', new DateTimeZone('America/Sao_Paulo'))); //Não funciona
     $_SESSION['user_id'] = $user -> get_id();
     $_SESSION['user_role'] = $user -> get_role();
     $_SESSION['user_name'] = ($user -> get_role() == 'teacher') ?

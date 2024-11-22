@@ -1,5 +1,7 @@
 <?php
 
+require_once (__DIR__ . '/../controllers/people_dao.php');
+
 final class InterfaceManager{
     const PAGE_TYPE = [
         'login',
@@ -24,8 +26,13 @@ final class InterfaceManager{
     }
 
     public static function mask_timestamp(string $timestampz): string{
-        $datetime = new DateTime($timestampz);
-        return $datetime->format('d/m/y às H:i');
+        try {
+            $datetime = new DateTime($timestampz);
+            return $datetime->format('d/m/y | H:i');
+        }
+        catch (DateMalformedStringException) {
+            return 'Último acesso mal-formado';
+        }
     }
 
     // Echoers:
@@ -107,11 +114,11 @@ final class InterfaceManager{
         ";
     }
 
-    public static function back_to_user_search_button(): string{
+    public static function back_to_search_button($search_type): string{
         return "
-            <form method='post' action='user_search.php'>
+            <form method='post' action='".$search_type."_search.php'>
                 <input 
-                    id='back_to_user_search_button' 
+                    id='back_to_search_button' 
                     class='back_buttons'
                     type='submit' 
                     value='&#x25c0; | NOVA BUSCA'>
@@ -230,6 +237,10 @@ final class InterfaceManager{
             $table .= "\n<tr class='$tr_class'>";
             foreach ($headers as $header) {
                 if ($header == 'telefone') $table .= "<td>" . self::mask_phone(htmlspecialchars($row[$header])) . "</td>";
+                else if($header == 'tipo') {
+                    if ($row[$header] === 'student') $table .= "<td>Discente</td>";
+                    else $table .= "<td>Docente</td>";
+                }
                 else if ($header == 'último acesso') $table .= "<td>" . self::mask_timestamp(htmlspecialchars($row[$header])) . "</td>";
                 else if($header == 'dívida') $table .= "<td>R$ " . number_format(trim(htmlspecialchars($row[$header])), 2, ',', '.') . "</td>";
                 else $table .= "<td>" . ucfirst(htmlspecialchars($row[$header])) . "</td>";

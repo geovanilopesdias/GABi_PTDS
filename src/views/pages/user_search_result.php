@@ -2,27 +2,22 @@
 
 require_once(__DIR__ . '/../../managers/interface_mng.php');
 require_once(__DIR__ . '/../../controllers/people_dao.php');
+require_once(__DIR__ . '/search_result.php');
 
-session_start();
 
-final class UserSearchResults{
-    const PAGE_TYPE = 'result_list';
+final class UserSearchResults extends SearchResults{
+    const SEARCH_TYPE = 'user';
+    const GET_FIELDS = ['name', 'classroom'];
 
-    static function echo_logo_back_buttons(){
-        echo "
-            <div id='logo'>".
-                InterfaceManager::system_logo(self::PAGE_TYPE)."
-            </div>
-            <div id='back_to_menu'>".
-            InterfaceManager::back_to_user_search_button()."
-            </div>
-            <div id='back_to_search'>".
-                InterfaceManager::back_to_menu_button()."
-            </div>
-        ";
+    function __construct(){}
+    
+    public function echo_structure(
+        string $search_type = self::SEARCH_TYPE,
+        array $get_fields = self::GET_FIELDS){
+            parent::echo_structure($search_type, $get_fields);
     }
 
-    static function echo_table_results(){
+    protected function echo_table_results(){
         $results = array();
         // Search by name:
         if (!empty($_GET['name'])){
@@ -57,24 +52,10 @@ final class UserSearchResults{
             echo InterfaceManager::table_of_results($caption, $results);
         }
     }
-
-    static function echo_structure(){
-        session_start();
-        if (!isset($_SESSION['user_id']) and $_SESSION['user_role'] !== 'librarian') {
-            header('Location: login.php'); exit;
-        }
-        $search = htmlspecialchars($_GET['name']).htmlspecialchars($_GET['classroom']);
-        $title = "GABi | Busca por: $search";
-        InterfaceManager::echo_html_head($title, self::PAGE_TYPE);
-        echo "<div id='results_grid'>";
-        self::echo_logo_back_buttons();
-        self::echo_table_results();
-        echo "</div>";
-        InterfaceManager::echo_html_tail();
-    }
     
 }
 
-UserSearchResults::echo_structure();
+$results = new UserSearchResults();
+$results -> echo_structure();
 
 ?>
