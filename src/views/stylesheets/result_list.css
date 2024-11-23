@@ -75,3 +75,7 @@
 .even {
     background-color: var(--light-font_color);
 }
+
+#opus_weblink {
+    text-decoration: none;
+}

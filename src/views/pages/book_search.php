@@ -16,14 +16,17 @@ final class BookSearch extends Search{
 
         echo "
             <div id='search_form'>
-                <form class='search' action='".self::SEARCH_TYPE."_search_result.php' method='get'>
-                    <input type='text' name='title' placeholder='Título' autofocus/>
-                    <input type='text' name='author' placeholder='Autor'/>
-                    <input type='text' name='publisher' placeholder='Editora'/>
-                    <input type='text' name='collection' placeholder='Coleção'/>
-                    <input type='text' name='cover_colors' placeholder='Cor de capa (azul, branco)'/><br>
-                    <input type='text' name='asset_code' placeholder='Patrimônio'/><br>".
-                    InterfaceManager::search_input_disclaimer('Insira valor exato!').
+                <form class='search' action='".self::SEARCH_TYPE."_search_result.php' method='get'>    
+                    <fieldset><legend>Busca por palavra-chave</legend> 
+                        <input type='text' name='title' placeholder='Título' autofocus/></br>
+                        <input type='text' name='author' placeholder='Autor'/></br>
+                        <input type='text' name='collection' placeholder='Coleção'/></br>
+                        <input type='text' name='cover_colors' placeholder='Cor de capa (azul, branco)'/><br>                    
+                    </fieldset>
+                    <fieldset><legend>Busca por patrimônio</legend>
+                        <input type='text' name='asset_code' placeholder='Insira valor exato!'/><br>".
+                        InterfaceManager::search_input_disclaimer('Busca por patrimônio ignora campos acima!') .
+                    "</fieldset>" .
                     InterfaceManager::search_button().
                 "</form>
             </div>

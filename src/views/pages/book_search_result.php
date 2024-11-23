@@ -34,13 +34,13 @@ final class BookSearchResults extends SearchResults{
                     $colors_list = explode(',', htmlspecialchars(trim($_GET[$f])));
                     $keywords .= implode(',', $colors_list);
                     foreach($colors_list as $color)
-                        $copies = BookDAO::fetch_bookcopy_holistically_by($f, $color);
+                        $copies = BookDAO::fetch_bookcopy_essentially_by($f, $color);
                 }
 
                 else {
                     $search = htmlspecialchars(trim($_GET[$f]));
                     $keywords .= $search . " ";
-                    $copies = BookDAO::fetch_bookcopy_holistically_by($f, $search);
+                    $copies = BookDAO::fetch_bookcopy_essentially_by($f, $search);
                 }
 
                 foreach ($copies as $c) if (!in_array($c['id'], $results, true)) $results[] = $c;

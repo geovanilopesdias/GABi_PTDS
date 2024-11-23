@@ -1,7 +1,7 @@
 <?php 
 
-// require_once('../../src/controllers/loan_dao.php');
-require_once('../../src/controllers/book_dao.php');
+require_once('../../src/controllers/loan_dao.php');
+// require_once('../../src/controllers/book_dao.php');
 // require_once('../../src/controllers/people_dao.php');
 
 function insertion_test(){
@@ -23,7 +23,7 @@ function exclusion_test(){
 }
 
 function fetching_test(){
-    return BookDAO::fetch_bookcopy_holistically_by('title', 'conc');
+    return LoanDAO::fetch_loan_by('name', 'ant', true);
 }
 
    

@@ -28,6 +28,7 @@
 }
 
 #search_form{
+    margin-top: 10px;
     grid-row: 2;
     grid-column: 1 / span 2;
 }
@@ -46,4 +47,11 @@
 
 .search_button:hover {
     filter: brightness(0.8);
+}
+
+fieldset {
+    font-size: 10px;
+    border: none;
+    width: 60vh;
+    justify-self: center;
 }

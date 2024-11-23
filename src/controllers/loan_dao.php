@@ -80,7 +80,30 @@ final class LoanDAO{
         return $loan_instances;
     }
 
-    
+    public static function fetch_loan_by(string $field, string $value, bool $open_only): ?array { 
+        if ($field !== 'name' and $field !== 'asset_code')
+            throw new InvalidArgumentException('Search only by reader\'s name or copy\'s asset code.');
+        
+        $db_man = new DAOManager();
+        $search = ($field === 'name') ? [$field => "%$value%"] : [$field => $value];
+        $where_field = ($field === 'name') ? 'r.name ILIKE' : 'b.asset_code =';
+        $dql = "
+            SELECT l.id AS id, b.asset_code AS \"patr.\", o.title AS título, 
+                r.name AS nome, r.role AS tipo, l.loan_date AS retirada";
+        $dql .= (!$open_only) ? ", l.return_date AS devolução " : " ";
+
+        $dql .= "
+            FROM ". DB::LOAN_TABLE ." l 
+            JOIN ". DB::READER_TABLE ." r ON r.id = l.loaner_id
+            JOIN ". DB::BOOK_COPY_TABLE ." b ON b.id = l.book_copy_id
+            JOIN ". DB::EDITION_TABLE ." e ON e.id = b.edition_id 
+            JOIN ". DB::OPUS_TABLE ." o ON o.id = e.opus_id
+            WHERE $where_field :$field 
+        ";
+        $dql .= ($open_only) ? " AND l.return_date is null" : "";
+        return $db_man -> fetch_flex_dql($dql, $search);
+        
+    }
 
 }
 ?>

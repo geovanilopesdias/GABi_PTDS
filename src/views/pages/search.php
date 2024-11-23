@@ -28,7 +28,7 @@ abstract class Search{
             match($search_type){
                 'user' => 'Usuários',
                 'book' => 'Livros',
-                'loan' => 'Empréstimo',
+                'loan' => 'Empréstimos',
             };
 
         InterfaceManager::echo_html_head($title, self::PAGE_TYPE);

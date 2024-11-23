@@ -162,13 +162,13 @@ final class InterfaceManager{
      * properties needed for the tag; the inner array's values refer to the content of their labels.
      * Example: $selector = [['id' => 'male', 'content' => 'Masculino], ...
      * @param string $group_name: The 'name' property of all input tags that'll groups them.
-     * @param string $field_set_legend: Value of the legend of the fieldset nesting the input-radio group.
+     * @param string $fieldset_legend: Value of the legend of the fieldset nesting the input-radio group.
      * @param ?string $div_name: Optional name for a div to stylize it in css. Letting it null
      * won't nest the input-radio group in any div tags.
      * @param bool $first_option_checked: if true, inserts the 'checked' property in the first option.
      */
     public static function input_radio_group(
-        array $selector, string $group_name, string $field_set_legend,
+        array $selector, string $group_name, string $fieldset_legend,
         ?string $div_name = null, bool $first_option_checked = true): string {
             if (count($selector) < 1) throw new InvalidArgumentException('More than one option is needed');
             
@@ -188,15 +188,43 @@ final class InterfaceManager{
             return $div_name ?
                 "<div id='".htmlspecialchars($div_name)."'>
                     <fieldset>
-                        <legend>".htmlspecialchars($field_set_legend)."</legend>
+                        <legend>".htmlspecialchars($fieldset_legend)."</legend>
                         $radio_group
                     </fieldset>
                 </div>" :
 
                 "<fieldset>
-                    <legend>".htmlspecialchars($field_set_legend)."</legend>
+                    <legend>".htmlspecialchars($fieldset_legend)."</legend>
                     $radio_group
                 </fieldset>";
+    }
+
+    public static function input_checkbox_group(string $group_name, array $id_label_pairs, string $fieldset_legend = '') : string {
+        $html = (empty($fieldset_label)) ? "" :
+            "<fieldset><legend>$fieldset_legend</legend>";
+        foreach ($id_label_pairs as $id => $label) 
+            $html .= "
+                <input type='checkbox' id='$id' value='$id' name='$group_name'>
+                <label for='$id'>$label</label>
+            ";
+        
+        $html .= (empty($fieldset_label)) ? "" :
+            "</fieldset>";
+        return $html;
+    }
+
+    public static function input_checkbox_single(string $id_name, string $label, string $fieldset_legend = '') : string {
+        $html = (empty($fieldset_label)) ? "" :
+            "<fieldset><legend>$fieldset_legend</legend>";
+        $html .= "
+                <input type='checkbox' id='$id_name' name='$id_name' checked>
+                <label for='$id_name'>$label</label>
+            ";
+        
+        $html .= (empty($fieldset_label)) ? "" :
+            "</fieldset>";
+
+        return $html;
     }
 
     /**
@@ -237,7 +265,7 @@ final class InterfaceManager{
         
         // Caption and header
         $headers = array_keys($results[0]);
-        $hidden_headers = ['origem', 'tradutores', 'ddc', 'volume'];
+        $hidden_headers = ['id'];
         $table = "<div class='results'><table>\n<caption>" . htmlspecialchars($caption) . "</caption>\n<thead>\n<tr>";
         foreach ($headers as $header) $table .= (!in_array($header, $hidden_headers, true))? "<th>" . ucfirst(htmlspecialchars($header)) . "</th>" : '';
         $table .= "</tr>\n</thead>\n<tbody>";
@@ -249,21 +277,21 @@ final class InterfaceManager{
             foreach ($headers as $header) $table .= match($header){
                 // Readers
                 'telefone' => "<td>" . self::mask_phone(htmlspecialchars($row[$header])) . "</td>",
+                'nome' => "<td>" . ucfirst(htmlspecialchars($row[$header])) . "</td>",
                 'tipo' => ($row[$header] === 'student') ? "<td>Discente</td>" : "<td>Docente</td>",
-                'último acesso' => "<td>" . self::mask_timestamp(htmlspecialchars($row[$header])) . "</td>",
+                'último acesso', 'retirada', 'devolução' => "<td>" . self::mask_timestamp(htmlspecialchars($row[$header])) . "</td>",
                 'dívida' => "<td>R$ " . number_format(trim(htmlspecialchars($row[$header])), 2, ',', '.') . "</td>",
 
                 // Books
-                'origem', 'tradutores', 'ddc', 'volume' => "", // Hidden headers!
-                'título' => "<td>" . htmlspecialchars($row[$header]) .
-                    " (" . htmlspecialchars($row['origem']) . ") | " . (($row['volume'] != 1) ? "vol. ".htmlspecialchars($row['volume']) : "") . "</td>",
+                'id' => "", // Hidden headers!
+                'título' => "<td>" . htmlspecialchars($row[$header]) . "</td>",
                 
                 'autores' => "<td>" . implode(', ', array_map(function($author) {
                     return htmlspecialchars($author['name']) . " (" . htmlspecialchars($author['birth_year']) . ")";},
                     json_decode($row[$header], true))) . "</td>",
                 'situação' => "<td>" . self::translate_book_status(htmlspecialchars($row[$header])) . "</td>",
                 
-                'link' => "<td><a id='opus_link' href='" . htmlspecialchars($row[$header]) . "'>&#128279;</a></td>",
+                'weblink' => "<td><a id='opus_weblink' target='blank' href='" . htmlspecialchars($row[$header]) . "'>&#128279;</a></td>",
                 default => "<td>" . ucfirst(htmlspecialchars($row[$header])) . "</td>"
             };
             $table .= "</tr>";

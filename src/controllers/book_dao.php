@@ -210,6 +210,38 @@ final class BookDAO{
         return $results;
     }
 
+    public static function fetch_bookcopy_essentially_by(string $field, mixed $value): ?array {
+        if($field === 'asset_code')
+            throw new InvalidArgumentException('Use method BookDAO::fetch_bookcopy_holistically_by_asset_code() instead.');
+
+        if (!in_array($field, ['title', 'author', 'collection', 'cover_colors'], true))
+            throw new InvalidArgumentException("It isn't possible to search by $field");
+
+        $db_man = new DAOManager();
+        $field_search = match ($field) {
+            'title' => 'o.title', 'author' => 'w.name',
+            'collection' => 'c.name', 'cover_colors' => 'e.cover_colors'
+        };
+
+        $search = [$field => "%$value%"];
+        $dql = "SELECT 
+            b.id AS id, b.asset_code AS \"patr.\",
+            o.title AS título, json_agg(json_build_object('name', w.name, 'birth_year', w.birth_year)) AS autores, 
+            o.cutter_sanborn AS cutter, b.status AS situação,
+            o.alternative_url AS weblink 
+            FROM ". DB::AUTHORSHIP_TABLE. " a 
+            JOIN ".DB::OPUS_TABLE. " o ON a.opus_id = o.id 
+            JOIN ". DB::WRITER_TABLE. " w ON a.writer_id = w.id 
+            JOIN ". DB::EDITION_TABLE. " e ON e.opus_id = o.id 
+            JOIN ". DB::COLLECTION_TABLE. " c ON c.id = e.collection_id 
+            JOIN ". DB::BOOK_COPY_TABLE. " b ON b.edition_id = e.id 
+            WHERE $field_search ILIKE :$field 
+            GROUP BY b.id, b.asset_code, b.status, o.title,
+                o.alternative_url, o.cutter_sanborn 
+            ORDER BY o.title";
+        return $db_man->fetch_flex_dql($dql, $search);
+    }
+
     public static function fetch_bookcopy_holistically_by(string $field, mixed $value): ?array {
         if($field === 'asset_code')
             throw new InvalidArgumentException('Use method BookDAO::fetch_bookcopy_holistically_by_asset_code() instead.');
