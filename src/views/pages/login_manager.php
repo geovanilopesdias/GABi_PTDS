@@ -36,16 +36,20 @@ final class LoginManager extends ViewManager{
         'Prof. '.$user -> get_name() : $user -> get_name();
     }
 
+    protected function handle_errors(){
+        $user = self::get_user();
+        if (is_null($user)) $this -> operation_failed('usuário informado não foi encontrado!');
+        if (!SecurityManager::check_password($user, $_POST['passphrase']))
+            $this -> operation_failed('senha informada está incorreta!');
+        return $user;
+    }
+
     public function manage_post_variable(){
         session_start();
         if (empty($_POST['login']) or empty($_POST['passphrase'])) 
             $this -> operation_failed('os campos login e senha precisam ser preenchidos');
     
-        $user = self::get_user();
-        if (is_null($user)) $this -> operation_failed('usuário informado não foi encontrado!');
-        if (!SecurityManager::check_password($user, $_POST['passphrase']))
-        $this -> operation_failed('senha informada está incorreta!');
-        
+        $user = $this -> handle_errors();    
         $this -> persist_post_to_session($user);
         $this->operation_succeed($user);
     }

@@ -1,5 +1,5 @@
 <?php
-
+require_once (__DIR__ . '/../../managers/security_mng.php');
 enum ReaderRole : string{
     case LIBRARIAN = 'librarian';
     case STUDENT = 'student';
@@ -62,7 +62,7 @@ final class Reader{
             $data['id'] ?? null,
             $data['debt']
         );
-        if ($for_fetching) {
+        if ($for_fetching) { // Delete option to avoid the use for registration
             $r -> name = $data['name'];
             $r -> phone = $data['phone'];
             $r -> last_login = $data['last_login'];
@@ -109,13 +109,7 @@ final class Reader{
         return $r;
     }
 
-    private function isNameValid($nameToTest): bool{
-        return preg_match("/^[A-zÀ-ÿ][A-zÀ-ÿ']+\s([A-zÀ-ÿ']\s?)*[A-zÀ-ÿ][A-zÀ-ÿ']+$/", $nameToTest);
-    }
-
-    private function isPhoneValid($phoneToTest): bool{
-        return preg_match("/^[1-9]{2}9[0-9]{8}$/", $phoneToTest);
-    }
+    
     
     public function get_id(){return $this->id;}
     public function get_name(){return $this->name;}
@@ -128,29 +122,37 @@ final class Reader{
     public function get_debt(){return $this->debt;}
     public function get_last_login(): DateTime{return $this->last_login;}
     
-    public function set_login($login){$this->login = $login;}
     public function set_can_loan(bool $can_borrow){$this->can_borrow = $can_borrow;}
     public function set_last_login(DateTime $last_login){$this->last_login = $last_login;}
 
+
+    public function set_login($login){
+        if (SecurityManager::is_login_valid($login)) $this->login = $login;
+        else throw new UnexpectedValueException("Login $login inválido.");
+    }
+
     // Modificar para inserir salga etc.
     public function set_passphrase(string $passphrase): void {
-        $this->passphrase = hash('sha256', $passphrase); // Assign the hashed value to the property
+        if (SecurityManager::is_passphrase_valid($passphrase)) 
+            $this->passphrase = hash('sha256', $passphrase); // Assign the hashed value to the property
+        else throw new UnexpectedValueException("Tentativa de cadastrado com senha inválida.");
+
     }
     
     public function set_debt($debt){
-        if($debt >= 0)
-            $this->debt = $debt;
+        if($debt >= 0) $this->debt = $debt;
+        else $this->debt = -1*$debt;
     }
 
     public function set_name($name){
-        if(self::isNameValid($name))
-            $this->name = $name;
-        else
-            throw new UnexpectedValueException("Invalid name format.");
+        if(SecurityManager::is_name_valid(ucfirst(trim($name)))) $this->name = $name;
+        else throw new UnexpectedValueException(
+            ucfirst($name)." possui um formato inválido para nomes."
+        );
     }
 
     public function set_phone($phone){
-        if(self::isPhoneValid($phone))
+        if(SecurityManager::is_phone_valid($phone))
             $this->phone = $phone;
         else
             throw new UnexpectedValueException("Invalid phone format.");

@@ -23,12 +23,12 @@ final class UserRegister extends Register{
             <div id='register_form'>
                 <form class='register' action='".self::REGISTER_TYPE."_register_manager.php' method='post'>".
                     InterfaceManager::input_radio_group(
-                        $radio_options, 'radio_register_for', 'Cadastro de:', 'radio')."
-                    <input type='text' name='name' placeholder='Nome' autofocus/><br>
-                    <input type='text' name='phone' placeholder='Telefone (51)' autofocus/><br>".
-                    InterfaceManager::classroom_selector(false).
-                    InterfaceManager::search_input_disclaimer('A busca por nome ignora o campo de turma!').
-                    InterfaceManager::search_button().
+                        $radio_options, 'role', 'Cadastro de:', 'radio')."</br>".
+                    InterfaceManager::input_checkbox_single('can_loan', 'Poderá emprestar (válido apenas para professores)', '', false)."</br>
+                    <input type='text' name='name' placeholder='Nome' autofocus required/><br>
+                    <input type='text' name='phone' placeholder='Telefone' required/><br>".
+                    InterfaceManager::classroom_selector(false)."</br>".
+                    InterfaceManager::register_button().
                 "</form>
             </div>
         ";
@@ -36,7 +36,7 @@ final class UserRegister extends Register{
     
 }
 
-$search = new UserSearch();
+$search = new UserRegister();
 $search -> echo_structure();
 
 ?>

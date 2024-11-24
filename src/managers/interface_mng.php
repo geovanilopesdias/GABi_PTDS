@@ -159,6 +159,10 @@ final class InterfaceManager{
         return "<input class='search_button' type='submit' value='&#x1F50D;'>";
     }
 
+    public static function register_button(): string {
+        return "<input class='register_button' type='submit' value='Cadastrar &#x1F4BE;'>";
+    }
+    
 
     // ----- For forms
     public static function search_input_disclaimer($disclaimer): string{
@@ -234,11 +238,12 @@ final class InterfaceManager{
         return $html;
     }
 
-    public static function input_checkbox_single(string $id_name, string $label, string $fieldset_legend = '') : string {
+    public static function input_checkbox_single(string $id_name, string $label, string $fieldset_legend = '', bool $checked = true) : string {
         $html = (empty($fieldset_label)) ? "" :
             "<fieldset><legend>$fieldset_legend</legend>";
         $html .= "
-                <input type='checkbox' id='$id_name' name='$id_name' checked>
+                <input type='checkbox' id='$id_name' name='$id_name' ". 
+                (($checked) ? 'checked' : '').">
                 <label for='$id_name'>$label</label>
             ";
         

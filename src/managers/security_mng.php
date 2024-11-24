@@ -12,6 +12,39 @@ final class SecurityManager{
         $post_passphrase_sha256 = hash('sha256', $post_passphrase);
         return $user -> get_passphrase() === $post_passphrase_sha256;
     }
+
+    public static function generate_login(string $name, string $phone): string {
+        $name_words = explode(' ', $name);
+        return $name_words[0] . $name_words[count($name_words)-1] . $phone;
+    }
+
+    public static function generate_provisory_passphrase(){
+        $nouns = ['carro', 'forno', 'prédio', 'trinco', 'computador', 'lápis', 'livro'];
+        $adjective = ['grande', 'pequeno', 'torto', 'feio', 'ruim', 'bonito', 'novo'];
+        $colors = ['azul', 'vermelho', 'preto', 'branco', 'verde', 'dourado', 'prateado'];
+        $word_list = [$nouns, $colors, $adjective];
+        for ($i = 0; $i < 3; $i++) {
+            $words[] = $word_list[$i][array_rand($word_list[$i])];
+        }
+        
+        return implode('-', $words) . rand(10, 99);
+    }
+
+    public static function is_login_valid($login_to_test): bool{
+        return strlen($login_to_test) >= 8;
+    }
+
+    public static function is_passphrase_valid($passphrase_to_test): bool{
+        return strlen($passphrase_to_test) >= 8;
+    }
+
+    public static function is_name_valid($nameToTest): bool{
+        return preg_match("/^[A-zÀ-ÿ][A-zÀ-ÿ']+\s([A-zÀ-ÿ']\s?)*[A-zÀ-ÿ][A-zÀ-ÿ']+$/", $nameToTest);
+    }
+
+    public static function is_phone_valid($phoneToTest): bool{
+        return preg_match("/^[1-9]{2}9[0-9]{8}$/", $phoneToTest);
+    }
 }
 
 ?>
