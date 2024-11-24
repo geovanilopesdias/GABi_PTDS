@@ -6,7 +6,8 @@ final class InterfaceManager{
     const PAGE_TYPE = [
         'login',
         'menu',
-        'registration',
+        'register',
+        'manager',
         'searching',
         'element_detail',
         'result_list'
@@ -99,6 +100,7 @@ final class InterfaceManager{
         ";
     }
 
+    // ----- Buttons
     public static function logout_button(): string{
         return "
             <form method='post' action='logout.php'>
@@ -124,7 +126,7 @@ final class InterfaceManager{
         ";
     }
 
-    public static function back_to_search_button($search_type): string{
+    public static function back_to_search_button(string $search_type): string{
         return "
             <form method='post' action='".$search_type."_search.php'>
                 <input 
@@ -136,10 +138,29 @@ final class InterfaceManager{
         ";
     }
 
+
+    /**
+     * @var $register_type: Should be rather simply user, book or loan.
+     */
+    public static function back_to_register_button(string $register_type): string{
+        return "
+            <form method='post' action='".$register_type."_register.php'>
+                <input 
+                    id='back_to_register_button' 
+                    class='back_buttons'
+                    type='submit' 
+                    value='&#x25c0; | NOVO CADASTRO'>
+            </form>
+        ";
+    }
+    
+
     public static function search_button(): string {
         return "<input class='search_button' type='submit' value='&#x1F50D;'>";
     }
 
+
+    // ----- For forms
     public static function search_input_disclaimer($disclaimer): string{
         return "<p class='search_disclaimer'>".
             htmlspecialchars($disclaimer)."</p></br>";
@@ -266,7 +287,7 @@ final class InterfaceManager{
         // Caption and header
         $headers = array_keys($results[0]);
         $hidden_headers = ['id'];
-        $table = "<div class='results'><table>\n<caption>" . htmlspecialchars($caption) . "</caption>\n<thead>\n<tr>";
+        $table = "<div class='results'><table class='sortable'>\n<caption>" . htmlspecialchars($caption) . "</caption>\n<thead>\n<tr>";
         foreach ($headers as $header) $table .= (!in_array($header, $hidden_headers, true))? "<th>" . ucfirst(htmlspecialchars($header)) . "</th>" : '';
         $table .= "</tr>\n</thead>\n<tbody>";
 

@@ -5,11 +5,11 @@ require_once(__DIR__ . '/../../managers/interface_mng.php');
 final class LibrarianMenu{
     const PAGE_TYPE = 'menu';
     const MENU_HREF = [
-        'loan_registration' => 'loan_registration.php',
+        'loan_register' => 'loan_register.php',
         'loan_search' => 'loan_search.php',
-        'book_registration' => 'book_registration.php',
+        'book_register' => 'book_register.php',
         'book_search' => 'book_search.php',
-        'user_registration' => 'user_registration.php',
+        'user_register' => 'user_register.php',
         'user_search' => 'user_search.php',
         'report_debt' => 'report_debt.php',
         'report_pages' => 'report_pages.php',
@@ -18,11 +18,11 @@ final class LibrarianMenu{
 
     const IMAGE_DIR = '/code/src/views/images/';     
     const MENU_ICON_SRC = [
-        'loan_registration' => self::IMAGE_DIR.'loan_registration.png',
+        'loan_register' => self::IMAGE_DIR.'loan_register.png',
         'loan_search' => self::IMAGE_DIR.'loan_search.png',
-        'book_registration' => self::IMAGE_DIR.'book_register.png',
+        'book_register' => self::IMAGE_DIR.'book_register.png',
         'book_search' => self::IMAGE_DIR.'book_search.png',
-        'user_registration' => self::IMAGE_DIR.'user_register.png',
+        'user_register' => self::IMAGE_DIR.'user_register.png',
         'user_search' => self::IMAGE_DIR.'user_search.png',
         'report_debt' => self::IMAGE_DIR.'report_debt.png',
         'report_open_loans' => self::IMAGE_DIR.'report_open_loans.png',
@@ -65,8 +65,8 @@ final class LibrarianMenu{
         
                 <tr>
                     <td>
-                    <a href='".self::MENU_HREF['loan_registration']."'>
-                        <img class='menu_icon' src='".self::MENU_ICON_SRC['loan_registration']."' />
+                    <a href='".self::MENU_HREF['loan_register']."'>
+                        <img class='menu_icon' src='".self::MENU_ICON_SRC['loan_register']."' />
                     </a>
                     </td>
 
@@ -77,8 +77,8 @@ final class LibrarianMenu{
                     </td>
                     
                     <td>
-                    <a href='".self::MENU_HREF['book_registration']."'>
-                        <img class='menu_icon' src='".self::MENU_ICON_SRC['book_registration']."' />
+                    <a href='".self::MENU_HREF['book_register']."'>
+                        <img class='menu_icon' src='".self::MENU_ICON_SRC['book_register']."' />
                     </a>
                     </td>
                     
@@ -102,8 +102,8 @@ final class LibrarianMenu{
                 </tr>
                 <tr>
                     <td rowspan='3'>
-                    <a href='".self::MENU_HREF['user_registration']."'>
-                        <img class='menu_icon' src='".self::MENU_ICON_SRC['user_registration']."' />
+                    <a href='".self::MENU_HREF['user_register']."'>
+                        <img class='menu_icon' src='".self::MENU_ICON_SRC['user_register']."' />
                     </a>
                     </td>
                     

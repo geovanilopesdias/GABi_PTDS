@@ -23,7 +23,7 @@ function exclusion_test(){
 }
 
 function fetching_test(){
-    return LoanDAO::fetch_loan_by('name', 'ant', true);
+    return BookDAO::fetch_bookcopy_essentially_by('title', 'conc');
 }
 
    

@@ -239,6 +239,7 @@ final class BookDAO{
             GROUP BY b.id, b.asset_code, b.status, o.title,
                 o.alternative_url, o.cutter_sanborn 
             ORDER BY o.title";
+        echo $dql;
         return $db_man->fetch_flex_dql($dql, $search);
     }
 

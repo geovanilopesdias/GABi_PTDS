@@ -1,61 +1,59 @@
 <?php
 
 require_once(__DIR__ . '/../../managers/interface_mng.php');
+require_once(__DIR__ . '/../../managers/security_mng.php');
 require_once(__DIR__ . '/../../controllers/people_dao.php');
+require_once(__DIR__ . '/manager.php');
 
-session_start();
-    const PAGE_TYPE = 'login';
+final class LoginManager extends ViewManager{
+    const REGISTER_TYPE = 'login';
+    const FAIL_TITLE = 'Login recusado';
+    const ERROR_WARNING = 'Algo deu errado com sua tentativa de login';
+    const SUCCESS_TITLE = '';
+    const SUCCESS_MESSAGE = '';
 
-    function get_user(): ?Reader{
-        return PeopleDAO::fetch_reader_by_login(trim(htmlspecialchars($_POST['login'] ?? '')));
+    public function __construct() {}
+
+    protected function operation_failed(
+        string $error_detail, $errors = [],
+        string $register_type = self::REGISTER_TYPE.'_register',
+        string $fail_title = self::FAIL_TITLE,
+        string $error_warning = self::ERROR_WARNING){
+            parent::operation_failed($error_detail, $errors, $register_type, $fail_title, $error_warning);
     }
 
-    /**
-     * By now, is what it is; I'll change Reader set_passphrase to comport
-     * password_hash after studying about peppering passwords.
-     * https://www.php.net/manual/en/function.password-hash.php
-    */
-    function check_password(?Reader $user): bool{
-        $post_passphrase_sha256 = hash('sha256', $_POST['passphrase']);
-        return $user -> get_passphrase() === $post_passphrase_sha256;
+    public function operation_succeed($user){
+            header('Location:'.$user -> get_role().'_menu.php');
+            InterfaceManager::echo_html_tail();
+            exit;
     }
 
-    function login_failed(string $error){
-        InterfaceManager::echo_html_head('GABi | Login recusado', 'login');
-        echo InterfaceManager::system_logo(PAGE_TYPE);
-        echo '<h2>Algo deu errado com sua tentativa de login!</h2>';
-        echo "<h4>O que houve: $error<h4>";
-        echo '<h3>Em instantes, serás redirecionado à tela de Login</h3>';
-        header('refresh:7; url=login.php');
-        InterfaceManager::echo_html_tail();
-        exit;
-    }
-
-    function login_succeed_for($user){
-        InterfaceManager::echo_html_head("GABi | Login Autorizado", 'login');
-        echo InterfaceManager::system_logo(PAGE_TYPE);
-        echo '<h2>Login Autorizado!</h2>';
-        header('Location:'.$user -> get_role().'_menu.php');
-        InterfaceManager::echo_html_tail();
-        exit;
-    }
-        
-    // Error checking:
-    if (empty($_POST['login']) or empty($_POST['passphrase'])) 
-        login_failed('campos login e/ou senha estão vazios!');
-    
-    $user = get_user();
-    if (is_null($user)) login_failed('usuário informado não foi encontrado!');
-    if (!check_password($user)) login_failed('senha informada está incorreta!');
-    
-    // Update the last login date, create the session and redirect:
-    $user -> set_last_login(new DateTime('now', new DateTimeZone('America/Sao_Paulo'))); //Não funciona
-    $_SESSION['user_id'] = $user -> get_id();
-    $_SESSION['user_role'] = $user -> get_role();
-    $_SESSION['user_name'] = ($user -> get_role() == 'teacher') ?
+    protected function persist_post_to_session($user){
+        $user -> set_last_login(new DateTime('now', new DateTimeZone('America/Sao_Paulo'))); //Não funciona
+        $_SESSION['user_id'] = $user -> get_id();
+        $_SESSION['user_role'] = $user -> get_role();
+        $_SESSION['user_name'] = ($user -> get_role() == 'teacher') ?
         'Prof. '.$user -> get_name() : $user -> get_name();
-    login_succeed_for($user);
+    }
 
+    public function manage_post_variable(){
+        session_start();
+        if (empty($_POST['login']) or empty($_POST['passphrase'])) 
+            $this -> operation_failed('os campos login e senha precisam ser preenchidos');
     
+        $user = self::get_user();
+        if (is_null($user)) $this -> operation_failed('usuário informado não foi encontrado!');
+        if (!SecurityManager::check_password($user, $_POST['passphrase']))
+        $this -> operation_failed('senha informada está incorreta!');
+        
+        $this -> persist_post_to_session($user);
+        $this->operation_succeed($user);
+    }
+    
+
+}
+
+$management = new LoginManager();
+$management -> manage_post_variable();   
 
 ?>
