@@ -29,6 +29,7 @@ abstract class Register{
                 'user' => 'Usuários',
                 'book' => 'Livros',
                 'loan' => 'Empréstimos',
+                'classroom' => 'Turmas',
             };
 
         InterfaceManager::echo_html_head($title, self::PAGE_TYPE);

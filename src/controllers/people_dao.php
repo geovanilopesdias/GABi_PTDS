@@ -1,5 +1,7 @@
 <?php
 
+use PhpParser\Builder\Class_;
+
 require_once (__DIR__ . '/../managers/dao_mng.php');
 require_once (__DIR__ . '/../models/people/reader.php');
 require_once (__DIR__ . '/../models/people/classroom.php');
@@ -225,6 +227,19 @@ final class PeopleDAO{
         foreach($fetched_classrooms as $c) $classroom_instances[] = Classroom::fromArray($c);
         return $classroom_instances;
     }
+
+    public static function fetch_classroom_by_name(string $cleaned_name): ?Classroom { 
+        $db_man = new DAOManager();
+        $search = ['name' => "$cleaned_name"];
+        $where_conditions = [['field' => 'name', "operator" => '=']];
+        $classroom = $db_man -> fetch_records_from(
+            $search, DB::CLASSROOM_TABLE, DB::CLASSROOM_FIELDS,
+            $where_conditions, 'AND', null, false, true); // Call unique raw
+        
+        if (!$classroom) return null;
+        return Classroom::fromArray($classroom, true);
+    }
+
 
     public static function fetch_reader_by_login(string $cleaned_login): ?Reader { 
         $db_man = new DAOManager();

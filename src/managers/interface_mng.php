@@ -263,7 +263,7 @@ final class InterfaceManager{
         $classroom_intances = PeopleDAO::fetch_all_classrooms();
         $required = ($is_required) ? 'required' : '';
         $selector = "
-            <select name='classrooms[]' class='selector' $required multiple size='3'>
+            <select name='classrooms_ids[]' class='selector' $required multiple size='3'>
                 <option value=''>Seleciona uma turma</option>";
         foreach ($classroom_intances as $c)
             $selector .= "<option value='".$c->get_id()."'>".

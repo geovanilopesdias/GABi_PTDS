@@ -7,7 +7,7 @@ require_once(__DIR__ . '/search_result.php');
 
 final class UserSearchResults extends SearchResults{
     const SEARCH_TYPE = 'user';
-    const GET_FIELDS = ['name', 'classroom'];
+    const GET_FIELDS = ['name', 'classrooms_ids'];
 
     function __construct(){}
     
@@ -33,7 +33,7 @@ final class UserSearchResults extends SearchResults{
         // Search by classroom:
         else {
             $search = 'pelas turmas selecionadas são:';
-            foreach($_GET['classrooms'] as $id){
+            foreach($_GET['classrooms_ids'] as $id){
                 $c_students = PeopleDAO::fetch_all_students_from_classroom(htmlspecialchars($id));
                 $results = array_merge($results, $c_students);
             }

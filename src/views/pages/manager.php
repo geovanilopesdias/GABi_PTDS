@@ -21,28 +21,32 @@ abstract class ViewManager{
         string $error_detail, $errors=[], string $register_type, string $fail_title, string $error_warning){
         InterfaceManager::echo_html_head("GABi | $fail_title", self::PAGE_TYPE);
         echo InterfaceManager::system_logo(self::PAGE_TYPE);
+        echo "<div id'failed'>";
         echo "<h2>$error_warning</h2>";
-        echo "<h4>O que houve: $error_detail<h4>";
-        echo "<h3>Em instantes, serás redirecionado para tentar novamente</h3>";
+        echo "<p>O que houve: $error_detail</p>";
+        echo "<p>Em instantes, serás redirecionado para tentar novamente</p>";
         $this -> persist_post_to_session($errors);
         foreach($errors as $error) echo "
-            <p>Erros encontrados:</p>
+            <h2>Erros encontrados:</h2>
             <ul>
                 <li>$error</li>
             </ul>
         ";
+        echo "</div>";
         header("refresh:10; url=$register_type.php");
         InterfaceManager::echo_html_tail();
         exit;
     }
 
-    protected function operation_succeed(array $args) {
+    protected function operation_succeed(mixed &$args) {
         InterfaceManager::echo_html_head("GABi | ".$args['success_title'], self::PAGE_TYPE);
         echo InterfaceManager::system_logo(self::PAGE_TYPE);
+        echo "<div id'success'>";
         echo "<h2>".$args['success_message']."</h2>";
         echo $args['success_body'] ?? '';
-        InterfaceManager::back_to_register_button($args['register_type']);
-        InterfaceManager::back_to_menu_button();
+        echo InterfaceManager::back_to_register_button($args['register_type']);
+        echo InterfaceManager::back_to_menu_button();
+        echo "</div>";
         InterfaceManager::echo_html_tail();
         exit;
     }

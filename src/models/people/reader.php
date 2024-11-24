@@ -65,14 +65,14 @@ final class Reader{
         if ($for_fetching) { // Delete option to avoid the use for registration
             $r -> name = $data['name'];
             $r -> phone = $data['phone'];
-            $r -> last_login = $data['last_login'];
             $r -> passphrase = $data['passphrase'];
+            $r->last_login = SecurityManager::toDateTimeOrNull($data['last_login']);
         }
         else{
-            $r -> last_login = $data['last_login'];
             $r -> set_name($data['name']);
             $r -> set_phone($data['phone']);
             $r -> set_passphrase($data['passphrase']);
+            $r->last_login = SecurityManager::toDateTimeOrNull($data['last_login']);
         }
         return $r;
     }

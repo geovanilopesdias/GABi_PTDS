@@ -1,0 +1,8 @@
+#success, #failed{
+    background-color: var(--darker-div-bgc);
+    filter: var(--darker-div-filter);
+}
+
+.reader_data_header{
+    font-weight: bold;
+}

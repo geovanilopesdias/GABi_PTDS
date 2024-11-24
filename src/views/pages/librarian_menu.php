@@ -14,7 +14,9 @@ final class LibrarianMenu{
         'report_debt' => 'report_debt.php',
         'report_pages' => 'report_pages.php',
         'report_loan_history' => 'report_loan_history.php',
-        'report_outdate_user' => 'report_outdate_user.php'];
+        'report_outdate_user' => 'report_outdate_user.php',
+        'classroom_register' => 'classroom_register.php',
+        'classroom_search' => 'classroom_search.php'];
 
     const IMAGE_DIR = '/code/src/views/images/';     
     const MENU_ICON_SRC = [
@@ -27,7 +29,11 @@ final class LibrarianMenu{
         'report_debt' => self::IMAGE_DIR.'report_debt.png',
         'report_open_loans' => self::IMAGE_DIR.'report_open_loans.png',
         'report_user_loan_history' => self::IMAGE_DIR.'report_user_loan_history.png',
-        'report_outdate_user' => self::IMAGE_DIR.'report_outdate_user.png'];
+        'report_outdate_user' => self::IMAGE_DIR.'report_outdate_user.png',
+        'classroom_register' => self::IMAGE_DIR.'classroom_register.png',
+        'classroom_search' => self::IMAGE_DIR.'classroom_search.png',
+        'library_settings' => self::IMAGE_DIR.'library_settings.png'];
+
 
     
     static function echo_logo_greeting(){
@@ -134,6 +140,31 @@ final class LibrarianMenu{
                     <td>
                     <a href='' title='NÃO IMPLEMENTADO'>
                     <img class='report_icon' src='".self::MENU_ICON_SRC['report_outdate_user']."' />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class='super_label' colspan='2'>Turmas</td>
+                    <td class='super_label' colspan='2'>Configurações</td>
+                </tr>
+
+                <tr>
+                    <td class='sub_labels'>Cadastro</td>
+                    <td class='sub_labels'>Busca</td>
+                    <td class='sub_labels' colspan='2'>Visualizar/Editar</td>
+                </tr>
+                <tr>
+                    <td>
+                    <a href='".self::MENU_HREF['classroom_register']."'>
+                    <img class='report_icon' src='".self::MENU_ICON_SRC['classroom_register']."' />
+                    </td>
+                    <td>
+                    <a href='".self::MENU_HREF['classroom_search']."'>
+                    <img class='report_icon' src='".self::MENU_ICON_SRC['classroom_search']."' />
+                    </td>
+                    <td colspan='2'>
+                    <a href='".self::MENU_HREF['library_settings']."'>
+                    <img class='report_icon' src='".self::MENU_ICON_SRC['library_settings']."' />
                     </td>
                 </tr>
             </table>

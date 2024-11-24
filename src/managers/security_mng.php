@@ -13,9 +13,15 @@ final class SecurityManager{
         return $user -> get_passphrase() === $post_passphrase_sha256;
     }
 
+    public static function toDateTimeOrNull($value): ?DateTime {
+        if (is_string($value)) return new DateTime($value, new DateTimeZone('America/Sao_Paulo'));
+        if ($value instanceof DateTime) return $value;
+        return null;
+    }
+
     public static function generate_login(string $name, string $phone): string {
         $name_words = explode(' ', $name);
-        return $name_words[0] . $name_words[count($name_words)-1] . $phone;
+        return $name_words[0] . $name_words[count($name_words)-1] . preg_replace('/\D/', '', $phone);
     }
 
     public static function generate_provisory_passphrase(){

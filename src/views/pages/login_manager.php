@@ -22,10 +22,10 @@ final class LoginManager extends ViewManager{
             parent::operation_failed($error_detail, $errors, $register_type, $fail_title, $error_warning);
     }
 
-    public function operation_succeed($user){
-            header('Location:'.$user -> get_role().'_menu.php');
-            InterfaceManager::echo_html_tail();
-            exit;
+    public function operation_succeed(mixed &$user){
+        header('Location:'.$user -> get_role().'_menu.php');
+        InterfaceManager::echo_html_tail();
+        exit;
     }
 
     protected function persist_post_to_session($user){

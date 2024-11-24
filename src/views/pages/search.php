@@ -29,6 +29,7 @@ abstract class Search{
                 'user' => 'Usuários',
                 'book' => 'Livros',
                 'loan' => 'Empréstimos',
+                'classroom' => 'Discentes de turmas',
             };
 
         InterfaceManager::echo_html_head($title, self::PAGE_TYPE);

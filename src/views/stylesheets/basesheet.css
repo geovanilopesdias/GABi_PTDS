@@ -47,6 +47,12 @@ h2 {
   margin: 0px;
 }
 
+ul {  
+  list-style-type: none;
+  font-size: 1rem;
+  text-align: left;
+}
+
 footer {
   font: bold 15px "Chakra Petch", sans-serif;
   color: var(--light-font_color);
@@ -115,6 +121,11 @@ input, select {
   margin: 5px;
 }
 
+#back_to_register_button{
+  background-color: var(--dark-font_color);
+  margin: 5px;
+}
+
 /* ----- Gabi Logo ----- */
 .gabi_logo{
   filter: drop-shadow(grey .2rem .2rem 5px);;
@@ -136,7 +147,7 @@ input, select {
   max-width: var(--gabi-logo-menu-width);
 }
 
-#gabi_logo_registration,
+#gabi_logo_register,
 #gabi_logo_element_detail,
 #gabi_logo_result_list {
   max-height: 70%;
