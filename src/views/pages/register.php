@@ -27,7 +27,10 @@ abstract class Register{
         $title = "GABi | Registro de ".
             match($register_type){
                 'user' => 'Usuários',
-                'book' => 'Livros',
+                'writer' => 'Autores',
+                'opus' => 'Obras',
+                'edition' => 'Edições',
+                'bookcopy' => 'Exemplares',
                 'loan' => 'Empréstimos',
                 'classroom' => 'Turmas',
             };

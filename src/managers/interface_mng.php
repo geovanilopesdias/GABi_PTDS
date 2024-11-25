@@ -1,6 +1,7 @@
 <?php
 
 require_once (__DIR__ . '/../controllers/people_dao.php');
+require_once (__DIR__ . '/../controllers/book_dao.php');
 
 final class InterfaceManager{
     const PAGE_TYPE = [
@@ -264,11 +265,32 @@ final class InterfaceManager{
         $required = ($is_required) ? 'required' : '';
         $selector = "
             <select name='classrooms_ids[]' class='selector' $required multiple size='3'>
-                <option value=''>Seleciona uma turma</option>";
+                <option value=''>--- Seleciona uma ou mais turmas</option>";
         foreach ($classroom_intances as $c)
             $selector .= "<option value='".$c->get_id()."'>".
                               $c->get_name().'/'.$c->get_year()."
                           </option>";
+        
+        return "$selector</select>";
+    }
+
+    /**
+     * Selector tag with all the registered writers.
+     * 
+     * The values of the options are the respective writers' ids
+     *  to properly fetch them.
+     */
+    public static function writer_selector(bool $is_required = true): string{
+        $writer_intances = BookDAO::fetch_all_writers();
+        $required = ($is_required) ? 'required' : '';
+        $selector = "
+            <select name='writer_ids[]' class='selector' $required multiple size='3'>
+                <option value=''>--- Seleciona um ou mais autores</option>";
+        foreach ($writer_intances as $w)
+            $selector .= "<option value='".$w->get_id()."'>".
+                              $w->get_name().
+                              (($w->get_birth_year() > 0) ? ' ('.$w->get_birth_year().')' : '').
+                              "</option>";
         
         return "$selector</select>";
     }
@@ -317,7 +339,7 @@ final class InterfaceManager{
                     json_decode($row[$header], true))) . "</td>",
                 'situação' => "<td>" . self::translate_book_status(htmlspecialchars($row[$header])) . "</td>",
                 
-                'weblink' => "<td><a id='opus_weblink' target='blank' href='" . htmlspecialchars($row[$header]) . "'>&#128279;</a></td>",
+'weblink' => "<td><a id='opus_weblink' target='blank' href='" . htmlspecialchars($row[$header]) . "'>&#128279;</a></td>",
                 default => "<td>" . ucfirst(htmlspecialchars($row[$header])) . "</td>"
             };
             $table .= "</tr>";
@@ -332,15 +354,12 @@ final class InterfaceManager{
 }
 
 // echoReaderTypeSelector
-// echoClsrmSelectorForRegistration
-// echoClsrmSelectorForStudent
-// echoClsrmSelectorForTeacher
-// echoClsrAndStudentSelectorForSearching
-// echoClsrmSelectorForSearching
+// echoClsrAndStudentSelectorForLoan
 // echoStudentSelectorFromClsrm
+
 // echoButtonGridForLoan
 // echoRenovationButton
 // echoReturnCopyButton
-// echoSearchButton
+
 // echoPayDebtButton
 // echoEntityAnchor

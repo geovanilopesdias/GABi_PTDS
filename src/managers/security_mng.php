@@ -51,6 +51,15 @@ final class SecurityManager{
     public static function is_phone_valid($phoneToTest): bool{
         return preg_match("/^[1-9]{2}9[0-9]{8}$/", $phoneToTest);
     }
+
+    public static function is_url_valid($url_to_test): bool{
+        if (empty($url_to_test)) return true;
+        return filter_var($url_to_test, FILTER_VALIDATE_URL);
+    }
+
+    public static function is_ddc_valid(string $ddcToTest): bool{
+        return preg_match('/^\d{1,3}(\.\d+)?$/', $ddcToTest);
+    }
 }
 
 ?>

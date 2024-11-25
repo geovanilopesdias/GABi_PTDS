@@ -1,5 +1,6 @@
 <?php
 require_once (__DIR__ . '/../../managers/security_mng.php');
+
 enum ReaderRole : string{
     case LIBRARIAN = 'librarian';
     case STUDENT = 'student';

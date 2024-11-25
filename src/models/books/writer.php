@@ -1,5 +1,7 @@
 <?php
 
+require_once (__DIR__ . '/../../managers/security_mng.php');
+
 final class Writer{
     private ?int $id, $birth_year;
     private ?string $name;
@@ -44,16 +46,12 @@ final class Writer{
         }
     }
 
-    private static function isNameValid($nameToTest): bool{
-        return preg_match("/^[A-zÀ-ÿ][A-zÀ-ÿ']+\s([A-zÀ-ÿ']\s?)*[A-zÀ-ÿ][A-zÀ-ÿ']+$/", $nameToTest);
-    }   
-
     public function get_id() {return $this->id;}
     public function get_name() {return $this->name;}
     public function get_birth_year() {return $this->birth_year;}
 
     public function set_name(string $name) {
-        if (self::isNameValid($name))
+        if (SecurityManager::is_name_valid(ucfirst($name)))
             $this->name = $name;
         else throw new UnexpectedValueException("$name is an invalid name format for an writer.");
     }

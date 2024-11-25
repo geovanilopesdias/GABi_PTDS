@@ -26,8 +26,8 @@ abstract class ViewManager{
         echo "<p>O que houve: $error_detail</p>";
         echo "<p>Em instantes, serás redirecionado para tentar novamente</p>";
         $this -> persist_post_to_session($errors);
+        echo "<h2>Erros encontrados:</h2>";
         foreach($errors as $error) echo "
-            <h2>Erros encontrados:</h2>
             <ul>
                 <li>$error</li>
             </ul>

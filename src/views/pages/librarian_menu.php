@@ -1,13 +1,14 @@
 <?php
 
 require_once(__DIR__ . '/../../managers/interface_mng.php');
+require_once(__DIR__ . '/menu.php');
 
-final class LibrarianMenu{
-    const PAGE_TYPE = 'menu';
+final class LibrarianMenu extends Menu{
+    const MENU_TYPE = 'librarian';
     const MENU_HREF = [
         'loan_register' => 'loan_register.php',
         'loan_search' => 'loan_search.php',
-        'book_register' => 'book_register.php',
+        'book_register' => 'book_register_options.php',
         'book_search' => 'book_search.php',
         'user_register' => 'user_register.php',
         'user_search' => 'user_search.php',
@@ -18,7 +19,6 @@ final class LibrarianMenu{
         'classroom_register' => 'classroom_register.php',
         'classroom_search' => 'classroom_search.php'];
 
-    const IMAGE_DIR = '/code/src/views/images/';     
     const MENU_ICON_SRC = [
         'loan_register' => self::IMAGE_DIR.'loan_register.png',
         'loan_search' => self::IMAGE_DIR.'loan_search.png',
@@ -36,7 +36,7 @@ final class LibrarianMenu{
 
 
     
-    static function echo_logo_greeting(){
+    protected function echo_logo_greeting(){
         echo "
                 <div id='logo'>".
                     InterfaceManager::system_logo(self::PAGE_TYPE).
@@ -51,7 +51,9 @@ final class LibrarianMenu{
         
     }
 
-    static function echo_menu_table(){
+    public function __construct() {}
+
+    protected function echo_menu_table(){
         echo "<div id='table'>
             <table class='menu_table'>
                 <caption>
@@ -177,21 +179,13 @@ final class LibrarianMenu{
         ";
     }
 
-    static function echo_structure(){
-        session_start();
-        if (!isset($_SESSION['user_id']) and $_SESSION['user_role'] !== 'librarian') {
-            header('Location: login.php'); exit;
-        }
-        $title = "GABi | Menu Bibliotecário";
-        InterfaceManager::echo_html_head($title, self::PAGE_TYPE);
-        echo "<div id='menu_grid'>";
-        self::echo_logo_greeting();
-        self::echo_menu_table();
-        echo "</div>";
-        InterfaceManager::echo_html_tail();
+    public function echo_structure(
+        string $menu_type = self::MENU_TYPE){
+            parent::echo_structure($menu_type);
     }
 
     
 }
 
-LibrarianMenu::echo_structure();
+$menu = new LibrarianMenu();
+$menu -> echo_structure();

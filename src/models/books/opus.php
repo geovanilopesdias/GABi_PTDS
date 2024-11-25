@@ -1,6 +1,7 @@
 <?php
 
 // require_once '../../../tools/cutter/cutter.php';
+require_once (__DIR__ . '/../../managers/security_mng.php');
 
 final class Opus{
     private string $title;
@@ -51,15 +52,6 @@ final class Opus{
         return $o;
     }
 
-    private function isDdcValid(string $ddcToTest): bool{
-        return preg_match('/^\d{1,3}(\.\d+)?$/', $ddcToTest);
-    }
-
-    private function isUrlValid(?string $urlToTest): bool{
-        if (empty($urlToTest)) return true;
-        return filter_var($urlToTest, FILTER_VALIDATE_URL);
-    }
-
     public function get_id(): int{
         if (isset($this -> id)) return $this->id;
         else return 0;
@@ -75,12 +67,12 @@ final class Opus{
     public function set_original_year(int $original_year){$this->original_year = $original_year;}
     
     public function set_ddc(string $ddc){
-        if(self::isDdcValid($ddc)) $this->ddc = $ddc;
+        if(SecurityManager::is_ddc_valid($ddc)) $this->ddc = $ddc;
         else throw new UnexpectedValueException("Invalid DDC Code.");
     }
 
     public function set_alternative_url(?string $alternative_url){
-        if(self::isUrlValid($alternative_url))
+        if(SecurityManager::is_url_valid($alternative_url))
             $this -> alternative_url = $alternative_url ?? '';
         else throw new UnexpectedValueException("Invalid URL.");
     }

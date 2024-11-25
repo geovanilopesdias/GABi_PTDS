@@ -30,7 +30,7 @@ final class BookDAO{
         $db_man = new DAOManager();
         if (!$db_man -> can_user_register($user_id)) return false;
         $a = Authorship::fromArray($data);
-        return $db_man -> insert_record_in(DB::AUTHORSHIP_TABLE, $a -> toArray());   
+        return $db_man -> insert_record_in(DB::AUTHORSHIP_TABLE, $a -> toArray(), false);   
     }
 
     public static function register_publisher(array $data, int $user_id){ // OK
@@ -111,7 +111,7 @@ final class BookDAO{
     public static function fetch_all_writers() { //OK
         $db_man = new DAOManager();
         $writer_instances = array();
-        $fetched_writers = $db_man -> fetch_all_records_from(DB::WRITER_TABLE);
+        $fetched_writers = $db_man -> fetch_all_records_from(DB::WRITER_TABLE, 'name');
         foreach($fetched_writers as $w) $writer_instances[] = Writer::fromArray($w, true);
         return $writer_instances;
     }

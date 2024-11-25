@@ -75,28 +75,32 @@ final class DAOManager{
     }
 
     // >>> DML
-    private function get_dml_clause_for(DML_OPS $op, string $t_name, array $t_fields): string{
+    private function get_dml_clause_for(DML_OPS $op, string $t_name, array $t_fields, bool $return_id = true): string{
         if ($op === DML_OPS::UPDATE){
             $set_clauses = array();
             foreach ($t_fields as $f) $set_clauses[] = "$f = :$f";
         }
 
         return match ($op){
-            DML_OPS::INSERT => "INSERT INTO $t_name (" . implode(', ', $t_fields) .") VALUES (:" . implode(', :', $t_fields) . ")",
+            DML_OPS::INSERT => "INSERT INTO $t_name (" .
+                implode(', ', $t_fields) .") VALUES (:" .
+                implode(', :', $t_fields) . ")".
+                (($return_id) ? "RETURNING id" : ''),
+                
             DML_OPS::UPDATE => "UPDATE $t_name SET " . implode(', ', $set_clauses) . " WHERE id = :id",
             DML_OPS::DELETE => "DELETE FROM $t_name WHERE id = :id",
         };
     }
 
     // ----- Insertion:
-    public function insert_record_in(string $t_name, array $data): bool {
+    public function insert_record_in(string $t_name, array $data, bool $return_id = true): mixed {
         //Send to insertion clause only non-empty fields:
         $t_fields = [];
         foreach ($data as $field => $value) 
             if (isset($value) || is_bool($value))  // allow bools to pass even if they are false
                 $t_fields[] = $field;       
 
-        $sql = self::get_dml_clause_for(DML_OPS::INSERT, $t_name, $t_fields);
+        $sql = self::get_dml_clause_for(DML_OPS::INSERT, $t_name, $t_fields, $return_id);
         $stmt = $this -> pdo -> prepare($sql);
         
         foreach ($t_fields as $field) {
@@ -114,7 +118,14 @@ final class DAOManager{
             catch (PDOException $e) {die("Connection failed: " . $e->getMessage() . $field . 'SQL Statement: '. $sql);}
         }
         
-        try {return $stmt->execute();}
+        try {
+            if ($return_id) {
+                $stmt->execute();
+                return $stmt->fetchColumn(); // Returns last id inserted
+            }
+            else return $stmt->execute();
+            
+        }
         catch (PDOException $e) {die("Connection failed: " . $e->getMessage());}
     }   
     
@@ -304,8 +315,10 @@ final class DAOManager{
     
 
     // ----- Fetchers:
-    public function fetch_all_records_from(string $t_name): mixed{ //OK
-        $stmt = $this->pdo->prepare("SELECT * FROM " . $t_name);
+    public function fetch_all_records_from(string $t_name, string $order_by = ''): mixed{ //OK
+        $stmt = $this->pdo->prepare(
+            "SELECT * FROM " . $t_name .
+            (empty($order_by) ? "":" ORDER BY $order_by"));
         try {
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
