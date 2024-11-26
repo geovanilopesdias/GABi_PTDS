@@ -1,0 +1,68 @@
+#index{
+    height: auto;
+    width: 100vh;
+    background-color: var(--light-font_color);
+    border-radius: 50px 50px 0px 0px;
+    padding: 10px;
+    perspective: 1000px;
+  }
+  
+  #gabi_slogan h1{
+    font-size: 1.5rem;
+    text-align: left;
+    margin-left: 5vw;
+  }
+  
+  #door{
+    justify-self: center;
+    display: grid;
+    grid-template-rows: 1fr 3fr;
+    margin: 3vh;
+    height: 170px;
+    width: 80px;
+    border: none;
+    border-radius: 50px 50px 0px 0px;
+    padding: 3vh;
+    color: var(--light-font_color);
+    background: linear-gradient(180deg, #692626, #3a0707);
+    transform-origin: left;
+    box-shadow: 0px 4px 0px rgb(56, 10, 10), 0px 6px 10px rgba(0, 0, 0, 0.3);
+    transition: transform 0.7s ease, box-shadow 0.7s ease;
+  }
+  
+  #door:hover{
+    transform: rotateY(50deg);
+    box-shadow: -8px 0px 10px rgba(0, 0, 0, 0.5);
+  }
+
+  #letters{
+    margin-top: 20%;
+    font-size: 1.2rem;
+    text-decoration: none;
+    align-self: center;
+    grid-row: 1;
+    padding: 1vh;
+    color: black;
+    background-color: var(--light-font_color);
+    border-radius: 10px;
+  }
+
+  #handle{
+    grid-row: 2;
+    margin-top: 50%;
+    align-self: start;
+    justify-self: right;
+  }
+
+  a:link { 
+    text-decoration: none; 
+  } 
+  a:visited { 
+    text-decoration: none; 
+  } 
+  a:hover { 
+    text-decoration: none; 
+  } 
+  a:active { 
+    text-decoration: none; 
+  }

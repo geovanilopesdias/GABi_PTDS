@@ -20,7 +20,7 @@ final class OpusRegister extends Register{
         echo "
             <div id='register_form'>
                 <form class='register' action='".self::REGISTER_TYPE."_register_manager.php' method='post'>".
-                    InterfaceManager::writer_selector(true  )."<br>
+                    InterfaceManager::writer_selector(true)."<br>
 
                     <input type='text' name='title' placeholder='Título' value='".(htmlspecialchars($form_data['title']) ?? '')."' required/></br>".
                     ((!empty($errors)) ? InterfaceManager::search_input_disclaimer($errors['invalid_title']) : '') ."

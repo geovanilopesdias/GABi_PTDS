@@ -51,6 +51,7 @@
     margin: 10px;
     grid-column: 2;
     grid-row: 1 / span 3;
+    overflow: hidden;
 }
 
 /* ----- Table Menu ----- */
@@ -97,15 +98,21 @@
     height: 10vh;
     margin-top: 5px;
     margin-bottom: 5px;
-    filter: var(--login-menu-filter);
+    filter: drop-shadow(black .2rem .2rem 5px);
     cursor: pointer;
+    transition: all ease .4s;
 }
-  
+
 .report_icon {
     width: 5vh;
     height: 5vh;
     margin-top: 5px;
     margin-bottom: 5px;
+}
+
+.report_icon:hover, .menu_icon:hover{
+    transform: scale(1.1);
+    filter: drop-shadow(black .1rem .1rem 3px);
 }
 
 #flaticon_reference {
