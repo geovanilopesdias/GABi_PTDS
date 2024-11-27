@@ -1,3 +1,5 @@
+<?php
+echo"
 <!DOCTYPE html>
 <html lang='pt-br'>
     <head>
@@ -9,19 +11,19 @@
     </head>
     <body>
         <img id='gabi_logo_index' class='gabi_logo' src='code/src/views/images/gabi_logo.png'/></br>
-        <div id="index">
-            <div id="gabi_slogan">
+        <div id='index'>
+            <div id='gabi_slogan'>
                 <h1>Ideal para <em>biblios</em> pequenas</h1>
                 <h1>e promover a sua <em>grande</em> escola!</h1>
             </div>
-            <a href="code/src/views/pages/login.php">
+            <a href='code/src/views/pages/login.php'>
                 <div id='door'>
-                    <div id="letters">Acessar</div>
-                    <div id="handle">⚪</div>
+                    <div id='letters'>Acessar</div>
+                    <div id='handle'>⚪</div>
                 </div>
             </a>
-            <!-- <form action="" method="post">
-                <input  type="submit" value=""/>
+            <!-- <form action='' method='post'>
+                <input  type='submit' value=''/>
             </form> -->
         </div>
         <footer>
@@ -29,3 +31,5 @@
         </footer>
     </body>
 </html>
+";
+?>
