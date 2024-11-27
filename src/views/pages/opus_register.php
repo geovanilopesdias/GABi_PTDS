@@ -6,7 +6,7 @@ require_once(__DIR__ . '/register.php');
 final class OpusRegister extends Register{
     const REGISTER_TYPE = 'opus';
     
-    function __construct(){}
+    public function __construct(){}
     
     public function echo_structure(
         string $register_type = self::REGISTER_TYPE){

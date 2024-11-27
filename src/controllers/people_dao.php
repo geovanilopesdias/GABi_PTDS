@@ -59,14 +59,14 @@ final class PeopleDAO{
         $db_man = new DAOManager();
         if (!$db_man -> can_user_register($user_id)) return false;
         $e = Enrollment::fromArray($data);
-        return $db_man -> insert_record_in(DB::ENROLLMENT_TABLE, $e -> toArray());
+        return $db_man -> insert_record_in(DB::ENROLLMENT_TABLE, $e -> toArray(), false);
     }
 
     public static function register_teaching(array $data, int $user_id){ // OK
         $db_man = new DAOManager();
         if (!$db_man -> can_user_register($user_id)) return false;
         $t = Teaching::fromArray($data);
-        return $db_man -> insert_record_in(DB::TEACHING_TABLE, $t -> toArray());
+        return $db_man -> insert_record_in(DB::TEACHING_TABLE, $t -> toArray(), false);
     }
 
     // Updating:

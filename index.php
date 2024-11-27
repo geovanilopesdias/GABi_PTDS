@@ -4,19 +4,19 @@ echo"
 <html lang='pt-br'>
     <head>
         <title>GABi</title>
-        <link href='code/src/views/stylesheets/basesheet.css' rel='stylesheet' page_type='text/css' />
-        <link href='code/src/views/stylesheets/index.css' rel='stylesheet' page_type='text/css' />
+        <link href='".__DIR__."src/views/stylesheets/basesheet.css' rel='stylesheet' page_type='text/css' />
+        <link href='".__DIR__."src/views/stylesheets/index.css' rel='stylesheet' page_type='text/css' />
         <link rel='preconnect' href='https://fonts.googleapis.com' />
         <meta charset='utf-8'>
     </head>
     <body>
-        <img id='gabi_logo_index' class='gabi_logo' src='code/src/views/images/gabi_logo.png'/></br>
+        <img id='gabi_logo_index' class='gabi_logo' src='".__DIR__."src/views/images/gabi_logo.png'/></br>
         <div id='index'>
             <div id='gabi_slogan'>
                 <h1>Ideal para <em>biblios</em> pequenas</h1>
                 <h1>e promover a sua <em>grande</em> escola!</h1>
             </div>
-            <a href='code/src/views/pages/login.php'>
+            <a href='".__DIR__."src/views/pages/login.php'>
                 <div id='door'>
                     <div id='letters'>Acessar</div>
                     <div id='handle'>⚪</div>
