@@ -19,7 +19,7 @@ final class BookSearch extends Search{
                 <form class='search' action='".self::SEARCH_TYPE."_search_result.php' method='get'>    
                     <fieldset><legend>Busca por palavra-chave</legend> 
                         <input type='text' name='title' placeholder='Título' autofocus/></br>
-                        <input type='text' name='author' placeholder='Autor'/></br>
+                        <input type='text' name='writer' placeholder='Autor'/></br>
                         <input type='text' name='collection' placeholder='Coleção'/></br>
                         <input type='text' name='cover_colors' placeholder='Cor de capa (azul, branco)'/><br>                    
                     </fieldset>

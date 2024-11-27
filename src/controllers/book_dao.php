@@ -219,7 +219,7 @@ final class BookDAO{
 
         $db_man = new DAOManager();
         $field_search = match ($field) {
-            'title' => 'o.title', 'author' => 'w.name',
+            'title' => 'o.title', 'writer' => 'w.name',
             'collection' => 'c.name', 'cover_colors' => 'e.cover_colors'
         };
 
@@ -236,10 +236,11 @@ final class BookDAO{
             JOIN ". DB::COLLECTION_TABLE. " c ON c.id = e.collection_id 
             JOIN ". DB::BOOK_COPY_TABLE. " b ON b.edition_id = e.id 
             WHERE $field_search ILIKE :$field 
-            GROUP BY b.id, b.asset_code, b.status, o.title,
-                o.alternative_url, o.cutter_sanborn 
+            GROUP BY b.id, b.asset_code, b.status, e.cover_colors, 
+                o.title, o.alternative_url, 
+                o.cutter_sanborn
             ORDER BY o.title";
-        echo $dql;
+            echo $dql;
         return $db_man->fetch_flex_dql($dql, $search);
     }
 

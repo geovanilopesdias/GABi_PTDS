@@ -10,7 +10,7 @@ abstract class SearchResults{
 
     protected function echo_structure(string $search_type, array $get_fields){
         session_start();
-        if (!isset($_SESSION['user_id']) and $_SESSION['user_role'] !== 'librarian') {
+        if (!isset($_SESSION['user_id'])) {
             header('Location: login.php'); exit;
         }
         
