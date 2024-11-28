@@ -10,6 +10,7 @@ final class BookRegisterOptions extends Menu{
         'edition_register' => 'edition_register.php',
         'bookcopy_register' => 'bookcopy_register.php',
         'collection_register' => 'collection_register.php',
+        'publisher_register' => 'publisher_register.php',
         'writer_register' => 'writer_register.php'];
 
     const IMAGE_DIR = '/code/src/views/images/';     
@@ -18,6 +19,7 @@ final class BookRegisterOptions extends Menu{
         'edition_register' => self::IMAGE_DIR.'edition_register.png',
         'bookcopy_register' => self::IMAGE_DIR.'bookcopy_register.png',
         'collection_register' => self::IMAGE_DIR.'collection_register.png',
+        'publisher_register' => self::IMAGE_DIR.'publisher_register.png',
         'writer_register' => self::IMAGE_DIR.'writer_register.png'];
     
     function __construct(){}
@@ -74,7 +76,8 @@ final class BookRegisterOptions extends Menu{
                 </tr>
                 <tr>
                     <td class='sub_labels'>Autores</td>    
-                    <td class='sub_labels' colspan='2'>Coleções</td>
+                    <td class='sub_labels'>Editoras</td>
+                    <td class='sub_labels'>Coleções</td>
                 </tr>
                 <tr>
                     <td>    
@@ -82,7 +85,12 @@ final class BookRegisterOptions extends Menu{
                             <img class='menu_icon' src='".self::MENU_ICON_SRC['writer_register']."' />
                         </a>
                     </td>
-                    <td  colspan='2'>
+                    <td>
+                        <a href='".self::MENU_HREF['publisher_register']."'>
+                            <img class='menu_icon' src='".self::MENU_ICON_SRC['publisher_register']."' />
+                        </a>
+                    </td>
+                    <td>
                         <a href='".self::MENU_HREF['collection_register']."'>
                             <img class='menu_icon' src='".self::MENU_ICON_SRC['collection_register']."' />
                         </a>
@@ -90,7 +98,8 @@ final class BookRegisterOptions extends Menu{
                 </tr>
                 <tr>
                     <td class='description_labels'>Cadastre autores antes da obra!</td>
-                    <td class='description_labels' colspan='2'>Conjunto de obras que compõem uma coleção, como 'Vagalume' ou 'Harry Potter'.</td>
+                    <td class='description_labels'>Cadastre editoras antes de edições!</td>
+                    <td class='description_labels'>Conjunto de obras que compõem uma coleção, como 'Vagalume' ou 'Harry Potter'.</td>
                 </tr>
                 
             </table></div>

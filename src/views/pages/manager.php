@@ -3,7 +3,7 @@
 require_once(__DIR__ . '/../../managers/interface_mng.php');
 require_once(__DIR__ . '/../../controllers/people_dao.php');
 
-abstract class ViewManager{
+abstract class FormManager{
     const PAGE_TYPE = 'manager';
 
     protected abstract function persist_post_to_session($errors);

@@ -98,12 +98,19 @@ final class BookDAO{
         if (empty($collection_array)) return null;
         return Collection::fromArray($collection_array, true); // Factory used truly for fetching
     }
+
+    public static function fetch_publisher_by_id(int $id): ?Publisher { // OK
+        $db_man = new DAOManager();
+        $pub_array = $db_man -> fetch_record_by_id_from(DB::PUBLISHER_TABLE, $id);
+        if (empty($pub_array)) return null;
+        return Publisher::fromArray($pub_array, true); // Factory used truly for fetching
+    }
     
     // All fetchers:
     public static function fetch_all_opuses() { //OK
         $db_man = new DAOManager();
         $opus_instances = array();
-        $fetched_opuses = $db_man -> fetch_all_records_from(DB::OPUS_TABLE);
+        $fetched_opuses = $db_man -> fetch_all_records_from(DB::OPUS_TABLE, 'title');
         foreach($fetched_opuses as $o) $opus_instances[] = Opus::fromArray($o, true);
         return $opus_instances;
     }
@@ -118,14 +125,14 @@ final class BookDAO{
 
     public static function fetch_all_publishers() { // OK
         $db_man = new DAOManager();
-        $fetched_pubs = $db_man -> fetch_all_records_from(DB::PUBLISHER_TABLE);
+        $fetched_pubs = $db_man -> fetch_all_records_from(DB::PUBLISHER_TABLE, 'name');
         foreach($fetched_pubs as $w) $pubs_instances[] = Publisher::fromArray($w, true);
         return $pubs_instances;
     }
 
     public static function fetch_all_collections() {  // OK
         $db_man = new DAOManager();
-        $fetched_collections = $db_man -> fetch_all_records_from(DB::COLLECTION_TABLE);
+        $fetched_collections = $db_man -> fetch_all_records_from(DB::COLLECTION_TABLE, 'name');
         foreach($fetched_collections as $c) $colls_instances[] = Collection::fromArray($c, true);
         return $colls_instances;
     }
@@ -139,7 +146,7 @@ final class BookDAO{
 
     public static function fetch_whole_bookshelf() { //OK
         $db_man = new DAOManager();
-        $fetched_copies = $db_man -> fetch_all_records_from(DB::BOOK_COPY_TABLE);
+        $fetched_copies = $db_man -> fetch_all_records_from(DB::BOOK_COPY_TABLE, 'asset_code');
         foreach($fetched_copies as $c) $copies_instances[] = BookCopy::fromArray($c, false);
         return $copies_instances;
     }
@@ -210,16 +217,23 @@ final class BookDAO{
         return $results;
     }
 
+    public static function fetch_edition_by_isbn(int $isbn): mixed { //OK
+        $db_man = new DAOManager();
+        $search = ['isbn' => $isbn];
+        $dql = "SELECT * FROM ". DB::EDITION_TABLE. " WHERE isbn = :isbn";
+        return $db_man->fetch_flex_dql($dql, $search, true);
+    }
+
     public static function fetch_bookcopy_essentially_by(string $field, mixed $value): ?array {
         if($field === 'asset_code')
             throw new InvalidArgumentException('Use method BookDAO::fetch_bookcopy_holistically_by_asset_code() instead.');
 
-        if (!in_array($field, ['title', 'author', 'collection', 'cover_colors'], true))
+        if (!in_array($field, ['title', 'author', 'collection', 'cover_colors', 'isbn'], true))
             throw new InvalidArgumentException("It isn't possible to search by $field");
 
         $db_man = new DAOManager();
         $field_search = match ($field) {
-            'title' => 'o.title', 'writer' => 'w.name',
+            'title' => 'o.title', 'writer' => 'w.name', 'isbn' => 'e.isbn',
             'collection' => 'c.name', 'cover_colors' => 'e.cover_colors'
         };
 
@@ -247,19 +261,19 @@ final class BookDAO{
         if($field === 'asset_code')
             throw new InvalidArgumentException('Use method BookDAO::fetch_bookcopy_holistically_by_asset_code() instead.');
 
-        if (!in_array($field, ['title', 'writer', 'publisher', 'collection', 'cover_colors'], true))
+        if (!in_array($field, ['title', 'writer', 'publisher', 'collection', 'cover_colors', 'isbn'], true))
             throw new InvalidArgumentException("It isn't possible to search by $field");
 
         $db_man = new DAOManager();
         $field_search = match ($field) {
-            'title' => 'o.title', 'writer' => 'w.name',
+            'title' => 'o.title', 'writer' => 'w.name', 'isbn' => 'e.isbn',
             'publisher' => 'p.name', 'collection' => 'c.name',
             'cover_colors' => 'e.cover_colors'
         };
 
         $search = [$field => "%$value%"];
         $book_copy_fields = ['b.id AS id', 'b.asset_code AS patrimônio', 'b.status AS situação'];
-        $edition_fields = ['e.volume', 'e.edition_number AS edição', 'e.publishing_year AS ano', 'e.pages AS páginas', 'e.cover_colors AS capa', 'e.translators AS tradutores'];
+        $edition_fields = ['e.isbn', 'e.volume', 'e.edition_number AS edição', 'e.publishing_year AS ano', 'e.pages AS páginas', 'e.cover_colors AS capa', 'e.translators AS tradutores'];
         $opus_fields = ['o.title AS título', 'o.original_year AS origem', 'o.alternative_url AS link', 'o.ddc', 'o.cutter_sanborn AS cutter'];
         $dql = "SELECT ".
             implode(", ", $opus_fields) . ", ".    
@@ -274,7 +288,7 @@ final class BookDAO{
             " JOIN ". DB::BOOK_COPY_TABLE. " b ON b.edition_id = e.id".
             " JOIN ". DB::PUBLISHER_TABLE. " p ON p.id = e.publisher_id".
             " WHERE $field_search ILIKE :$field 
-            GROUP BY b.id, b.asset_code, b.status, e.volume, e.edition_number,
+            GROUP BY b.id, b.asset_code, b.status, e.isbn, e.volume, e.edition_number,
                 e.publishing_year, e.pages, e.cover_colors, e.translators,
                 o.title, o.original_year, o.alternative_url, o.ddc,
                 o.cutter_sanborn, p.name 

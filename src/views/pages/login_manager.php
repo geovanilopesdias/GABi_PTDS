@@ -5,7 +5,7 @@ require_once(__DIR__ . '/../../managers/security_mng.php');
 require_once(__DIR__ . '/../../controllers/people_dao.php');
 require_once(__DIR__ . '/manager.php');
 
-final class LoginManager extends ViewManager{
+final class LoginManager extends FormManager{
     const REGISTER_TYPE = 'login';
     const FAIL_TITLE = 'Login recusado';
     const ERROR_WARNING = 'Algo deu errado com sua tentativa de login';

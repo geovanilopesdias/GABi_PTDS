@@ -6,7 +6,7 @@ require_once(__DIR__ . '/../../managers/interface_mng.php');
 require_once(__DIR__ . '/../../controllers/people_dao.php');
 require_once(__DIR__ . '/manager.php');
 
-final class UserRegisterManager extends ViewManager{
+final class UserRegisterManager extends FormManager{
     const REGISTER_TYPE = 'user';
     const FAIL_TITLE = 'Cadastro recusado';
     const ERROR_WARNING = 'Algo deu errado com sua tentativa de cadastro de usuário!';
@@ -100,11 +100,11 @@ final class UserRegisterManager extends ViewManager{
         $list = "
             <p>Usuário cadastrado:</p></br>
             <ul>
-                <li><span class='reader_data_header'>Nome:</span> " . htmlspecialchars($reader_data['name']) . "</li>
-                <li><span class='reader_data_header'>Telefone:</span> " . InterfaceManager::mask_phone($reader_data['phone']) . "</li>
-                <li><span class='reader_data_header'>Login:</span> " . htmlspecialchars($reader_data['login']) . "</li>
-                <li><span class='reader_data_header'>Senha provisória:</span> " . htmlspecialchars($reader_data['passphrase']) . "</li>
-                <li><span class='reader_data_header'>Turma(s):</span><ul>";
+                <li><span class='data_header'>Nome:</span> " . htmlspecialchars($reader_data['name']) . "</li>
+                <li><span class='data_header'>Telefone:</span> " . InterfaceManager::mask_phone($reader_data['phone']) . "</li>
+                <li><span class='data_header'>Login:</span> " . htmlspecialchars($reader_data['login']) . "</li>
+                <li><span class='data_header'>Senha provisória:</span> " . htmlspecialchars($reader_data['passphrase']) . "</li>
+                <li><span class='data_header'>Turma(s):</span><ul>";
     
         if (!empty($reader_data['classrooms']) && is_array($reader_data['classrooms'])) 
             foreach ($reader_data['classrooms'] as $c) 
@@ -123,7 +123,7 @@ final class UserRegisterManager extends ViewManager{
             $errors = $this -> handle_errors(); 
             if (empty($errors)){
                 $args = [
-                    'register_type' => 'user_register',
+                    'register_type' => self::REGISTER_TYPE,
                     'success_title' => 'Cadastro aceito',
                     'success_message' => 'Cadastro de usuário realizado com sucesso'
                 ];

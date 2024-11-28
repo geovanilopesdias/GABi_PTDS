@@ -141,7 +141,7 @@ final class InterfaceManager{
 
 
     /**
-     * @var $register_type: Should be rather simply user, book or loan.
+     * @var $register_type: Should be rather simply user, opus (etc.) or loan.
      */
     public static function back_to_register_button(string $register_type): string{
         return "
@@ -155,7 +155,7 @@ final class InterfaceManager{
         ";
     }
     
-
+    // ----- For forms
     public static function search_button(): string {
         return "<input class='search_button' type='submit' value='&#x1F50D;'>";
     }
@@ -164,8 +164,6 @@ final class InterfaceManager{
         return "<input class='register_button' type='submit' value='Cadastrar &#x1F4BE;'>";
     }
     
-
-    // ----- For forms
     public static function search_input_disclaimer($disclaimer): string{
         return "<p class='search_disclaimer'>".
             htmlspecialchars($disclaimer)."</p></br>";
@@ -300,12 +298,36 @@ final class InterfaceManager{
         $required = ($is_required) ? 'required' : '';
         $selector = "
             <select name='opus_id' class='selector' $required>
-                <option value=''>--- Seleciona um ou mais autores</option>";
+                <option value=''>--- Seleciona uma obra</option>";
         foreach ($opus_intances as $o)
             $selector .= "<option value='".$o->get_id()."'>".
                               $o->get_title().
                               (!is_null($o->get_original_year()) ? ' ('.$o->get_original_year().')' : '').
                               "</option>";
+        
+        return "$selector</select>";
+    }
+
+    public static function publisher_selector(): string{
+        $pub_intances = BookDAO::fetch_all_publishers();
+        $selector = "
+            <select name='publisher_id' class='selector'>
+                <option value=''>--- Seleciona uma editora</option>";
+        foreach ($pub_intances as $p)
+            $selector .= "<option value='".$p->get_id()."'>".
+                              $p->get_name()."</option>";
+        
+        return "$selector</select>";
+    }
+
+    public static function collection_selector(): string{
+        $coll_intances = BookDAO::fetch_all_collections();
+        $selector = "
+            <select name='collection_id' class='selector'>
+                <option value=''>--- Seleciona uma coleção</option>";
+        foreach ($coll_intances as $c)
+            $selector .= "<option value='".$c->get_id()."'>".
+                              $c->get_name()."</option>";
         
         return "$selector</select>";
     }
@@ -371,7 +393,6 @@ final class InterfaceManager{
 
 }
 
-// echoReaderTypeSelector
 // echoClsrAndStudentSelectorForLoan
 // echoStudentSelectorFromClsrm
 
@@ -380,4 +401,3 @@ final class InterfaceManager{
 // echoReturnCopyButton
 
 // echoPayDebtButton
-// echoEntityAnchor

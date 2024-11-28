@@ -3,7 +3,7 @@
 require_once(__DIR__ . '/../../controllers/book_dao.php');
 require_once(__DIR__ . '/manager.php');
 
-final class UserRegisterManager extends ViewManager{
+final class OpusRegisterManager extends FormManager{
     const REGISTER_TYPE = 'opus';
     const FAIL_TITLE = 'Cadastro recusado';
     const ERROR_WARNING = 'Algo deu errado com sua tentativa de cadastro de obra!';
@@ -99,7 +99,7 @@ final class UserRegisterManager extends ViewManager{
                 $args = [
                     'register_type' => self::REGISTER_TYPE.'_register',
                     'success_title' => 'Cadastro aceito',
-                    'success_message' => 'Cadastro de usuário realizado com sucesso'
+                    'success_message' => 'Cadastro de obra realizado com sucesso'
                 ];
                 $args['opus_data'] = [
                     'title' => htmlspecialchars($_POST['title']),
@@ -115,7 +115,7 @@ final class UserRegisterManager extends ViewManager{
     }
 }
 
-$management = new UserRegisterManager();
+$management = new OpusRegisterManager();
 $management -> manage_post_variable();   
 
 ?>

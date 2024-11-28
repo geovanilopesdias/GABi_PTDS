@@ -28,6 +28,7 @@ abstract class Register{
             match($register_type){
                 'user' => 'Usuários',
                 'writer' => 'Autores',
+                'publisher' => 'Editoras',
                 'opus' => 'Obras',
                 'edition' => 'Edições',
                 'bookcopy' => 'Exemplares',
