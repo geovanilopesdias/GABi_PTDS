@@ -295,6 +295,21 @@ final class InterfaceManager{
         return "$selector</select>";
     }
 
+    public static function opus_selector(bool $is_required = true): string{
+        $opus_intances = BookDAO::fetch_all_opuses();
+        $required = ($is_required) ? 'required' : '';
+        $selector = "
+            <select name='opus_id' class='selector' $required>
+                <option value=''>--- Seleciona um ou mais autores</option>";
+        foreach ($opus_intances as $o)
+            $selector .= "<option value='".$o->get_id()."'>".
+                              $o->get_title().
+                              (!is_null($o->get_original_year()) ? ' ('.$o->get_original_year().')' : '').
+                              "</option>";
+        
+        return "$selector</select>";
+    }
+
     /**
      * Generates an HTML table string from a set of results.
      *
