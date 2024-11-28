@@ -39,7 +39,7 @@ final class LoanSearchResults extends SearchResults{
         // Table build:
         else {
             $caption = "Resultados da busca por '$keywords'";
-            echo InterfaceManager::table_of_results($caption, $results);
+            echo InterfaceManager::table_of_results(self::SEARCH_TYPE, $caption, $results);
         }
     }
     

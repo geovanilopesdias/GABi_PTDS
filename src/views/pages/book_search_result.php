@@ -62,7 +62,7 @@ final class BookSearchResults extends SearchResults{
             return;
         }
     
-        echo InterfaceManager::table_of_results("Results for: $keywords", $results);
+        echo InterfaceManager::table_of_results(self::SEARCH_TYPE, "Results for: $keywords", $results);
     }
     
     

@@ -258,7 +258,7 @@ final class PeopleDAO{
         $db_man = new DAOManager();
         $search = ["name" => "%$cleaned_name%"];        
         $dql = "
-            SELECT r.name AS nome, r.phone AS telefone,
+            SELECT r.id as id, r.name AS nome, r.phone AS telefone,
             r.role AS tipo, 
             r.debt AS dívida, last_login AS \"último acesso\" 
             FROM ". DB::READER_TABLE. " r 
@@ -272,7 +272,7 @@ final class PeopleDAO{
         $db_man = new DAOManager();
         $search = ["name" => "%$cleaned_name%"];        
         $dql = "
-            SELECT r.name AS nome, r.phone AS telefone,
+            SELECT r.id as id, r.name AS nome, r.phone AS telefone,
             r.debt AS dívida, last_login AS \"último acesso\" 
             FROM ". DB::READER_TABLE. " r 
             WHERE r.name ILIKE :name AND r.role = 'student'
@@ -285,7 +285,7 @@ final class PeopleDAO{
         $db_man = new DAOManager();
         $search = ["name" => "%$cleaned_name%"];        
         $dql = "
-            SELECT r.name AS nome, r.phone AS telefone,
+            SELECT r.id as id, r.name AS nome, r.phone AS telefone,
             r.debt AS dívida, last_login AS \"último acesso\" 
             FROM ". DB::READER_TABLE. " r 
             WHERE r.name ILIKE :name  AND r.role = 'teacher'
@@ -298,7 +298,7 @@ final class PeopleDAO{
         $db_man = new DAOManager();
         $search = ["classroom_id" => $classroom_id];        
         $dql = "
-            SELECT r.name AS nome, r.phone AS telefone,
+            SELECT r.id as id, r.name AS nome, r.phone AS telefone,
             r.debt AS dívida, last_login AS  \"último acesso\", c.name AS turma 
             FROM ". DB::READER_TABLE. " r 
             JOIN ".DB::ENROLLMENT_TABLE." e ON e.student_id = r.id 
@@ -314,7 +314,7 @@ final class PeopleDAO{
         $db_man = new DAOManager();
         $search = ["classroom_id" => $classroom_id];        
         $dql = "
-            SELECT r.name AS nome, r.phone AS telefone,
+            SELECT r.id as id, r.name AS nome, r.phone AS telefone,
             r.debt AS dívida, last_login AS acesso 
             FROM ". DB::READER_TABLE. " r 
             JOIN ".DB::TEACHING_TABLE." t ON t.teacher_id = r.id 

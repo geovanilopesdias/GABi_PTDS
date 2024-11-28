@@ -1,6 +1,7 @@
 <?php
 
 require_once(__DIR__ . '/../../managers/interface_mng.php');
+require_once(__DIR__ . '/element_detail.php');
 require_once(__DIR__ . '/../../controllers/people_dao.php');
 require_once(__DIR__ . '/../../controllers/book_dao.php');
 require_once(__DIR__ . '/../../controllers/loan_dao.php');

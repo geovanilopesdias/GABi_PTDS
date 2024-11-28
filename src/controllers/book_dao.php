@@ -240,7 +240,6 @@ final class BookDAO{
                 o.title, o.alternative_url, 
                 o.cutter_sanborn
             ORDER BY o.title";
-            echo $dql;
         return $db_man->fetch_flex_dql($dql, $search);
     }
 
@@ -248,12 +247,12 @@ final class BookDAO{
         if($field === 'asset_code')
             throw new InvalidArgumentException('Use method BookDAO::fetch_bookcopy_holistically_by_asset_code() instead.');
 
-        if (!in_array($field, ['title', 'author', 'publisher', 'collection', 'cover_colors'], true))
+        if (!in_array($field, ['title', 'writer', 'publisher', 'collection', 'cover_colors'], true))
             throw new InvalidArgumentException("It isn't possible to search by $field");
 
         $db_man = new DAOManager();
         $field_search = match ($field) {
-            'title' => 'o.title', 'author' => 'w.name',
+            'title' => 'o.title', 'writer' => 'w.name',
             'publisher' => 'p.name', 'collection' => 'c.name',
             'cover_colors' => 'e.cover_colors'
         };

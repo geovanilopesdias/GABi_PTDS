@@ -49,7 +49,7 @@ final class ClassroomSearchResults extends SearchResults{
             echo InterfaceManager::no_results_disclaimer($disclaimer);
         } else {
             $caption = "Resultados da busca por '" . implode(', ', $keywords) . "'";
-            echo InterfaceManager::table_of_results($caption, $results);
+            echo InterfaceManager::table_of_results(self::SEARCH_TYPE, $caption, $results);
         }
     }
 

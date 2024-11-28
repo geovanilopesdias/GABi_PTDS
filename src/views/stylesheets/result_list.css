@@ -79,3 +79,12 @@
 #opus_weblink {
     text-decoration: none;
 }
+
+.element_detail_link{
+    margin: 0px;
+    border: none;
+    background-color: transparent;
+    padding: 0px;
+    text-align: center;
+    align-self: center;
+}

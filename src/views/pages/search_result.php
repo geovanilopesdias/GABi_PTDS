@@ -15,7 +15,9 @@ abstract class SearchResults{
         }
         
         $search = '';
-        foreach($get_fields as $f) $search .= htmlspecialchars($_GET[$f]).' ';
+        foreach($get_fields as $f)
+            if (!is_array($f)) $search .= htmlspecialchars($_GET[$f]).' ';
+            else foreach ($f as $data) $search .= htmlspecialchars($data).' ';
         $title = "GABi | Busca por: $search";
         InterfaceManager::echo_html_head($title, self::PAGE_TYPE);
         echo "<div id='results_grid'>";

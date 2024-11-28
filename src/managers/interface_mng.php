@@ -303,7 +303,7 @@ final class InterfaceManager{
      * @return string The HTML string for the table.
      * @throws InvalidArgumentException If $results is empty or not formatted correctly.
      */
-    public static function table_of_results(string $caption, array $results): string {
+    public static function table_of_results(string $data_type, string $caption, array $results): string {
         if (empty($results)) 
             throw new InvalidArgumentException('The results array must not be empty.');
         
@@ -313,9 +313,8 @@ final class InterfaceManager{
         
         // Caption and header
         $headers = array_keys($results[0]);
-        $hidden_headers = ['id'];
         $table = "<div class='results'><table class='sortable'>\n<caption>" . htmlspecialchars($caption) . "</caption>\n<thead>\n<tr>";
-        foreach ($headers as $header) $table .= (!in_array($header, $hidden_headers, true))? "<th>" . ucfirst(htmlspecialchars($header)) . "</th>" : '';
+        foreach ($headers as $header) $table .= "<th>" . ucfirst(htmlspecialchars($header)) . "</th>";
         $table .= "</tr>\n</thead>\n<tbody>";
 
         // Rows
@@ -323,6 +322,11 @@ final class InterfaceManager{
         foreach ($results as $row) {
             $table .= "\n<tr class='$tr_class'>";
             foreach ($headers as $header) $table .= match($header){
+                //General
+                'id' => "<td><form method='post' action='".$data_type."_element_detail.php'>
+                    <input type='hidden' name='id' value='".$row[$header]."'>
+                    <input type='submit' class='element_detail_link' value='&#128065;'></form></td>", 
+                    
                 // Readers
                 'telefone' => "<td>" . self::mask_phone(htmlspecialchars($row[$header])) . "</td>",
                 'nome' => "<td>" . ucfirst(htmlspecialchars($row[$header])) . "</td>",
@@ -331,7 +335,6 @@ final class InterfaceManager{
                 'dívida' => "<td>R$ " . number_format(trim(htmlspecialchars($row[$header])), 2, ',', '.') . "</td>",
 
                 // Books
-                'id' => "", // Hidden headers!
                 'título' => "<td>" . htmlspecialchars($row[$header]) . "</td>",
                 
                 'autores' => "<td>" . implode(', ', array_map(function($author) {
