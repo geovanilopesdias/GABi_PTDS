@@ -6,15 +6,14 @@ require_once(__DIR__ . '/search_result.php');
 
 
 final class BookSearchResults extends SearchResults{
-    const SEARCH_TYPE = 'book';
+    const SEARCH_TYPE = 'bookcopy';
     const GET_FIELDS = ['title', 'writer', 'collection', 'cover_colors', 'asset_code'];
 
     function __construct(){}
     
     public function echo_structure(
-        string $search_type = self::SEARCH_TYPE,
-        array $get_fields = self::GET_FIELDS){
-            parent::echo_structure($search_type, $get_fields);
+        string $search_type = self::SEARCH_TYPE){
+            parent::echo_structure($search_type);
     }
 
     protected function echo_table_results(){

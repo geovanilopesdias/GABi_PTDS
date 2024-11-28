@@ -4,10 +4,11 @@
   --bgc: #ab7b4f;
   --title-size: 24px;
   --general_font: Chakra Petch, sans-serif;
+  --data-font-size: clamp(1vw, 1.2vw, 2vw);
   --text-size: 16px;
   --general-pd: 10px;
-  --light-font_color: beige;
-  --dark-font_color: #511515;
+  --light-font-color: beige;
+  --dark-font-color: #511515;
   /*Buttons*/
   --btn-br: 20px;
   
@@ -55,7 +56,7 @@ ul {
 
 footer {
   font: bold 15px "Chakra Petch", sans-serif;
-  color: var(--light-font_color);
+  color: var(--light-font-color);
   background-color: var(--darker-div-bgc);
   padding: var(--general-pd);
   margin: 1rem;
@@ -76,7 +77,7 @@ input, select {
   padding: 0px;
   margin: 5px;
   font-weight: bold;
-  color: var(--light-font_color);
+  color: var(--light-font-color);
   background-color: var(--darker-div-bgc);
   filter: var(--darker-div-filter);
 }
@@ -93,7 +94,7 @@ input, select {
   font-family: Chakra Petch, sans-serif;
   font-size: 12px;
   font-weight: bold;
-  color: var(--light-font_color);
+  color: var(--light-font-color);
   padding: 10px;
   margin-top: 20px;
   border-radius: 5px;
@@ -107,7 +108,7 @@ input, select {
 }
 
 #logout_button {
-  background-color: var(--dark-font_color);
+  background-color: var(--dark-font-color);
   margin-bottom: 20px;
 }
 
@@ -117,12 +118,12 @@ input, select {
 }
 
 #back_to_search_button {
-  background-color: var(--dark-font_color);
+  background-color: var(--dark-font-color);
   margin: 5px;
 }
 
 #back_to_register_button{
-  background-color: var(--dark-font_color);
+  background-color: var(--dark-font-color);
   margin: 5px;
 }
 

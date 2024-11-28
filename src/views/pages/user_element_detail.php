@@ -24,12 +24,20 @@ final class ReaderDetail extends ElementDetail{
             'librarian' => 'bibliotecário',
         };
         return "
-            <p class='element_detail'>Nome: " . $element->get_name()."</p>
-            <p class='element_detail'>Telefone: " . InterfaceManager::mask_phone($element->get_phone()) . "</p>
-            <p class='element_detail'>Tipo: $reader_role</p>
-            <p class='element_detail'>Último acesso: " . $element->get_last_login() -> format('d/m/y | H:i') . "</p>
-            <p class='element_detail'>Débito: " . $element->get_debt() . "</p>
+            <p><strong>Nome:</strong> " . ucwords($element->get_name())." ($reader_role)</p>
+            <p><strong>Telefone:</strong> " . InterfaceManager::mask_phone($element->get_phone()) . "</p>
+            <p><strong>Último acesso:</strong> " . $element->get_last_login() -> format('d/m/y | H:i') . "</p>
+            <p><strong>Débito:</strong> R$ " . $element->get_debt() . "</p>
         ";
+    }
+
+    protected function data_table($element): string {
+        $open_loans = LoanDAO::fetch_open_loans_by_loaner_id($element -> get_id());
+        if(!empty($open_loans)) {
+            return InterfaceManager::table_of_results('loan', 'Empréstimos em aberto', $open_loans);
+        }
+        else return "<p>Este usuário está em posse de livros.</p>";
+        
     }
 
 

@@ -8,17 +8,14 @@ abstract class SearchResults{
 
     protected abstract function echo_table_results();
 
-    protected function echo_structure(string $search_type, array $get_fields){
+    protected function echo_structure(string $search_type){
         session_start();
-        if (!isset($_SESSION['user_id'])) {
-            header('Location: login.php'); exit;
-        }
-        
-        $search = '';
-        foreach($get_fields as $f)
-            if (!is_array($f)) $search .= htmlspecialchars($_GET[$f]).' ';
-            else foreach ($f as $data) $search .= htmlspecialchars($data).' ';
-        $title = "GABi | Busca por: $search";
+        if (!isset($_SESSION['user_id'])) {header('Location: login.php'); exit;}   
+        $title = "GABi | Busca por ";
+        $title .= match($search_type){
+                'user' => 'Leitores',
+                'bookcopy' => 'Exemplares',
+            };
         InterfaceManager::echo_html_head($title, self::PAGE_TYPE);
         echo "<div id='results_grid'>";
         self::echo_logo_back_buttons($search_type);

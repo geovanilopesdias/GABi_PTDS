@@ -329,7 +329,7 @@ final class InterfaceManager{
                     
                 // Readers
                 'telefone' => "<td>" . self::mask_phone(htmlspecialchars($row[$header])) . "</td>",
-                'nome' => "<td>" . ucfirst(htmlspecialchars($row[$header])) . "</td>",
+                'nome' => "<td>" . ucwords(htmlspecialchars($row[$header])) . "</td>",
                 'tipo' => ($row[$header] === 'student') ? "<td>Discente</td>" : "<td>Docente</td>",
                 'último acesso', 'retirada', 'devolução' => "<td>" . self::mask_timestamp(htmlspecialchars($row[$header])) . "</td>",
                 'dívida' => "<td>R$ " . number_format(trim(htmlspecialchars($row[$header])), 2, ',', '.') . "</td>",

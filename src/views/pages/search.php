@@ -26,7 +26,7 @@ abstract class Search{
         
         $title = "GABi | Busca de ".
             match($search_type){
-                'user' => 'Usuários',
+                'user' => 'Leitores',
                 'book' => 'Livros',
                 'loan' => 'Empréstimos',
                 'classroom' => 'Discentes de turmas',

@@ -52,13 +52,11 @@ final class LoanDAO{
 
     // ----- Reading
     // Basic fetchers:
-    public static function fetch_loan_by_id(int $id, int $user_id): ?Loan { //OK
+    public static function fetch_loan_by_id(int $id): ?Loan { //OK
         $db_man = new DAOManager();
         $loan_array = $db_man -> fetch_record_by_id_from(DB::LOAN_TABLE, $id);
         // Only loaners and the respectively reader should be able to search for the loan:
         if (empty($loan_array)) return null;
-        if ($loan_array['loaner_id'] !== $user_id)
-            if (!$db_man -> can_user_loan($user_id)) return null;
                 
         foreach(self::DATE_FIELDS as $f)
             $loan_array[$f] = isset($loan_array[$f]) ? new DateTime($loan_array[$f], new DateTimeZone('America/Sao_Paulo')) : null;
@@ -88,11 +86,8 @@ final class LoanDAO{
         $search = ($field === 'name') ? [$field => "%$value%"] : [$field => $value];
         $where_field = ($field === 'name') ? 'r.name ILIKE' : 'b.asset_code =';
         $dql = "
-            SELECT l.id AS id, b.asset_code AS \"patr.\", o.title AS título, 
-                r.name AS nome, r.role AS tipo, l.loan_date AS retirada";
-        $dql .= (!$open_only) ? ", l.return_date AS devolução " : " ";
-
-        $dql .= "
+            SELECT ".implode(',', DB::LOAN_FIELDS).", 
+                r.name, r.role, o.title 
             FROM ". DB::LOAN_TABLE ." l 
             JOIN ". DB::READER_TABLE ." r ON r.id = l.loaner_id
             JOIN ". DB::BOOK_COPY_TABLE ." b ON b.id = l.book_copy_id
@@ -103,6 +98,37 @@ final class LoanDAO{
         $dql .= ($open_only) ? " AND l.return_date is null" : "";
         return $db_man -> fetch_flex_dql($dql, $search);
         
+    }
+
+    public static function fetch_open_loans_by_loaner_id(int $loaner_id): ?array { 
+        $db_man = new DAOManager();
+        $search = ['loaner_id' => $loaner_id];
+        $dql = "
+            SELECT l.id AS id, b.asset_code AS \"patr.\", o.title AS título, 
+                l.loan_date AS retirada
+            FROM ". DB::LOAN_TABLE ." l 
+            JOIN ". DB::READER_TABLE ." r ON r.id = l.loaner_id
+            JOIN ". DB::BOOK_COPY_TABLE ." b ON b.id = l.book_copy_id
+            JOIN ". DB::EDITION_TABLE ." e ON e.id = b.edition_id 
+            JOIN ". DB::OPUS_TABLE ." o ON o.id = e.opus_id
+            WHERE r.id = :loaner_id AND l.return_date is null";
+        return $db_man -> fetch_flex_dql($dql, $search);
+        
+    }
+
+    public static function fetch_loan_with_reader_and_opus_data_by_loan_id(int $loan_id): ?array { 
+        $db_man = new DAOManager();
+        $search = ['loan_id' => $loan_id];
+        $dql = "
+            SELECT l.".implode(', l.', DB::LOAN_FIELDS)." , 
+                r.name, b.asset_code, o.title 
+            FROM ". DB::LOAN_TABLE ." l 
+            JOIN ". DB::READER_TABLE ." r ON r.id = l.loaner_id
+            JOIN ". DB::BOOK_COPY_TABLE ." b ON b.id = l.book_copy_id
+            JOIN ". DB::EDITION_TABLE ." e ON e.id = b.edition_id 
+            JOIN ". DB::OPUS_TABLE ." o ON o.id = e.opus_id
+            WHERE l.id = :loan_id";
+        return $db_man -> fetch_flex_dql($dql, $search, true);
     }
 
 }
