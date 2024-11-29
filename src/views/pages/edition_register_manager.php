@@ -102,29 +102,32 @@ final class EditionRegisterManager extends FormManager{
     }
 
     protected function unordered_register_data(array $edition_data): string {
+        $opus = (!empty($edition_data['opus_id'])) ? BookDAO::fetch_opus_by_id($edition_data['opus_id']) : null;
+        $publisher = ((!empty($edition_data['publisher_id']))) ? BookDAO::fetch_publisher_by_id($edition_data['publisher_id']) : null;
+        $collection = (!empty($edition_data['collection_id'])) ? BookDAO::fetch_collection_by_id($edition_data['collection_id']) : null;
         return "
             <p>Obra cadastrada:</p></br>
             <ul>
                 <li><span class='data_header'>Título:</span> " .
-                    $edition_data['opus_title'] . "</li>
+                    (!is_null($opus) ? $opus -> get_title() : '') . "</li>
                 <li><span class='data_header'>Editora:</span> " .
-                    $edition_data['publisher_name'] . "</li>
+                    (!is_null($publisher) ? $publisher -> get_name() : '') . "</li>
                 <li><span class='data_header'>Coleção:</span> " .
-                    $edition_data['collection_name'] . "</li>
+                    (!is_null($collection) ? $collection -> get_name() : '') . "</li>
                 <li><span class='data_header'>ISBN:</span> " .
-                    $edition_data['isbn'] . "</li>
+                    ($edition_data['isbn'] ?? '') . "</li>
                 <li><span class='data_header'>Edição:</span> " .
-                    $edition_data['edition_number'] . "</li>
+                    ($edition_data['edition_number'] ?? '') . "</li>
                 <li><span class='data_header'>Ano de publicação:</span> " .
-                    $edition_data['publishing_year'] . "</li>
+                    ($edition_data['publishing_year'] ?? '') . "</li>
                 <li><span class='data_header'>Número de páginas:</span> " .
-                    $edition_data['pages'] . "</li>
+                    ($edition_data['pages'] ?? '') . "</li>
                 <li><span class='data_header'>Volume:</span> " .
-                    $edition_data['volume'] . "</li>
+                    ($edition_data['volume'] ?? '') . "</li>
                 <li><span class='data_header'>Cores da capa:</span> " .
-                    $edition_data['cover_colors'] . "</li>
+                    ($edition_data['cover_colors'] ?? '') . "</li>
                 <li><span class='data_header'>Tradutores:</span> " .
-                    $edition_data['translators'] . "</li>
+                    ($edition_data['translators'] ?? '') . "</li>
             </ul>";
     }
     
@@ -134,10 +137,6 @@ final class EditionRegisterManager extends FormManager{
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errors = $this -> handle_errors(); 
             if (empty($errors)){
-                $opus = BookDAO::fetch_opus_by_id(htmlspecialchars((int) $_POST['opus_id']));
-                $publisher = BookDAO::fetch_publisher_by_id(htmlspecialchars((int) $_POST['publisher_id']));
-                $collection = BookDAO::fetch_collection_by_id(htmlspecialchars((int) $_POST['collection_id']));
-                
                 $args = [
                     'register_type' => self::REGISTER_TYPE.'_register',
                     'success_title' => 'Cadastro aceito',
@@ -145,16 +144,16 @@ final class EditionRegisterManager extends FormManager{
                 ];
 
                 $args['edition_data'] = [
-                    'opus_title' => ($opus -> get_title()) ?? '',
-                    'publisher_name' => ($publisher -> get_name()) ?? '',
-                    'collection_name' => ($collection -> get_name()) ?? '',
-                    'isbn' => htmlspecialchars($_POST['isbn']) ?? '',
-                    'edition_number' => htmlspecialchars($_POST['edition_number']) ?? null,
-                    'publishing_year' => htmlspecialchars($_POST['publishing_year']) ?? null,
-                    'pages' => htmlspecialchars($_POST['pages']) ?? null,
-                    'volume' => htmlspecialchars($_POST['volume']) ?? null,
-                    'cover_colors' => htmlspecialchars($_POST['cover_colors']) ?? null,
-                    'translators' => htmlspecialchars($_POST['translators']) ?? null,
+                    'opus_id' => !empty($_POST['opus_id']) ? (int) htmlspecialchars($_POST['opus_id']) : '',
+                    'publisher_id' => !empty($_POST['publisher_id']) ? (int) htmlspecialchars($_POST['publisher_id']) : null,
+                    'collection_id' => !empty($_POST['collection_id']) ? (int) htmlspecialchars($_POST['collection_id']) : null,
+                    'isbn' => !empty($_POST['isbn']) ? htmlspecialchars($_POST['isbn']) : null,
+                    'edition_number' => !empty($_POST['edition_number']) ? (int) htmlspecialchars($_POST['edition_number']) : null,
+                    'publishing_year' => !empty($_POST['publishing_year']) ? (int) htmlspecialchars($_POST['publishing_year']) : null,
+                    'pages' => !empty($_POST['pages']) ? (int) htmlspecialchars($_POST['pages']) : null,
+                    'volume' => !empty($_POST['volume']) ? (int) htmlspecialchars($_POST['volume']) : null,
+                    'cover_colors' => !empty($_POST['cover_colors']) ? htmlspecialchars($_POST['cover_colors']) : null,
+                    'translators' => !empty($_POST['translators']) ? htmlspecialchars($_POST['translators']) : null,
                 ];
                 $this->operation_succeed($args);
                 

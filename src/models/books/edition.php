@@ -57,7 +57,7 @@ final class Edition{
         }
         else {
             $e -> set_isbn($data['isbn']);
-            $e -> set_translators($data['translators']);
+            $e -> set_translators(!empty($data['translators']) ? $data['translators'] : null);
         }
         
         return $e;
