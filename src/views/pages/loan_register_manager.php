@@ -29,13 +29,15 @@ final class LoanRegisterManager extends FormManager{
     protected function operation_succeed(&$args){
         try{
             $loan_data = $args['loan_data'];
-            foreach ($loan_data['book_data'] as $c => $title) {
+            foreach ($loan_data['book_data'] as $b) {
                 $data = [
                     'loaner_id' => $loan_data['loaner_id'],
-                    'book_copy_id' => $c,
+                    'book_copy_id' => $b['id'],
                     'loan_date' => $loan_data['loan_date']
                 ];
-                LoanDAO::register_loan($data, $_SESSION['user_id']);
+                $loan = LoanDAO::register_loan($data, $_SESSION['user_id']);
+                if ($loan <= 0 or is_null($loan) or !$loan)
+                    {throw new Exception;}
             }
             
             //Registration
@@ -56,6 +58,8 @@ final class LoanRegisterManager extends FormManager{
             foreach ($asset_codes as $c) {
                 if (BookDAO::is_asset_code_unique($c))
                     {$errors['non_existent_asset_code'] = 'Um dos patrimônios inseridos não está cadastrado!';}
+                if (!BookDAO::is_asset_code_available($c))
+                    {$errors['asset_code_non_available'] = "O patrimônio inserido deveria constar como 'emprestado'!";}
             }
         }       
 
@@ -70,8 +74,8 @@ final class LoanRegisterManager extends FormManager{
 
     protected function unordered_register_data(array $loan_data): string {
         $book_data = array();
-        foreach ($loan_data['book_data'] as $asset_code => $title)
-            {$book_data[] = "$title ($asset_code)";}
+        foreach ($loan_data['book_data'] as $b)
+            {$book_data[] = $b['title'] . "(" . $b['asset_code']  . ")";}
 
         return "
             <p>Empréstimo cadastrado:</p></br>
@@ -99,7 +103,13 @@ final class LoanRegisterManager extends FormManager{
                 $asset_codes = explode(',', htmlspecialchars($_POST['asset_code']));
                 foreach ($asset_codes as $c) {
                     $bookcopy = BookDAO::fetch_bookcopy_holistically_by_asset_code($c);
-                    if ($bookcopy) {$book_data[$c] = $bookcopy['title'];}
+                    if ($bookcopy) {
+                        $book_data[] = [
+                            'id' => $bookcopy['id'],
+                            'title' => $bookcopy['title'],
+                            'asset_code' => $c,
+                        ];
+                    }
                 }
                               
                 $reader_name = PeopleDAO::fetch_reader_by_id(

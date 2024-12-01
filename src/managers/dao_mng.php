@@ -85,7 +85,7 @@ final class DAOManager{
             DML_OPS::INSERT => "INSERT INTO $t_name (" .
                 implode(', ', $t_fields) .") VALUES (:" .
                 implode(', :', $t_fields) . ")".
-                (($return_id) ? "RETURNING id" : ''),
+                (($return_id) ? " RETURNING id" : ''),
                 
             DML_OPS::UPDATE => "UPDATE $t_name SET " . implode(', ', $set_clauses) . " WHERE id = :id",
             DML_OPS::DELETE => "DELETE FROM $t_name WHERE id = :id",
@@ -102,20 +102,19 @@ final class DAOManager{
 
         $sql = self::get_dml_clause_for(DML_OPS::INSERT, $t_name, $t_fields, $return_id);
         $stmt = $this -> pdo -> prepare($sql);
-        
         foreach ($t_fields as $field) {
             try {
-                if (is_bool($data[$field])) {
-                    $stmt->bindValue(":$field", $data[$field], PDO::PARAM_BOOL);
-                } 
-                else if ($data[$field] instanceof DateTime){
-                    $stmt->bindValue(":$field", $data[$field]->format('Y-m-d H:i:sP'), PDO::PARAM_STR);
-                }
-                else {
-                    $stmt->bindValue(":$field", $data[$field]);
-                }
+                if (is_bool($data[$field]))
+                    {$stmt->bindValue(":$field", $data[$field], PDO::PARAM_BOOL);} 
+                else if ($data[$field] instanceof DateTime)
+                    {$stmt->bindValue(":$field", $data[$field]->format('Y-m-d H:i:sP'), PDO::PARAM_STR);}
+                else
+                    {$stmt->bindValue(":$field", $data[$field]);}
             }   
-            catch (PDOException $e) {die("Connection failed: " . $e->getMessage() . $field . 'SQL Statement: '. $sql);}
+            catch (PDOException $e) {
+                error_log("Problema de inserção: " . $e->getMessage() . $field . 'SQL Statement: '. $sql);
+                return null;
+            }
         }
         
         try {
@@ -123,12 +122,14 @@ final class DAOManager{
                 $stmt->execute();
                 return $stmt->fetchColumn(); // Returns last id inserted
             }
-            else return $stmt->execute();
-            
+            else
+                {return $stmt->execute();}
         }
         catch (PDOException $e) {
-            die("Connection failed: " . $e->getMessage());
+            error_log("Problema de inserção: " . $e->getMessage() . $field . 'SQL Statement: '. $sql);
+            return null;
         }
+        
     }   
     
     // ----- Updating:

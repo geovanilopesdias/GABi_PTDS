@@ -31,7 +31,11 @@ final class LoanDetail extends ElementDetail{
             <p><strong>Retirada em:</strong> " . InterfaceManager::mask_timestamp($loan['loan_date']) . "</p>
             <p><strong>Emprestado por:</strong> $opener_name (em ".InterfaceManager::mask_timestamp($loan['opening_date']).")</p>
         ";
-        if (!is_null($loan['return_date'])){
+        if (is_null($loan['return_date'])) {
+            InterfaceManager::;
+        }
+
+        else {
             $closer_name = PeopleDAO::fetch_reader_by_id($loan['closer_id'], true) -> get_name();
             $detail .= "
                 <p><strong>Retorno em:</strong> " . InterfaceManager::mask_timestamp($loan['return_date']) . "</p>

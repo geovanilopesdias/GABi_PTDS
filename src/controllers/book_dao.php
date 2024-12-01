@@ -384,6 +384,11 @@ final class BookDAO{
         return is_null($book);
     }
 
+    public static function is_asset_code_available(string $asset_code): bool {
+        $book = self::fetch_bookcopy_by_asset_code($asset_code);
+        return $book -> get_status() === 'available';
+    }
+
     
 
     public static function fetch_opus_by_title(string $title): ?array { // OK

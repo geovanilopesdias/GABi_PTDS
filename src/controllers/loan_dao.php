@@ -18,7 +18,7 @@ final class LoanDAO{
     }
 
     // ----- Registration:
-    public static function register_loan(array $data, int $user_id){ //OK
+    public static function register_loan(array $data, int $user_id){ 
         $db_man = new DAOManager();
         if (!$db_man -> can_user_loan($user_id)) return false;
         $data['opener_id'] = $user_id;

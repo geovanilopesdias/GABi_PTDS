@@ -139,6 +139,39 @@ final class InterfaceManager{
         ";
     }
 
+    private static function close_loan_button(): string{
+        return "
+            <form method='post' action='".$search_type."_search.php'>
+                <input 
+                    id='back_to_search_button' 
+                    class='back_buttons'
+                    type='submit' 
+                    value='&#x25c0; | DEVOLVER'>
+            </form>
+        ";
+    }
+
+    private static function renovate_loan_button(): string{
+        return "
+            <form method='post' action='".$search_type."_search.php'>
+                <input 
+                    id='back_to_search_button' 
+                    class='back_buttons'
+                    type='submit' 
+                    value='&#x25c0; | NOVA BUSCA'>
+            </form>
+        ";
+    }
+
+    public static function loan_button_grid(string $search_type): string{
+        return "
+            <div>".
+            self::close_loan_button().
+            self::renovate_loan_button()."
+            </div>
+        ";
+    }
+
 
     /**
      * @var $register_type: Should be rather simply user, opus (etc.) or loan.
