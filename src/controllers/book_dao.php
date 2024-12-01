@@ -150,9 +150,9 @@ final class BookDAO{
             SELECT o.title, p.name as publisher, c.name as collection, 
             e.id, e.isbn, e.publishing_year as year 
             FROM ".DB::EDITION_TABLE." e 
-            JOIN ".DB::OPUS_TABLE." o on e.opus_id = o.id
-            JOIN ".DB::PUBLISHER_TABLE." p on p.id = e.publisher_id
-            JOIN ".DB::COLLECTION_TABLE." c on c.id = e.collection_id
+            LEFT JOIN ".DB::OPUS_TABLE." o on e.opus_id = o.id
+            LEFT JOIN ".DB::PUBLISHER_TABLE." p on p.id = e.publisher_id
+            LEFT JOIN ".DB::COLLECTION_TABLE." c on c.id = e.collection_id
         ";
         return $db_man -> fetch_all_flex_dql($dql);
     }
@@ -215,7 +215,7 @@ final class BookDAO{
             " JOIN ". DB::OPUS_TABLE. " ON ".DB::AUTHORSHIP_TABLE.".opus_id = ".DB::OPUS_TABLE.".id".
             " JOIN ". DB::WRITER_TABLE. " ON ".DB::AUTHORSHIP_TABLE.".writer_id = ".DB::WRITER_TABLE.".id".
             " JOIN ". DB::EDITION_TABLE. " ON ".DB::EDITION_TABLE.".opus_id = ".DB::OPUS_TABLE.".id".
-            " JOIN ". DB::PUBLISHER_TABLE. " ON ".DB::PUBLISHER_TABLE.".id = ".DB::EDITION_TABLE.".publisher_id".
+            " LEFT JOIN ". DB::PUBLISHER_TABLE. " ON ".DB::PUBLISHER_TABLE.".id = ".DB::EDITION_TABLE.".publisher_id".
             " WHERE ".DB::EDITION_TABLE.".id = :edition_id".
             " GROUP BY ".DB::EDITION_TABLE . ".id, ".DB::OPUS_TABLE.".id, ".DB::PUBLISHER_TABLE . ".name".
             " ORDER BY ".DB::OPUS_TABLE.".title";

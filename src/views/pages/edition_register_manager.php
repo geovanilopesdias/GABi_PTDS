@@ -64,7 +64,7 @@ final class EditionRegisterManager extends FormManager{
             }
         }
 
-        if (!empty($_POST['translators'])) {
+        if (!empty(trim($_POST['translators']))) {
             $names = explode(',', trim(htmlspecialchars($_POST['translators'])));
             $nonvalid_names = array();
             foreach ($names as $n) {if (!SecurityManager::is_name_valid($n)) {$nonvalid_names[] = $c;}}
@@ -138,7 +138,7 @@ final class EditionRegisterManager extends FormManager{
             $errors = $this -> handle_errors(); 
             if (empty($errors)){
                 $args = [
-                    'register_type' => self::REGISTER_TYPE.'_register',
+                    'register_type' => self::REGISTER_TYPE,
                     'success_title' => 'Cadastro aceito',
                     'success_message' => 'Cadastro de edição realizado com sucesso'
                 ];

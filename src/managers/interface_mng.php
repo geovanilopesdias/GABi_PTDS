@@ -330,12 +330,12 @@ final class InterfaceManager{
     }
 
     public static function edition_selector(bool $is_required = true): string{
-        $edition = BookDAO::fetch_all_editions_essentially_with_opus_title();
+        $editions = BookDAO::fetch_all_editions_essentially_with_opus_title();
         $required = ($is_required) ? 'required' : '';
         $selector = "
             <select name='edition_id' class='selector' $required>
                 <option value=''>--- Seleciona uma edição</option>";
-        foreach ($edition as $e)
+        foreach ($editions as $e)
             $selector .= "<option value='".$e['id']."'>".
                               $e['title'].
                               (!is_null($e['publisher']) ? ' | Ed.: '.$e['publisher'] : '').

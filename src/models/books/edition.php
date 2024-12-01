@@ -83,13 +83,18 @@ final class Edition{
     }
 
     public function set_translators(?string $translators){
-        if(is_null($translators)) $this -> translators = null;
-        
-        $translators_as_array = explode(',', $translators);
-        foreach($translators_as_array as $t) if(!SecurityManager::is_name_valid(trim($t)))
-            throw new UnexpectedValueException("Translators' names may have invalid characters.");
-        
-        $this -> translators = $translators;
+        error_log('Received translators: ' . var_export($translators, true));
+        if(is_null($translators) or trim($translators) === '')
+            {$this -> translators = null;}
+        else {
+            $translators_as_array = explode(',', $translators);
+            foreach($translators_as_array as $t) {
+                if(!SecurityManager::is_name_valid(trim($t))) {
+                    throw new UnexpectedValueException("Translators' names may have invalid characters.");}
+                }
+            
+            $this -> translators = $translators;
+        }
     }
 
     public function set_opus_id($opus_id){$this->opus_id = $opus_id;}
