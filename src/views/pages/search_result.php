@@ -16,6 +16,7 @@ abstract class SearchResults{
                 'user' => 'Leitores',
                 'bookcopy' => 'Exemplares',
                 'classroom' => 'Turmas',
+                'loan' => 'Empréstimos',
             };
         InterfaceManager::echo_html_head($title, self::PAGE_TYPE);
         echo "<div id='results_grid'>";

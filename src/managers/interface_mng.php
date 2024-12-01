@@ -33,7 +33,7 @@ final class InterfaceManager{
             return $datetime->format('d/m/y | H:i');
         }
         catch (DateMalformedStringException) {
-            return 'Último acesso mal-formado';
+            return 'Data mal-formado';
         }
     }
 
@@ -272,6 +272,27 @@ final class InterfaceManager{
         return "$selector</select>";
     }
 
+    public static function reader_selector(): string{
+        $reader_intances = PeopleDAO::fetch_all_readers();
+        $selector = "
+            <select name='loaner_id' class='selector' required>
+                <option value=''>--- Seleciona um leitor</option>";
+        foreach ($reader_intances as $r){
+            $selector .= "<option value='".$r->get_id()."'>". ucwords($r->get_name());    
+            if ($r -> get_role() == 'student') {
+                $classrooms = PeopleDAO::fetch_student_classrooms($r -> get_id());
+                if (is_array($classrooms))
+                    {$classrooms = implode(', ', $classrooms);}
+                $selector .= " (".$classrooms.")";
+            }
+            $selector .= "</option>";
+        }
+        
+        return "$selector</select>";
+    }
+
+    
+
     /**
      * Selector tag with all the registered writers.
      * 
@@ -371,7 +392,10 @@ final class InterfaceManager{
         // Caption and header
         $headers = array_keys($results[0]);
         $table = "<div class='results'><table class='sortable'>\n<caption>" . htmlspecialchars($caption) . "</caption>\n<thead>\n<tr>";
-        foreach ($headers as $header) $table .= "<th>" . ucfirst(htmlspecialchars($header)) . "</th>";
+        foreach ($headers as $header) {
+            $table .= ($header === 'id') ?
+                "<th>Ver</th>" : "<th>" . ucfirst(htmlspecialchars($header)) . "</th>";
+        }
         $table .= "</tr>\n</thead>\n<tbody>";
 
         // Rows

@@ -121,12 +121,12 @@ final class LibrarianMenu extends Menu{
                     </td>
                     
                     <td>
-                    <a href='".self::MENU_HREF['report_debt']."'>
+                    <a href='' title='NÃO IMPLEMENTADO'>
                         <img class='report_icon' src='".self::MENU_ICON_SRC['report_debt']."' />
                     </a>
                     </td>
                     <td>
-                    <a href='".self::MENU_HREF['report_open_loans']."'>
+                    <a href='' title='NÃO IMPLEMENTADO'>
                     <img class='report_icon' src='".self::MENU_ICON_SRC['report_open_loans']."' />
                     </td>
                 </tr>
@@ -136,7 +136,7 @@ final class LibrarianMenu extends Menu{
                 </tr>
                 <tr>
                     <td>
-                    <a href='".self::MENU_HREF['report_user_loan_history']."'>
+                    <a href='' title='NÃO IMPLEMENTADO'>
                     <img class='report_icon' src='".self::MENU_ICON_SRC['report_user_loan_history']."' />
                     </td>
                     <td>

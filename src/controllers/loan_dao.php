@@ -86,8 +86,8 @@ final class LoanDAO{
         $search = ($field === 'name') ? [$field => "%$value%"] : [$field => $value];
         $where_field = ($field === 'name') ? 'r.name ILIKE' : 'b.asset_code =';
         $dql = "
-            SELECT ".implode(',', DB::LOAN_FIELDS).", 
-                r.name, r.role, o.title 
+            SELECT l.id, l.loan_date AS retirada, 
+                r.name AS nome, r.role AS tipo, o.title AS título 
             FROM ". DB::LOAN_TABLE ." l 
             JOIN ". DB::READER_TABLE ." r ON r.id = l.loaner_id
             JOIN ". DB::BOOK_COPY_TABLE ." b ON b.id = l.book_copy_id

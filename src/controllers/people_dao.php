@@ -245,6 +245,14 @@ final class PeopleDAO{
         return $classroom_instances;
     }
 
+    public static function fetch_all_readers(): ?array {
+        $db_man = new DAOManager();
+        $reader_instances = array();
+        $fetched_readers = $db_man -> fetch_all_records_from(DB::READER_TABLE, 'name');
+        foreach($fetched_readers as $r) $reader_instances[] = Reader::fromArray($r, true);
+        return $reader_instances;
+    }
+
     public static function fetch_classroom_by_name(string $cleaned_name): ?Classroom { 
         $db_man = new DAOManager();
         $search = ['name' => "$cleaned_name"];
@@ -341,6 +349,22 @@ final class PeopleDAO{
         ";
         return $db_man->fetch_flex_dql($dql, $search);
     }
+
+    
+    public static function fetch_student_classrooms(int $student_id): ?array {
+        $db_man = new DAOManager();
+        $search = ["student_id" => $student_id];        
+        $dql = "
+            SELECT c.name 
+            FROM ". DB::CLASSROOM_TABLE. " c 
+            JOIN ".DB::ENROLLMENT_TABLE." e ON e.classroom_id = c.id 
+            JOIN ".DB::READER_TABLE." r ON r.id = e.student_id 
+            WHERE r.id = :student_id 
+        ";
+        $results = $db_man->fetch_flex_dql($dql, $search);
+        return $results ? array_column($results, 'name') : null;
+    }
+
      
 }
 
