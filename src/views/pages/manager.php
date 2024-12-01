@@ -1,7 +1,7 @@
 <?php
 
 require_once(__DIR__ . '/../../managers/interface_mng.php');
-require_once(__DIR__ . '/../../controllers/people_dao.php');
+// require_once(__DIR__ . '/../../controllers/people_dao.php');
 
 abstract class FormManager{
     const PAGE_TYPE = 'manager';
@@ -11,10 +11,6 @@ abstract class FormManager{
     
     public function manage_post_variable(){
         session_start();
-    }
-
-    protected function get_user(): ?Reader{
-        return PeopleDAO::fetch_reader_by_login(trim(htmlspecialchars($_POST['login'] ?? '')));
     }
 
     protected function operation_failed(
@@ -33,7 +29,7 @@ abstract class FormManager{
             </ul>
         ";
         echo "</div>";
-        header("refresh:10; url=$register_type.php");
+        header("refresh:10; url=$register_type"."_register.php");
         InterfaceManager::echo_html_tail();
         exit;
     }

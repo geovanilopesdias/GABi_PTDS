@@ -14,6 +14,10 @@ final class LoginManager extends FormManager{
 
     public function __construct() {}
 
+    private function get_user(): ?Reader{
+        return PeopleDAO::fetch_reader_by_login(trim(htmlspecialchars($_POST['login'] ?? '')));
+    }
+
     protected function operation_failed(
         string $error_detail, $errors = [],
         string $register_type = self::REGISTER_TYPE.'_register',

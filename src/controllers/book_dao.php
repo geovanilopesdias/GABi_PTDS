@@ -144,6 +144,19 @@ final class BookDAO{
         return $eds_instances;
     }
 
+    public static function fetch_all_editions_essentially_with_opus_title(): ?array{  
+        $db_man = new DAOManager();
+        $dql = "
+            SELECT o.title, p.name as publisher, c.name as collection, 
+            e.id, e.isbn, e.publishing_year as year 
+            FROM ".DB::EDITION_TABLE." e 
+            JOIN ".DB::OPUS_TABLE." o on e.opus_id = o.id
+            JOIN ".DB::PUBLISHER_TABLE." p on p.id = e.publisher_id
+            JOIN ".DB::COLLECTION_TABLE." c on c.id = e.collection_id
+        ";
+        return $db_man -> fetch_all_flex_dql($dql);
+    }
+
     public static function fetch_whole_bookshelf() { //OK
         $db_man = new DAOManager();
         $fetched_copies = $db_man -> fetch_all_records_from(DB::BOOK_COPY_TABLE, 'asset_code');
@@ -342,19 +355,36 @@ final class BookDAO{
     }
 
     // By-fetchers
-    public static function fetch_bookcopy_by_asset_code(string $asset_code): ?BookCopy { //OK
+    public static function fetch_bookcopy_by_asset_code(string $asset_code): ?BookCopy {
         $db_man = new DAOManager();
-        $bookcopy_array = $db_man -> fetch_records_from(
-            ['asset_code' => $asset_code],
-            DB::BOOK_COPY_TABLE, DB::BOOK_COPY_FIELDS,
-            [['field' => 'asset_code', 'operator' => '=']], // WHERE conditions
-            'AND', null, false, true // Not distinct, but unique
-        );
-        if (empty($bookcopy_array)) return null;
-        return BookCopy::fromArray(
-            $bookcopy_array, // fetch_records_from returns a 2D array
-            false); // Factory NOT used for insertion
+        try {
+            $bookcopy_array = $db_man->fetch_records_from (
+                ['asset_code' => $asset_code],
+                DB::BOOK_COPY_TABLE,
+                DB::BOOK_COPY_FIELDS,
+                [['field' => 'asset_code', 'operator' => '=']],
+                'AND', null, false, true
+            );
+            
+            if (empty($bookcopy_array)) return null;
+            return BookCopy::fromArray (
+                $bookcopy_array,
+                false
+            );
+        }
+        catch (Exception $e) {
+            error_log("Error in fetch_bookcopy_by_asset_code: " . $e->getMessage());
+            return null;
+        }
     }
+    
+
+    public static function is_asset_code_unique(string $asset_code): bool {
+        $book = self::fetch_bookcopy_by_asset_code($asset_code);
+        return is_null($book);
+    }
+
+    
 
     public static function fetch_opus_by_title(string $title): ?array { // OK
         $db_man = new DAOManager();

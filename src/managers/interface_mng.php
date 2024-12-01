@@ -290,7 +290,7 @@ final class InterfaceManager{
                               (($w->get_birth_year() > 0) ? ' ('.$w->get_birth_year().')' : '').
                               "</option>";
         
-        return "$selector</select>";
+        return "$selector</select><br>";
     }
 
     public static function opus_selector(bool $is_required = true): string{
@@ -305,7 +305,25 @@ final class InterfaceManager{
                               (!is_null($o->get_original_year()) ? ' ('.$o->get_original_year().')' : '').
                               "</option>";
         
-        return "$selector</select>";
+        return "$selector</select><br>";
+    }
+
+    public static function edition_selector(bool $is_required = true): string{
+        $edition = BookDAO::fetch_all_editions_essentially_with_opus_title();
+        $required = ($is_required) ? 'required' : '';
+        $selector = "
+            <select name='edition_id' class='selector' $required>
+                <option value=''>--- Seleciona uma edição</option>";
+        foreach ($edition as $e)
+            $selector .= "<option value='".$e['id']."'>".
+                              $e['title'].
+                              (!is_null($e['publisher']) ? ' | Ed.: '.$e['publisher'] : '').
+                              (!is_null($e['collection']) ? ' | Col.: '.$e['collection'] : '').
+                              (!is_null($e['isbn']) ? ' | ISBN: '.$e['isbn'] : '').
+                              (!is_null($e['year']) ? ' | '.$e['year'] : '').
+                              "</option>";
+        
+        return "$selector</select><br>";
     }
 
     public static function publisher_selector(): string{
@@ -317,7 +335,7 @@ final class InterfaceManager{
             $selector .= "<option value='".$p->get_id()."'>".
                               $p->get_name()."</option>";
         
-        return "$selector</select>";
+        return "$selector</select><br>";
     }
 
     public static function collection_selector(): string{
@@ -329,7 +347,7 @@ final class InterfaceManager{
             $selector .= "<option value='".$c->get_id()."'>".
                               $c->get_name()."</option>";
         
-        return "$selector</select>";
+        return "$selector</select><br>";
     }
 
     /**

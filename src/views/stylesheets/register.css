@@ -6,3 +6,8 @@
     box-shadow: var(--login-menu-box-shadow);
     filter: var(--darker-div-filter);
 }
+
+.search_disclaimer{
+    max-width: 25vw;
+    justify-self: center;
+}

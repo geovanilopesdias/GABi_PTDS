@@ -36,8 +36,6 @@ final class BookcopyDetail extends ElementDetail{
                     return htmlspecialchars($author['name']) . " (" . htmlspecialchars($author['birth_year']) . ")";},
                     json_decode($bookcopy['writers'], true)));
         $colors = $bookcopy['cover_colors'];
-        // $edition_fields = ['', '', '', '', '', ''];
-        // $opus_fields = ['', '', '', '', ''];
 
         $detail = "
             <p><strong>Patrimônio:</strong> " . ucwords($bookcopy['asset_code']).

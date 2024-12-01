@@ -1,14 +1,10 @@
 <?php
 
-use PhpParser\Node\Stmt\Interface_;
-
-use function PHPUnit\Framework\isNull;
-
 require_once(__DIR__ . '/../../managers/interface_mng.php');
 require_once(__DIR__ . '/../../controllers/people_dao.php');
 require_once(__DIR__ . '/manager.php');
 
-final class ClassroomRegisterManager extends ViewManager{
+final class ClassroomRegisterManager extends FormManager{
     const REGISTER_TYPE = 'classroom';
     const FAIL_TITLE = 'Cadastro recusado';
     const ERROR_WARNING = 'Algo deu errado com sua tentativa de cadastro de turma!';
@@ -22,7 +18,7 @@ final class ClassroomRegisterManager extends ViewManager{
 
     protected function operation_failed(
         string $error_detail, $errors = [],
-        string $register_type = self::REGISTER_TYPE.'_register',
+        string $register_type = self::REGISTER_TYPE,
         string $fail_title = self::FAIL_TITLE,
         string $error_warning = self::ERROR_WARNING
         ){
@@ -31,11 +27,11 @@ final class ClassroomRegisterManager extends ViewManager{
 
     protected function operation_succeed(&$args){
         try{
-            $reader_data = $args['reader_data'];
-            $classroom_names = explode(',', $reader_data['names']);
+            $classroom_data = $args['classroom_data'];
+            $classroom_names = explode(',', $classroom_data['names']);
             foreach ($classroom_names as $n)   
-                PeopleDAO::register_classroom(['name' => $n, 'year' => $reader_data['year']], $_SESSION['user_id']);
-            $args['success_body'] = $this -> unordered_register_data($reader_data);
+                PeopleDAO::register_classroom(['name' => $n, 'year' => $classroom_data['year']], $_SESSION['user_id']);
+            $args['success_body'] = $this -> unordered_register_data($classroom_data);
             parent::operation_succeed($args);
         }
         catch (Exception $e){
@@ -58,11 +54,11 @@ final class ClassroomRegisterManager extends ViewManager{
         return $errors;
     }
 
-    protected function unordered_register_data(array $reader_data): string {
+    protected function unordered_register_data(array $classroom_data): string {
         $list = "
-            <p><span class='reader_data_header'>Turmas cadastradas:</span></p></br><ul>";
+            <p><span class='classroom_data_header'>Turmas cadastradas:</span></p></br><ul>";
     
-        foreach ($reader_data['names'] as $n) $list .= "<li>" . htmlspecialchars($n) . "</li>";
+        foreach ($classroom_data['names'] as $n) $list .= "<li>" . htmlspecialchars($n) . "</li>";
         $list .= "</ul>";
         return $list;
     }
@@ -76,9 +72,9 @@ final class ClassroomRegisterManager extends ViewManager{
                 $args = [
                     'register_type' => self::REGISTER_TYPE,
                     'success_title' => 'Cadastro aceito',
-                    'success_message' => 'Cadastro de usuário realizado com sucesso'
+                    'success_message' => 'Cadastro de turma realizado com sucesso'
                 ];
-                $args['reader_data'] = [
+                $args['classroom_data'] = [
                     'names' => htmlspecialchars($_POST['names']),
                     'year' => htmlspecialchars($_POST['year'])
                 ];

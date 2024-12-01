@@ -12,15 +12,22 @@ abstract class ElementDetail{
     protected abstract function data_table($element): string;
 
     protected function get_element(string $element_type): mixed{
-        $id = htmlspecialchars($_POST['id']);
-        return match($element_type){
-            'user' => PeopleDAO::fetch_reader_by_id($id, true),
-            'classroom' => PeopleDAO::fetch_classroom_by_id($id),
-            'opus' => BookDAO::fetch_opus_by_id($id),
-            'edition' => BookDAO::fetch_edition_by_id($id),
-            'bookcopy' => BookDAO::fetch_bookcopy_by_id($id),
-            'loan' => LoanDAO::fetch_loan_by_id($id),
-        };
+        if (isset($_POST['asset_code'])) {
+            $asset_code = htmlspecialchars($_POST['asset_code']);
+            return BookDAO::fetch_bookcopy_by_asset_code($asset_code);
+        }
+        else {
+            $id = htmlspecialchars($_POST['id']);
+            return match($element_type){
+                'user' => PeopleDAO::fetch_reader_by_id($id, true),
+                'classroom' => PeopleDAO::fetch_classroom_by_id($id),
+                'opus' => BookDAO::fetch_opus_by_id($id),
+                'edition' => BookDAO::fetch_edition_by_id($id),
+                'bookcopy' => BookDAO::fetch_bookcopy_by_id($id),
+                'loan' => LoanDAO::fetch_loan_by_id($id),
+            };
+        }
+        
     }
 
     public function echo_structure(string $element_type){
@@ -37,7 +44,7 @@ abstract class ElementDetail{
                 'writer' => 'Autor',
                 'opus' => 'Obra',
                 'edition' => 'Edição',
-                'bookcopy' => 'Exemplar',
+                'bookcopy', 'book' => 'Exemplar',
                 'loan' => 'Empréstimo',
             };
         InterfaceManager::echo_html_head($title, self::PAGE_TYPE);

@@ -29,6 +29,7 @@ abstract class Register{
                 'user' => 'Usuários',
                 'writer' => 'Autores',
                 'publisher' => 'Editoras',
+                'collection' => 'Coleções',
                 'opus' => 'Obras',
                 'edition' => 'Edições',
                 'bookcopy' => 'Exemplares',

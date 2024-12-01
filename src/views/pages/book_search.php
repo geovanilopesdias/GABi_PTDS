@@ -21,14 +21,18 @@ final class BookSearch extends Search{
                         <input type='text' name='title' placeholder='Título' autofocus/></br>
                         <input type='text' name='writer' placeholder='Autor'/></br>
                         <input type='text' name='collection' placeholder='Coleção'/></br>
-                        <input type='text' name='cover_colors' placeholder='Cor de capa (azul, branco)'/><br>                    
+                        <input type='text' name='cover_colors' placeholder='Cor de capa (azul, branco)'/><br>".
+                        InterfaceManager::search_button()."
                     </fieldset>
+                </form>
+                <form class='search' action='bookcopy_element_detail.php' method='post'>    
                     <fieldset><legend>Busca por patrimônio</legend>
                         <input type='text' name='asset_code' placeholder='Insira valor exato!'/><br>".
-                        InterfaceManager::search_input_disclaimer('Busca por patrimônio ignora campos acima!') .
-                    "</fieldset>" .
-                    InterfaceManager::search_button().
-                "</form>
+                        InterfaceManager::search_input_disclaimer('Busca por patrimônio ignora campos anteriores!') .
+                        InterfaceManager::search_button()."
+                    </fieldset>
+                </form>
+                    
             </div>
         ";
     }

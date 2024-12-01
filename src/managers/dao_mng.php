@@ -427,6 +427,15 @@ final class DAOManager{
         }
         catch (PDOException $e) {die("Connection failed: " . $e->getMessage() . " SQL Statement: \n" . $stmt->queryString);}
     }
+
+    public function fetch_all_flex_dql(string $dql){
+        $stmt = $this -> pdo -> prepare($dql);
+        try {
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+        catch (PDOException $e) {die("Connection failed: " . $e->getMessage() . " SQL Statement: \n" . $stmt->queryString);}
+    }
 }
 
 ?>
