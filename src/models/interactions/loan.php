@@ -61,7 +61,7 @@ final class Loan{
 
     public function get_id(): int {return $this->id;}
     public function get_book_copy_id(): int {return $this->book_copy_id;}
-    public function get_reader_id(): int {return $this->loaner_id;}
+    public function get_loaner_id(): int {return $this->loaner_id;}
     public function get_opener_id(): int {return $this->opener_id;}
     public function get_closer_id(): int {return $this->closer_id;}
     public function get_receiver_id(): int {return $this->debt_receiver_id;}

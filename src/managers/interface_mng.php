@@ -139,37 +139,47 @@ final class InterfaceManager{
         ";
     }
 
-    private static function close_loan_button(): string{
+    private static function close_loan_button(int $loan_id): string{
         return "
-            <form method='post' action='".$search_type."_search.php'>
+            <form method='post' action='loan_update_manager.php'>
+                <input type='date' name='return_date' required>
+                <input type='hidden' name='action' value='close'>
+                <input type='hidden' name='id' value='".$loan_id."'>
                 <input 
-                    id='back_to_search_button' 
+                    id='close_loan_button' 
                     class='back_buttons'
                     type='submit' 
-                    value='&#x25c0; | DEVOLVER'>
+                    value='&crarr; | DEVOLVER'>
             </form>
         ";
     }
 
-    private static function renovate_loan_button(): string{
+    private static function renovate_loan_button(int $loan_id): string{
         return "
-            <form method='post' action='".$search_type."_search.php'>
+            <form method='post' action='loan_update_manager.php'>
+                <input type='date' name='renovation_date' required>
+                <input type='hidden' name='action' value='renovate'>
+                <input type='hidden' name='id' value='".$loan_id."'>
                 <input 
-                    id='back_to_search_button' 
+                    id='renovate_loan_button' 
                     class='back_buttons'
                     type='submit' 
-                    value='&#x25c0; | NOVA BUSCA'>
+                    value='&#10022; | RENOVAR'>
             </form>
         ";
     }
 
-    public static function loan_button_grid(string $search_type): string{
+    public static function loan_button_grid(int $loan_id, $errors): string{
+        $id_from_session = $_SESSION['form_data']['id'];
         return "
-            <div>".
-            self::close_loan_button().
-            self::renovate_loan_button()."
+            <div id='loan_button_grid'>".
+                ((!empty($errors)) ? InterfaceManager::search_input_disclaimer($errors['invalid_date']) : '') .
+                (is_null($id_from_session) ? self::close_loan_button($loan_id) : self::close_loan_button($id_from_session)). 
+                ((!empty($errors)) ? InterfaceManager::search_input_disclaimer($errors['invalid_closing']) : '') .
+                (is_null($id_from_session) ? self::renovate_loan_button($loan_id) : self::renovate_loan_button($id_from_session)).
+                ((!empty($errors)) ? InterfaceManager::search_input_disclaimer($errors['invalid_renovation']) : '') ."
             </div>
-        ";
+        ";//  
     }
 
 

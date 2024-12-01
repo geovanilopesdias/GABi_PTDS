@@ -32,7 +32,7 @@ final class LoanDetail extends ElementDetail{
             <p><strong>Emprestado por:</strong> $opener_name (em ".InterfaceManager::mask_timestamp($loan['opening_date']).")</p>
         ";
         if (is_null($loan['return_date'])) {
-            InterfaceManager::;
+            $detail .= InterfaceManager::loan_button_grid($element -> get_id(), $_SESSION['errors']);
         }
 
         else {

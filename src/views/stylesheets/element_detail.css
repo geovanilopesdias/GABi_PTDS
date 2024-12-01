@@ -49,3 +49,11 @@
     text-align: center;
     align-self: center;
 }
+
+#renovate_loan_button{
+    background-color: rgb(54, 73, 22);
+}
+
+#close_loan_button{
+    background-color: rgb(177, 105, 17);
+}

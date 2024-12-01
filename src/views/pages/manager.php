@@ -29,7 +29,10 @@ abstract class FormManager{
             </ul>
         ";
         echo "</div>";
-        header("refresh:10; url=$register_type"."_register.php");
+        if (isset($_POST['action'])) 
+            {header("refresh:5; url=loan_element_detail.php");}
+        else
+            {header("refresh:5; url=$register_type"."_register.php");}
         InterfaceManager::echo_html_tail();
         exit;
     }

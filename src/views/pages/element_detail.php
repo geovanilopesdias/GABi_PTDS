@@ -17,7 +17,7 @@ abstract class ElementDetail{
             return BookDAO::fetch_bookcopy_by_asset_code($asset_code);
         }
         else {
-            $id = htmlspecialchars($_POST['id']);
+            $id = intval(htmlspecialchars($_POST['id']));
             return match($element_type){
                 'user' => PeopleDAO::fetch_reader_by_id($id, true),
                 'classroom' => PeopleDAO::fetch_classroom_by_id($id),

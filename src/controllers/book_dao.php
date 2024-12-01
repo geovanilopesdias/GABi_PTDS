@@ -241,12 +241,12 @@ final class BookDAO{
         if($field === 'asset_code')
             throw new InvalidArgumentException('Use method BookDAO::fetch_bookcopy_holistically_by_asset_code() instead.');
 
-        if (!in_array($field, ['title', 'author', 'collection', 'cover_colors', 'isbn'], true))
+        if (!in_array($field, ['id', 'title', 'author', 'collection', 'cover_colors', 'isbn'], true))
             throw new InvalidArgumentException("It isn't possible to search by $field");
 
         $db_man = new DAOManager();
         $field_search = match ($field) {
-            'title' => 'o.title', 'writer' => 'w.name', 'isbn' => 'e.isbn',
+            'id' => 'b.id', 'title' => 'o.title', 'writer' => 'w.name', 'isbn' => 'e.isbn',
             'collection' => 'c.name', 'cover_colors' => 'e.cover_colors'
         };
 

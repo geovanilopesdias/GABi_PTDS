@@ -33,6 +33,12 @@ abstract class Search{
             };
 
         InterfaceManager::echo_html_head($title, self::PAGE_TYPE);
+        $header = "<h1>Busca de ". match ($search_type) {
+            'user' => 'Leitores',
+            'loan' => 'Empréstimos',
+            'book', 'bookcopy' => 'Livros',
+            'classroom' => 'Turmas',
+        } . "</h1>";
         echo "<div class='search_grid'>";
         self::echo_logo_back();
         $this -> echo_search_form();
