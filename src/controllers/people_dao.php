@@ -92,6 +92,23 @@ final class PeopleDAO{
         catch(Exception $e) {echo ("Reader setting failed: " . $e->getMessage());}
         return $db_man->update_entity_in(DB::READER_TABLE, $data);
     }
+
+    public static function update_reader_last_login(int $reader_id, DateTime $login): bool { //OK
+        try {
+            $db_man = new DAOManager();
+            $current_reader_data = self::fetch_reader_by_id($reader_id, false) -> toArray();
+            if (empty($current_reader_data)) return false;
+            
+            $data['id'] = $reader_id;
+            $data['last_login'] = $login;
+            return $db_man->update_entity_in(DB::READER_TABLE, $data);
+        }
+        catch(Exception $e) {
+            error_log ("Reader setting failed: " . $e->getMessage());
+            return false;
+        }
+        
+    }
     
     public static function edit_classroom(int $id_to_update, array $data, int $user_id){ // OK
         $db_man = new DAOManager();

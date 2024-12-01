@@ -126,7 +126,9 @@ final class DAOManager{
             else return $stmt->execute();
             
         }
-        catch (PDOException $e) {die("Connection failed: " . $e->getMessage());}
+        catch (PDOException $e) {
+            die("Connection failed: " . $e->getMessage());
+        }
     }   
     
     // ----- Updating:
@@ -138,17 +140,22 @@ final class DAOManager{
             throw new InvalidArgumentException("An entity ID is required for update.");
         
         foreach ($data as $f => $value) $t_fields[] = $f;
-    
         $dml = self::get_dml_clause_for(DML_OPS::UPDATE, $t_name, $t_fields);
-        $stmt = $this -> pdo -> prepare($dml);
-        foreach ($data as $f => $value){
-            if (is_bool($value)) $stmt->bindValue(":$f", $value, PDO::PARAM_BOOL);
-            else if ($data[$f] instanceof DateTime)
-                $stmt->bindValue(":$f", $data[$f]->format('Y-m-d H:i:sP'), PDO::PARAM_STR);
-            else $stmt->bindValue(":$f", $value);
+        
+        try {
+            $stmt = $this -> pdo -> prepare($dml);
+            foreach ($data as $f => $value){
+                if (is_bool($value)) $stmt->bindValue(":$f", $value, PDO::PARAM_BOOL);
+                else if ($data[$f] instanceof DateTime)
+                    $stmt->bindValue(":$f", $data[$f]->format('Y-m-d H:i:sP'), PDO::PARAM_STR);
+                else $stmt->bindValue(":$f", $value);
+            }
+            return $stmt->execute();
         }
-        try {return $stmt->execute();}
-        catch (PDOException $e) {die("Connection failed: " . $e->getMessage(). "DML:\n $dml");}
+        catch (PDOException $e) {
+            error_log("Connection failed in updating: " . $e->getMessage(). "DML: $dml");
+            return null;
+        }
     }
 
     /**
@@ -166,11 +173,17 @@ final class DAOManager{
                     SET $container_fk_field = :container_fk_value
                     FROM $element_table et
                     WHERE rt.$element_fk_field = :element_fk_value";
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->bindValue(":element_fk_value", $element_data['id']);
-            $stmt->bindValue(":container_fk_value", $container_fk_value);
-            try {return $stmt->execute();}
-            catch (PDOException $e) {die("Connection failed: " . $e->getMessage(). "DML: $sql");}
+            
+            try {
+                $stmt = $this->pdo->prepare($sql);
+                $stmt->bindValue(":element_fk_value", $element_data['id']);
+                $stmt->bindValue(":container_fk_value", $container_fk_value);
+                return $stmt->execute();
+            }
+            catch (PDOException $e) {
+                error_log("Connection failed in updating: " . $e->getMessage(). "DML: $sql");
+                return null;
+            }
     }
 
     
@@ -178,10 +191,15 @@ final class DAOManager{
     // ----- Deleting:
     public function delete_record_in(string $t_name, int $id): bool {
         $sql = self::get_dml_clause_for(DML_OPS::DELETE, $t_name, array());
-        $stmt = $this -> pdo -> prepare($sql);
-        $stmt->bindValue(":id", $id);
-        try {return $stmt->execute();}
-        catch (PDOException $e) {die("Connection failed: " . $e->getMessage(). "DML: $sql");}
+        try {
+            $stmt = $this -> pdo -> prepare($sql);
+            $stmt->bindValue(":id", $id);
+            return $stmt->execute();
+        }
+        catch (PDOException $e) {
+            error_log("Connection failed in deleting: " . $e->getMessage(). "DML: $sql");
+            return null;
+        }
     }
     
     public function delete_relationship(
@@ -194,11 +212,18 @@ final class DAOManager{
             $sql = "DELETE FROM $relation_table 
                     WHERE $container_fk_field = :container_fk_value
                     AND $element_fk_field = :element_fk_value";
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->bindValue(":container_fk_value", $container_fk_value);
-            $stmt->bindValue(":element_fk_value", $element_fk_value);
-            try {return $stmt->execute();}
-        catch (PDOException $e) {die("Connection failed: " . $e->getMessage(). "DML: $sql");}
+            
+            try {
+                $stmt = $this->pdo->prepare($sql);
+                $stmt->bindValue(":container_fk_value", $container_fk_value);
+                $stmt->bindValue(":element_fk_value", $element_fk_value);
+                return $stmt->execute();
+            }
+            
+            catch (PDOException $e) {
+                error_log("Connection failed in deleting: " . $e->getMessage(). "DML: $sql");
+                return null;
+            }
     }
     
     
@@ -323,7 +348,10 @@ final class DAOManager{
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
-        catch (PDOException $e) {die("Connection failed: " . $e->getMessage() . ' SQL Statement: ' . $stmt->queryString);}
+        catch (PDOException $e) {
+            error_log("Connection failed: " . $e->getMessage() . ' SQL Statement: ' . $stmt->queryString);
+            return null;
+        }
     }
     
     public function fetch_record_by_id_from(string $t_name, int $id): mixed{
@@ -332,7 +360,10 @@ final class DAOManager{
             $stmt->execute([':id' => $id]); $stmt->setFetchMode(PDO::FETCH_ASSOC);
             return $stmt->fetch();
         }
-        catch (PDOException $e) {die("Connection failed: " . $e->getMessage() . ' SQL Statement: ' . $stmt->queryString);}
+        catch (PDOException $e) {
+            error_log("Connection failed: " . $e->getMessage() . ' SQL Statement: ' . $stmt->queryString);
+            return null;
+        }
         
     }
 
@@ -356,10 +387,14 @@ final class DAOManager{
         try {
             foreach ($search as $field => $value) $stmt->bindValue(":$field", $value);
             $stmt->execute(); $stmt->setFetchMode(PDO::FETCH_ASSOC);
+            if(!$unique) return $stmt->fetchAll();
+            else return $stmt->fetch();
         }
-        catch (PDOException $e) {die("Connection failed: " . $e->getMessage() . "\nDQL Statement: \n". $dql);}
-        if(!$unique) return $stmt->fetchAll();
-        else return $stmt->fetch();
+        catch (PDOException $e) {
+            error_log("Connection failed: " . $e->getMessage() . "\nDQL Statement: \n". $dql);
+            return null;
+        }
+        
     }
     
 
@@ -385,7 +420,10 @@ final class DAOManager{
             echo $stmt->queryString;
             return $stmt -> fetchAll();
         }
-        catch (PDOException $e) {die("Connection failed: " . $e->getMessage() . " SQL Statement: \n" . $stmt->queryString);}
+        catch (PDOException $e) {
+            error_log("Connection failed: " . $e->getMessage() . " SQL Statement: \n" . $stmt->queryString);
+            return null;
+        }
     }
 
     public function fetch_elements_relation_joint(
@@ -408,7 +446,10 @@ final class DAOManager{
             $stmt -> execute(); 
             $results = $stmt -> fetchAll(PDO::FETCH_ASSOC);
         }
-        catch (PDOException $e) {die("Connection failed: " . $e->getMessage() . '\nDQL Statement: '. $dql);}
+        catch (PDOException $e) {
+            error_log("Connection failed: " . $e->getMessage() . '\nDQL Statement: '. $dql);
+            return null;
+        }
         
         foreach ($results as &$row) 
             if (isset($row[$element_table])) 
@@ -425,7 +466,10 @@ final class DAOManager{
             if(!$is_unique) return $stmt->fetchAll(PDO::FETCH_ASSOC);
             else return $stmt->fetch(PDO::FETCH_ASSOC);
         }
-        catch (PDOException $e) {die("Connection failed: " . $e->getMessage() . " SQL Statement: \n" . $stmt->queryString);}
+        catch (PDOException $e) {
+            error_log("Connection failed: " . $e->getMessage() . " SQL Statement: \n" . $stmt->queryString);
+            return null;
+        }
     }
 
     public function fetch_all_flex_dql(string $dql){
@@ -434,7 +478,10 @@ final class DAOManager{
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
-        catch (PDOException $e) {die("Connection failed: " . $e->getMessage() . " SQL Statement: \n" . $stmt->queryString);}
+        catch (PDOException $e) {
+            error_log("Connection failed: " . $e->getMessage() . " SQL Statement: \n" . $stmt->queryString);
+            return null;
+        }
     }
 }
 

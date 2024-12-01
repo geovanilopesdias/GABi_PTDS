@@ -4,7 +4,7 @@ require_once(__DIR__ . '/../../managers/interface_mng.php');
 require_once(__DIR__ . '/../../controllers/book_dao.php');
 require_once(__DIR__ . '/manager.php');
 
-final class WriterRegisterManager extends ViewManager{
+final class WriterRegisterManager extends FormManager{
     const REGISTER_TYPE = 'writer';
     const FAIL_TITLE = 'Cadastro recusado';
     const ERROR_WARNING = 'Algo deu errado com sua tentativa de cadastro de autor!';

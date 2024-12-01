@@ -29,7 +29,7 @@ final class BookcopyRegisterManager extends FormManager{
         try{
             foreach ($args['bookcopy_data']['asset_code'] as $c) {
                 BookDAO::register_book_copy(
-                    ['asset_code' => $c, 'edition_id' => $args['bookcopy_data']['edition_id']],
+                    ['asset_code' => trim($c), 'edition_id' => $args['bookcopy_data']['edition_id']],
                     $_SESSION['user_id']);
             }
             

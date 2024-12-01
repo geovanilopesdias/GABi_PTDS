@@ -15,6 +15,7 @@ abstract class SearchResults{
         $title .= match($search_type){
                 'user' => 'Leitores',
                 'bookcopy' => 'Exemplares',
+                'classroom' => 'Turmas',
             };
         InterfaceManager::echo_html_head($title, self::PAGE_TYPE);
         echo "<div id='results_grid'>";

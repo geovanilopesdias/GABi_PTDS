@@ -19,13 +19,16 @@ final class ClassroomSearchResults extends SearchResults{
     protected function echo_table_results() {
         $results = [];
         $keywords = [];
-        $classroom_names = explode(',', trim($_POST['classrooms']));
-
+        $classroom_names = explode(',', trim($_GET['classrooms']));
         foreach ($classroom_names as $name) {
             $name = trim($name);
             if (empty($name)) continue;
+
             $classroom = PeopleDAO::fetch_classroom_by_name($name);
-            if (!$classroom) continue; 
+            if (!$classroom) {
+                error_log("Classroom '{$name}' not found or returned false.");
+                continue;
+            } 
 
             $keywords[] = $name;
             $classroom_id = $classroom->get_id();

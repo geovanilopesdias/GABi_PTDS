@@ -362,6 +362,8 @@ final class InterfaceManager{
         if (empty($results)) 
             throw new InvalidArgumentException('The results array must not be empty.');
         
+        if ($data_type === 'classroom') {$data_type = 'user';}
+
         foreach ($results as $row) 
             if (!is_array($row) || array_values($row) === $row) 
                 throw new InvalidArgumentException('Each result row must be an associative array.');

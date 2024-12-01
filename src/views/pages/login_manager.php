@@ -33,7 +33,8 @@ final class LoginManager extends FormManager{
     }
 
     protected function persist_post_to_session($user){
-        $user -> set_last_login(new DateTime('now', new DateTimeZone('America/Sao_Paulo'))); //Não funciona
+        $new_login = new DateTime('now', new DateTimeZone('America/Sao_Paulo'));
+        PeopleDAO::update_reader_last_login($user -> get_id(), $new_login);
         $_SESSION['user_id'] = $user -> get_id();
         $_SESSION['user_role'] = $user -> get_role();
         $_SESSION['user_name'] = ($user -> get_role() == 'teacher') ?
