@@ -3,6 +3,7 @@
 require_once('src/managers/interface_mng.php');
 
 InterfaceManager::echo_html_head('GABI', 'index');
+echo __DIR__;
 echo "
     <div id='index'>
         <div id='gabi_logo'>

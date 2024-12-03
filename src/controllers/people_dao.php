@@ -1,10 +1,10 @@
 <?php
 
-require_once ('src/managers/dao_mng.php');
-require_once ('src/models/people/reader.php');
-require_once ('src/models/people/classroom.php');
-require_once ('src/models/people/teaching.php');
-require_once ('src/models/people/enrollment.php');
+require_once (__DIR__.'/../managers/dao_mng.php');
+require_once (__DIR__.'/../models/people/reader.php');
+require_once (__DIR__.'/../models/people/classroom.php');
+require_once (__DIR__.'/../models/people/teaching.php');
+require_once (__DIR__.'/../models/people/enrollment.php');
 // require_once ('book_dao.php');
 
 final class PeopleDAO{
