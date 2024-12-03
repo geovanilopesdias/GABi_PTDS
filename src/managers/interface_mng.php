@@ -54,9 +54,9 @@ final class InterfaceManager{
             throw new Exception('Page type should be one of the following: '.
                 implode(',', self::PAGE_TYPE));
 
-        $base_sheet_path = "/code/src/views/stylesheets/basesheet.css";
-        $stylesheet_path = "/code/src/views/stylesheets/$page_type.css";
-        $script_path = "/code/src/views/scripts/$page_type.js";
+        $base_sheet_path = "../../views/stylesheets/basesheet.css";
+        $stylesheet_path = "../../views/stylesheets/$page_type.css";
+        $script_path = "../../views/scripts/$page_type.js";
         
         echo "
             <!DOCTYPE html>
