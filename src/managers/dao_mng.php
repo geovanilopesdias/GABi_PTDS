@@ -295,7 +295,7 @@ final class DAOManager{
     private function build_joint_query(
         string $t1_name, string $t2_name,
         array $t1_fields = [], array $t2_fields = [],
-        array $on_conditions, string $on_logic = 'AND',
+        array $on_conditions = [], string $on_logic = 'AND',
         array $t1_where_conditions = [], array $t2_where_conditions = [],
         string $t1_where_logic = 'AND', string $t2_where_logic = 'AND',
         ?string $ordering_key = null, bool $distinct = false): string {
@@ -405,7 +405,7 @@ final class DAOManager{
     public function fetch_jointed_records_from(
         array $search, string $search_table, string $t1_name, string $t2_name,
         array $t1_fields = [], array $t2_fields = [],
-        array $on_conditions, string $on_logic = 'AND',
+        array $on_conditions = [], string $on_logic = 'AND',
         array $t1_where_conditions = [], array $t2_where_conditions = [],
         string $t1_where_logic = 'AND', string $t2_where_logic = 'AND',
         ?string $ordering_key = null, bool $distinct = false): mixed{
