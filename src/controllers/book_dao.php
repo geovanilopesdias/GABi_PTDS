@@ -1,13 +1,13 @@
 <?php
 
-require_once (__DIR__ . '/../managers/dao_mng.php');
-require_once (__DIR__ . '/../models/books/writer.php');
-require_once (__DIR__ . '/../models/books/authorship.php');
-require_once (__DIR__ . '/../models/books/book_copy.php');
-require_once (__DIR__ . '/../models/books/collection.php');
-require_once (__DIR__ . '/../models/books/edition.php');
-require_once (__DIR__ . '/../models/books/opus.php');
-require_once (__DIR__ . '/../models/books/publisher.php');
+require_once ('src/managers/dao_mng.php');
+require_once ('src/models/books/writer.php');
+require_once ('src/models/books/authorship.php');
+require_once ('src/models/books/book_copy.php');
+require_once ('src/models/books/collection.php');
+require_once ('src/models/books/edition.php');
+require_once ('src/models/books/opus.php');
+require_once ('src/models/books/publisher.php');
 
 
 final class BookDAO{

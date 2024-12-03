@@ -1,7 +1,7 @@
 <?php
 
-require_once (__DIR__ . '/../controllers/people_dao.php');
-require_once (__DIR__ . '/../controllers/book_dao.php');
+require_once ('src/controllers/people_dao.php');
+require_once ('src/controllers/book_dao.php');
 
 final class InterfaceManager{
     const PAGE_TYPE = [
