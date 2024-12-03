@@ -86,7 +86,6 @@ final class Edition{
     }
 
     public function set_translators(?string $translators){
-        error_log('Received translators: ' . var_export($translators, true));
         if(is_null($translators) or trim($translators) === '')
             {$this -> translators = null;}
         else {
