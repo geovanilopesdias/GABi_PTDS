@@ -5,7 +5,7 @@ final class Connection {
     private static $pdo = null;
 
     public function __construct() {
-        $this->config = require (__DIR__.'/../../../code/config.php');
+        $this->config = require ('config.php');
     }
 
     public static function connect(): PDO {
@@ -13,7 +13,9 @@ final class Connection {
             try {
                 $instance = new self();
                 self::$pdo = new PDO(
-                    "pgsql:host=localhost;dbname=" . $instance->config['db_name'],
+                    "pgsql:host=" . $instance->config['host'].
+                    ";port=" . $instance->config['port'].
+                    ";dbname=" . $instance->config['db_name'],
                     $instance->config['db_user'],
                     $instance->config['db_pass']
                 );
