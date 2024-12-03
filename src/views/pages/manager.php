@@ -1,7 +1,6 @@
 <?php
 
 require_once(__DIR__ . '/../../managers/interface_mng.php');
-// require_once(__DIR__ . '/../../controllers/people_dao.php');
 
 abstract class FormManager{
     const PAGE_TYPE = 'manager';
@@ -15,6 +14,14 @@ abstract class FormManager{
 
     protected function operation_failed(
         string $error_detail, $errors=[], string $register_type, string $fail_title, string $error_warning){
+        
+        if (isset($_POST['action'])) 
+            {header("refresh:5; url=loan_element_detail.php");}
+        else if (isset($_POST['login']))
+            {header("refresh:5; url=login.php");}
+        else
+            {header("refresh:5; url=$register_type"."_register.php");}
+
         InterfaceManager::echo_html_head("GABi | $fail_title", self::PAGE_TYPE);
         echo InterfaceManager::system_logo(self::PAGE_TYPE);
         echo "<div id'failed'>";
@@ -29,12 +36,8 @@ abstract class FormManager{
             </ul>
         ";
         echo "</div>";
-        if (isset($_POST['action'])) 
-            {header("refresh:5; url=loan_element_detail.php");}
-        else
-            {header("refresh:5; url=$register_type"."_register.php");}
         InterfaceManager::echo_html_tail();
-        exit;
+        exit();
     }
 
     protected function operation_succeed(mixed &$args) {
