@@ -89,7 +89,7 @@ final class InterfaceManager{
             throw new Exception('Page type should be one of the following: '.
                 implode(',', self::PAGE_TYPE));
         
-        $logo_path = "/code/src/views/images/gabi_logo.png";
+        $logo_path = "../../views/images/gabi_logo.png";
         return "<img id='gabi_logo_$page_type' class='gabi_logo' src='$logo_path'/></br>";
     }
     
@@ -174,11 +174,11 @@ final class InterfaceManager{
         $id_from_session = $_SESSION['form_data']['id'];
         return "
             <div id='loan_button_grid'>".
-                ((!empty($errors)) ? InterfaceManager::search_input_disclaimer($errors['invalid_date']) : '') .
+                ((!empty($errors)) ? self::search_input_disclaimer($errors['invalid_date']) : '') .
                 (is_null($id_from_session) ? self::close_loan_button($loan_id) : self::close_loan_button($id_from_session)). 
-                ((!empty($errors)) ? InterfaceManager::search_input_disclaimer($errors['invalid_closing']) : '') .
+                ((!empty($errors)) ? self::search_input_disclaimer($errors['invalid_closing']) : '') .
                 (is_null($id_from_session) ? self::renovate_loan_button($loan_id) : self::renovate_loan_button($id_from_session)).
-                ((!empty($errors)) ? InterfaceManager::search_input_disclaimer($errors['invalid_renovation']) : '') ."
+                ((!empty($errors)) ? self::search_input_disclaimer($errors['invalid_renovation']) : '') ."
             </div>
         ";//  
     }
