@@ -5,6 +5,7 @@ require_once (__DIR__ . '/../controllers/book_dao.php');
 
 final class InterfaceManager{
     const PAGE_TYPE = [
+        'index',
         'login',
         'menu',
         'register',
@@ -479,12 +480,5 @@ final class InterfaceManager{
     }
 
 }
-
-// echoClsrAndStudentSelectorForLoan
-// echoStudentSelectorFromClsrm
-
-// echoButtonGridForLoan
-// echoRenovationButton
-// echoReturnCopyButton
 
 // echoPayDebtButton

@@ -9,7 +9,7 @@ final class LibrarianMenu extends Menu{
         'loan_register' => 'loan_register.php',
         'loan_search' => 'loan_search.php',
         'book_register' => 'book_register_options.php',
-        'book_search' => 'book_search.php',
+        'book_search' => 'bookcopy_search.php',
         'user_register' => 'user_register.php',
         'user_search' => 'user_search.php',
         'report_debt' => 'report_debt.php',

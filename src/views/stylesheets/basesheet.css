@@ -134,12 +134,7 @@ input, select {
   padding: 0px;
 }
 
-#gabi_logo_index {
-  max-height: 70%;
-  max-width: 70%;
-}
-
-#gabi_logo_login {
+#gabi_logo_login, #gabi_logo_index {
   max-height: 80%;
   max-width: 80%;
 }

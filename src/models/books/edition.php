@@ -77,9 +77,12 @@ final class Edition{
 
 
     public function set_isbn($isbn){
-        if(is_null($isbn)) $this -> isbn = null;
-        if(SecurityManager::is_isbn_valid($isbn)) $this -> isbn = $isbn;
-        else throw new UnexpectedValueException("$isbn is an invalid ISBN code.");
+        if (is_null($isbn))
+            {$this -> isbn = null;}
+        else {
+            if(SecurityManager::is_isbn_valid($isbn)) $this -> isbn = $isbn;
+            else throw new UnexpectedValueException("$isbn is an invalid ISBN code.");
+        }        
     }
 
     public function set_translators(?string $translators){

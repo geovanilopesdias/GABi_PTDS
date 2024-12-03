@@ -57,11 +57,11 @@ final class BookSearchResults extends SearchResults{
         }
     
         if (empty($results)) {
-            echo InterfaceManager::no_results_disclaimer("No results for: $keywords");
+            echo InterfaceManager::no_results_disclaimer("Não encontramos exemplares de: '$keywords'");
             return;
         }
     
-        echo InterfaceManager::table_of_results(self::SEARCH_TYPE, "Results for: $keywords", $results);
+        echo InterfaceManager::table_of_results(self::SEARCH_TYPE, "Resultados encontrados para: '$keywords'", $results);
     }
     
     

@@ -1,7 +1,5 @@
 <?php
 
-use PhpParser\Builder\Interface_;
-
 require_once(__DIR__ . '/../../managers/interface_mng.php');
 
 final class Login{
