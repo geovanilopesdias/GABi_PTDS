@@ -31,21 +31,16 @@ final class BookCopy{
         ];
     }
     
-    public static function fromArray(array $data, bool $for_insertion = false){
+    public static function fromArray(array $data, bool $for_insertion = false) {
         $book = new BookCopy(
             $data['asset_code'],
-            $data['edition_id']
+            $data['edition_id'],
+            $for_insertion ? 'available' : $data['status'],
+            $data['id'] ?? null
         );
-        if(!$for_insertion) {
-            $book -> set_status($data['status']);
-            $book -> id = $data['id'] ?? null;
-        }
-        else {
-            $book -> set_status('available');
-            $book -> id = $data['id'] ?? null;
-        }
         return $book;
     }
+    
 
     public function get_id(): int {return $this->id;}
     public function get_edition_id(): int {return $this->edition_id;}

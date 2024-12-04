@@ -21,15 +21,16 @@ final class LoanUpdateManager extends FormManager {
         array $errors,
         string $register_type = self::UPDATE_TYPE,
         string $fail_title = self::FAIL_TITLE,
-        string $error_warning = self::ERROR_WARNING)
-            {parent::operation_failed($errors, $register_type, $fail_title, $error_warning);}
+        string $error_warning = self::ERROR_WARNING) {
+            parent::operation_failed($errors, $register_type, $fail_title, $error_warning);
+    }
 
     protected function operation_succeed(&$args){
         try{
             $loan = LoanDAO::fetch_loan_by_id($args['loan_id']);
             $date = new DateTime($args['date']);
             if ($args['action'] === 'close')
-                {LoanDAO::close_loan($loan -> get_loaner_id(), $_SESSION['user_id'], $date);}
+                {LoanDAO::close_loan($loan -> get_id(), $_SESSION['user_id'], $date);}
             else {
                 $data['loaner_id'] = $loan -> get_loaner_id();
                 $data['opener_id'] = $loan -> get_opener_id();
@@ -56,6 +57,7 @@ final class LoanUpdateManager extends FormManager {
         $book = BookDAO::fetch_bookcopy_by_id($loan -> get_book_copy_id());
         $loaner = PeopleDAO::fetch_reader_by_id($loan -> get_loaner_id(), true);
         $date = new DateTime(htmlspecialchars($_POST['date']));
+
         if ($date < $loan -> get_loan_date())
             {$errors['invalid_date'] = 'A data precisa ser anterior (ou a mesma) à retirada!';}
             
@@ -100,6 +102,7 @@ final class LoanUpdateManager extends FormManager {
             $errors = $this -> handle_errors(); 
             if (empty($errors)){
                 $args = [
+                    'loan_id' => htmlspecialchars($_POST['id']),
                     'action' => htmlspecialchars($_POST['action']),
                     'register_type' => self::UPDATE_TYPE,
                     'success_message' => 'Atualização de empréstimo realizado com sucesso!',

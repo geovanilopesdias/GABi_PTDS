@@ -82,7 +82,7 @@ final class BookDAO{
         $db_man = new DAOManager();
         $bookcopy_array = $db_man -> fetch_record_by_id_from(DB::BOOK_COPY_TABLE, $id);
         if (empty($bookcopy_array)) return null;
-        return BookCopy::fromArray($bookcopy_array, true); // Factory used truly for fetching
+        return BookCopy::fromArray($bookcopy_array);
     }
 
     public static function fetch_writer_by_id(int $id): ?Writer { // OK
