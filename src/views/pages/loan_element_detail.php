@@ -16,13 +16,16 @@ final class LoanDetail extends ElementDetail{
     }
 
     protected function detail_element($element): string{
-        if(is_null($element)) return "<h1>Puxa vida! Erro ao encontrar o empréstimo...</h1>";
+        if(is_null($element))
+            {return "<h1>Puxa vida! Erro ao encontrar o empréstimo...</h1>";}
+        
         $loan = LoanDAO::fetch_loan_with_reader_and_opus_data_by_loan_id($element -> get_id());
-
-        if(empty($loan)) return "<h1>Puxa vida! Erro ao construir o empréstimo...</h1>";
+        if(empty($loan))
+            {return "<h1>Puxa vida! Erro ao construir o empréstimo...</h1>";}
+        
         $opener_name = PeopleDAO::fetch_reader_by_id($loan['opener_id'], true) -> get_name();
-
-        if(empty($opener_name)) return "<h1>Puxa vida! Erro o responsável pelo empréstimo...</h1>";
+        if(empty($opener_name))
+            {return "<h1>Puxa vida! Erro ao resgatar o responsável pelo empréstimo...</h1>";}
         
         $detail = "
             <p><strong>Patrimônio:</strong> " . $loan['asset_code']."</p>
@@ -54,7 +57,7 @@ final class LoanDetail extends ElementDetail{
     }
 
     protected function data_table($element): string {
-        return "<p>[Aqui, futuramente discriminar-se-ão informações de reservas]</p>";
+        return "<p>[Aqui, futuramente, discriminar-se-ão informações de reservas]</p>";
         
     }
 

@@ -80,9 +80,9 @@ final class BookDAO{
 
     public static function fetch_bookcopy_by_id(int $id): ?BookCopy { // OK
         $db_man = new DAOManager();
-        $edition_array = $db_man -> fetch_record_by_id_from(DB::BOOK_COPY_TABLE, $id);
-        if (empty($edition_array)) return null;
-        return BookCopy::fromArray($edition_array, true); // Factory used truly for fetching
+        $bookcopy_array = $db_man -> fetch_record_by_id_from(DB::BOOK_COPY_TABLE, $id);
+        if (empty($bookcopy_array)) return null;
+        return BookCopy::fromArray($bookcopy_array, true); // Factory used truly for fetching
     }
 
     public static function fetch_writer_by_id(int $id): ?Writer { // OK

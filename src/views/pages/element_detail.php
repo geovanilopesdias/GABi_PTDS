@@ -17,7 +17,10 @@ abstract class ElementDetail{
             return BookDAO::fetch_bookcopy_by_asset_code($asset_code);
         }
         else {
-            $id = intval(htmlspecialchars($_POST['id']));
+            $id = intval(htmlspecialchars(
+                $_POST['id'] ??
+                $_SESSION['form_data']['id']));
+            
             return match($element_type){
                 'user' => PeopleDAO::fetch_reader_by_id($id, true),
                 'classroom' => PeopleDAO::fetch_classroom_by_id($id),
@@ -50,8 +53,8 @@ abstract class ElementDetail{
         InterfaceManager::echo_html_head($title, self::PAGE_TYPE);
         echo InterfaceManager::system_logo(self::PAGE_TYPE);
         echo "<div id='element_detail'>";
-        echo $this -> detail_element($this -> get_element($element_type));
-        echo $this -> data_table($this -> get_element($element_type));
+        echo $this -> detail_element(self::get_element($element_type));
+        echo $this -> data_table(self::get_element($element_type));
         echo InterfaceManager::back_to_menu_button();
         echo "</div>";
         InterfaceManager::echo_html_tail();

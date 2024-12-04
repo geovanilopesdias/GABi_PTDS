@@ -30,8 +30,14 @@ final class LoanUpdateManager extends FormManager {
             $date = new DateTime($args['date']);
             if ($args['action'] === 'close')
                 {LoanDAO::close_loan($loan -> get_loaner_id(), $_SESSION['user_id'], $date);}
-            else 
-                {LoanDAO::close_loan($loan -> get_loaner_id(), $_SESSION['user_id'], $date);}
+            else {
+                $data['loaner_id'] = $loan -> get_loaner_id();
+                $data['opener_id'] = $loan -> get_opener_id();
+                $data['book_copy_id'] = $loan -> get_book_copy_id();
+                $data['loan_date'] = $date;
+                $data['opening_date'] = LoanDAO::get_now();
+                LoanDAO::register_loan($data, $_SESSION['user_id']);
+            }
 
             $loan_data = $loan -> toArray();
             $loan_data['action'] = $args['action'];
@@ -94,6 +100,7 @@ final class LoanUpdateManager extends FormManager {
             $errors = $this -> handle_errors(); 
             if (empty($errors)){
                 $args = [
+                    'action' => htmlspecialchars($_POST['action']),
                     'register_type' => self::UPDATE_TYPE,
                     'success_message' => 'Atualização de empréstimo realizado com sucesso!',
                 ];
