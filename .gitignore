@@ -1,3 +1,4 @@
 /vendor/
 connection_tests.php
+config.php
 .env
