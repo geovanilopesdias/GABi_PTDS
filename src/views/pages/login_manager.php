@@ -50,7 +50,7 @@ final class LoginManager extends FormManager{
     }
 
     public function manage_post_variable(){
-        session_start();
+        parent::manage_post_variable();
         if (empty($_POST['login']) or empty($_POST['passphrase'])) 
             $this -> operation_failed('os campos login e senha precisam ser preenchidos');
     
