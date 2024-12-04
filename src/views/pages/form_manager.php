@@ -55,7 +55,8 @@ abstract class FormManager{
         echo "<div id'success'>";
         echo "<h2>".$args['success_message']."</h2>";
         echo $args['success_body'] ?? '';
-        echo InterfaceManager::back_to_register_button($args['register_type']);
+        if(empty($_POST['action']))
+            {echo InterfaceManager::back_to_register_button($args['register_type']);}
         echo InterfaceManager::back_to_menu_button();
         echo "</div>";
         InterfaceManager::echo_html_tail();

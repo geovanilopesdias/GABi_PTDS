@@ -32,6 +32,7 @@ final class LoanUpdateManager extends FormManager {
             if ($args['action'] === 'close')
                 {LoanDAO::close_loan($loan -> get_id(), $_SESSION['user_id'], $date);}
             else {
+                LoanDAO::close_loan($loan -> get_id(), $_SESSION['user_id'], $date); // Close before renovation
                 $data['loaner_id'] = $loan -> get_loaner_id();
                 $data['opener_id'] = $loan -> get_opener_id();
                 $data['book_copy_id'] = $loan -> get_book_copy_id();
@@ -40,9 +41,8 @@ final class LoanUpdateManager extends FormManager {
                 LoanDAO::register_loan($data, $_SESSION['user_id']);
             }
 
-            $loan_data = $loan -> toArray();
             $loan_data['action'] = $args['action'];
-            $args['success_body'] = $this -> unordered_register_data($loan_data);
+            $args['success_body'] = $this -> unordered_register_data($args);
             parent::operation_succeed($args);
         }
         catch (Exception $e){
@@ -73,21 +73,23 @@ final class LoanUpdateManager extends FormManager {
     protected function unordered_register_data(array $loan_data): string {
         if ($loan_data['action'] == 'close') {
             return "
-            <p>Empréstimo finalizado com sucesso:</p></br>
+            <h2>Empréstimo FINALIZADO:</h2></br>
             <ul>
                 <li><span class='data_header'>Leitor:</span> " .
-                    $loan_data['reader_name'] . "</li>
+                    $loan_data['loaner_name'] . "</li>
                 <li><span class='data_header'>Obra:</span> " .
-                $loan_data['title'] . " (".$loan_data['asset_code'].")</li>
+                    $loan_data['title'] . " (".$loan_data['asset_code'].")</li>
+                <li><span class='data_header'>Devolver até:</span> " .
+                    $loan_data['return_until'] . "</li>
             </ul>";
         }
 
         else {
             return "
-            <p>Empréstimo cadastrado:</p></br>
+            <h2>Empréstimo RENOVADO:</h2></br>
             <ul>
                 <li><span class='data_header'>Leitor:</span> " .
-                    $loan_data['reader_name'] . "</li>
+                    $loan_data['loaner_name'] . "</li>
                 <li><span class='data_header'>Obra:</span> " .
                     $loan_data['title'] . " (".$loan_data['asset_code'].")</li>
                 <li><span class='data_header'>Devolver até:</span> " .
@@ -114,19 +116,20 @@ final class LoanUpdateManager extends FormManager {
                     {$args['success_title'] = 'Empréstimo renovado';}
 
                 $loan = LoanDAO::fetch_loan_by_id(htmlspecialchars($_POST['id']));
-                $bookcopy = BookDAO::fetch_bookcopy_essentially_by('id', $loan -> get_book_copy_id());                             
+                $copy = BookDAO::fetch_bookcopy_by_id($loan -> get_book_copy_id());
+                $book = BookDAO::fetch_bookcopy_holistically_by_asset_code($copy -> get_asset_code());
+                $loaner = PeopleDAO::fetch_reader_by_id($loan -> get_loaner_id(), true);
                 
-                $args['loan_data'] = [
-                    'loaner_id' => intval(htmlspecialchars($_POST['loaner_id'])),
-                    'title' => $bookcopy['title'],
-                    'asset_code' => $bookcopy['asset_code'],
-                    'reader_name' => PeopleDAO::fetch_reader_by_id($loan -> get_loaner_id(), true) -> get_name(),
-                    'loan_date' => (new DateTime(htmlspecialchars($_POST['date']))),
-                ];
+                $args['loaner_id'] = intval(htmlspecialchars($_POST['loaner_id']));
+                $args['loaner_name'] = $loaner -> get_name();
+                $args['title'] = $book['title'];
+                $args['asset_code'] = $book['asset_code'];
+                $args['loan_date'] = (new DateTime(htmlspecialchars($_POST['date'])));
+                
 
                 if ($_POST['action' == 'renovate']) {
                     // It shall update with the library settings:
-                    $args['loan_data']['return_until'] =
+                    $args['return_until'] =
                     (new DateTime(htmlspecialchars($_POST['date']))) ->
                         add(new DateInterval('P7D')) -> format('d/m/Y');
                 }
