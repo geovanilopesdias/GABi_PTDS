@@ -26,8 +26,8 @@ final class LoginManager extends FormManager{
             {parent::operation_failed($errors, $register_type, $fail_title, $error_warning);}
 
     public function operation_succeed(mixed &$user){
+        echo $user -> get_role();
         header('Location:'.$user -> get_role().'_menu.php');
-        InterfaceManager::echo_html_tail();
         exit;
     }
 
@@ -66,15 +66,13 @@ final class LoginManager extends FormManager{
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errors = $this -> handle_errors(); 
             if (empty($errors)) {
-                $this -> operation_succeed(self::get_user());
                 $this -> persist_post_to_session($errors);
+                $this -> operation_succeed(self::get_user());
             }
             else 
                 {$this->operation_failed($errors);}
         }
     }
-    
-
 }
 
 $management = new LoginManager();

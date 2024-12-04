@@ -1,9 +1,9 @@
 <?php
     return [
-        'host' => 'autorack.proxy.rlwy.net',
-        'port' => '36341',
-        'db_name' => 'railway',
-        'db_user' => 'postgres',
-        'db_pass' => 'ENNmfKPveZLJTyqiFXqJAERabdUlAbaE'
+        'host' => 'localhost',
+        'port' => '5432',
+        'db_name' => 'postgres',
+        'db_user' => 'geovani_lopes_dias',
+        'db_pass' => 'rumsey_zagarelli_vuolo'
     ];
 ?>
