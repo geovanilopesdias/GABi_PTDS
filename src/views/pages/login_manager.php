@@ -7,7 +7,7 @@ require_once(__DIR__ . '/manager.php');
 
 final class LoginManager extends FormManager{
     const REGISTER_TYPE = 'login';
-    const FAIL_TITLE = 'Login recusado';
+    const FAIL_TITLE = 'Acesso Negado';
     const ERROR_WARNING = 'Algo deu errado com sua tentativa de login';
     const SUCCESS_TITLE = '';
     const SUCCESS_MESSAGE = '';
@@ -22,9 +22,8 @@ final class LoginManager extends FormManager{
         string $error_detail, $errors = [],
         string $register_type = self::REGISTER_TYPE,
         string $fail_title = self::FAIL_TITLE,
-        string $error_warning = self::ERROR_WARNING){
-            parent::operation_failed($error_detail, $errors, $register_type, $fail_title, $error_warning);
-    }
+        string $error_warning = self::ERROR_WARNING)
+            {parent::operation_failed($error_detail, $errors, $register_type, $fail_title, $error_warning);}
 
     public function operation_succeed(mixed &$user){
         header('Location:'.$user -> get_role().'_menu.php');
@@ -32,31 +31,47 @@ final class LoginManager extends FormManager{
         exit;
     }
 
-    protected function persist_post_to_session($user){
-        $new_login = new DateTime('now', new DateTimeZone('America/Sao_Paulo'));
-        PeopleDAO::update_reader_last_login($user -> get_id(), $new_login);
-        $_SESSION['user_id'] = $user -> get_id();
-        $_SESSION['user_role'] = $user -> get_role();
-        $_SESSION['user_name'] = ($user -> get_role() == 'teacher') ?
-        'Prof. '.$user -> get_name() : $user -> get_name();
+    protected function persist_post_to_session($errors){
+        if (!empty($errors)) {
+            $_SESSION['form_data'] = $_POST;
+            $_SESSION['errors'] = $errors;
+        }
+        
+        else {
+            $user = self::get_user();
+            $new_login = new DateTime('now', new DateTimeZone('America/Sao_Paulo'));
+            PeopleDAO::update_reader_last_login($user -> get_id(), $new_login);
+            $_SESSION['user_id'] = $user -> get_id();
+            $_SESSION['user_role'] = $user -> get_role();
+            $_SESSION['user_name'] = ($user -> get_role() == 'teacher') ?
+            'Prof. '.$user -> get_name() : $user -> get_name();
+        }
     }
 
     protected function handle_errors(){
+        $errors = array();
         $user = self::get_user();
-        if (is_null($user)) $this -> operation_failed('usuário informado não foi encontrado!');
-        if (!SecurityManager::check_password($user, $_POST['passphrase']))
-            $this -> operation_failed('senha informada está incorreta!');
-        return $user;
+        if (is_null($user))
+            {$errors['invalid_login'] = 'Login informado não consta no cadastro.';}
+        else {
+            if (!SecurityManager::check_password($user, $_POST['passphrase']))
+            {$errors['invalid_passphrase'] = 'Senha informada está incorreta!';}
+        }
+        
+        return $errors;
     }
 
     public function manage_post_variable(){
         parent::manage_post_variable();
-        if (empty($_POST['login']) or empty($_POST['passphrase'])) 
-            $this -> operation_failed('os campos login e senha precisam ser preenchidos');
-    
-        $user = $this -> handle_errors();    
-        $this -> persist_post_to_session($user);
-        $this->operation_succeed($user);
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $errors = $this -> handle_errors(); 
+            if (empty($errors)) {
+                $this -> operation_succeed(self::get_user());
+                $this -> persist_post_to_session($errors);
+            }
+            else 
+                {$this->operation_failed('Seu acesso foi recusado pelos motivos abaixo:', $errors);}
+        }
     }
     
 

@@ -1,7 +1,7 @@
 <?php
     return [
-        'host' => 'postgres.railway.internal',
-        'port' => '5432',
+        'host' => 'autorack.proxy.rlwy.net',
+        'port' => '36341',
         'db_name' => 'railway',
         'db_user' => 'postgres',
         'db_pass' => 'ENNmfKPveZLJTyqiFXqJAERabdUlAbaE'

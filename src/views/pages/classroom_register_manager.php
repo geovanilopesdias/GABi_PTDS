@@ -81,7 +81,7 @@ final class ClassroomRegisterManager extends FormManager{
                 $this->operation_succeed($args);
                 
             } 
-            else $this->operation_failed('Cadastro recusado!', $errors);
+            else $this->operation_failed('Cadastro de turma recusado pelos seguintes motivos:', $errors);
         }
     }
     

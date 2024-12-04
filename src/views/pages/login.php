@@ -9,8 +9,8 @@ final class Login{
         "
         <div class='login_container'>
             <form class='login' action='login_manager.php' method='post'>
-                <input type='text' name='login' placeholder='Login'/ autofocus><br>
-                <input type='password' name='passphrase' placeholder='Senha'/><br>
+                <input type='text' name='login' placeholder='Login'/ autofocus required><br>
+                <input type='password' name='passphrase' placeholder='Senha' required/><br>
                 <input type='submit' value='Acessar &#128214;'>
             </form>
         </div>

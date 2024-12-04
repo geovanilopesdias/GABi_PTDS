@@ -66,7 +66,7 @@ final class PublisherRegisterManager extends FormManager{
                 $args['publisher_data'] = ['name' => htmlspecialchars($_POST['name'])];
                 $this->operation_succeed($args);  
             } 
-            else $this->operation_failed('Cadastro recusado!', $errors);
+            else $this->operation_failed('Cadastro de editora recusado pelos seguintes motivos:', $errors);
         }
     }
     

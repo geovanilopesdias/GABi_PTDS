@@ -27,16 +27,16 @@ abstract class FormManager{
         echo "<div id'failed'>";
         echo "<h2>$error_warning</h2>";
         echo "<p>O que houve: $error_detail</p>";
-        echo "<p>Em instantes, serás redirecionado para tentar novamente</p>";
-        $this -> persist_post_to_session($errors);
-        echo "<h2>Erros encontrados:</h2>";
         foreach($errors as $error) echo "
             <ul>
                 <li>$error</li>
             </ul>
         ";
+        echo "<p>Em instantes, serás redirecionado para tentar novamente!</p>";
         echo "</div>";
         InterfaceManager::echo_html_tail();
+
+        $this -> persist_post_to_session($errors);
         exit();
     }
 
