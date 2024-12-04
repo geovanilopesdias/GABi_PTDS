@@ -1,4 +1,4 @@
 /vendor/
 connection_tests.php
-config.php
+/src/managers/config.php
 .env
