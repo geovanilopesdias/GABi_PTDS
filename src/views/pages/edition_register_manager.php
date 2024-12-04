@@ -1,7 +1,7 @@
 <?php
 
 require_once(__DIR__ . '/../../controllers/book_dao.php');
-require_once(__DIR__ . '/manager.php');
+require_once(__DIR__ . '/form_manager.php');
 
 final class EditionRegisterManager extends FormManager{
     const REGISTER_TYPE = 'edition';
@@ -16,13 +16,11 @@ final class EditionRegisterManager extends FormManager{
     }
 
     protected function operation_failed(
-        string $error_detail, $errors = [],
-        string $register_type = self::REGISTER_TYPE.'_register',
+        array $errors,
+        string $register_type = self::REGISTER_TYPE,
         string $fail_title = self::FAIL_TITLE,
-        string $error_warning = self::ERROR_WARNING
-        ){
-            parent::operation_failed($error_detail, $errors, $register_type, $fail_title, $error_warning);
-    }
+        string $error_warning = self::ERROR_WARNING)
+            {parent::operation_failed($errors, $register_type, $fail_title, $error_warning);}
 
     protected function operation_succeed(&$args){
         try{
@@ -158,7 +156,7 @@ final class EditionRegisterManager extends FormManager{
                 $this->operation_succeed($args);
                 
             } 
-            else $this->operation_failed('Cadastro de edição recusado pelos seguintes motivos:', $errors);
+            else $this->operation_failed($errors);
         }
     }
 }

@@ -3,7 +3,7 @@
 require_once(__DIR__ . '/../../controllers/book_dao.php');
 require_once(__DIR__ . '/../../controllers/loan_dao.php');
 require_once(__DIR__ . '/../../controllers/people_dao.php');
-require_once(__DIR__ . '/manager.php');
+require_once(__DIR__ . '/form_manager.php');
 
 final class LoanRegisterManager extends FormManager{
     const REGISTER_TYPE = 'loan';
@@ -18,13 +18,11 @@ final class LoanRegisterManager extends FormManager{
     }
 
     protected function operation_failed(
-        string $error_detail, $errors = [],
+        array $errors,
         string $register_type = self::REGISTER_TYPE,
         string $fail_title = self::FAIL_TITLE,
-        string $error_warning = self::ERROR_WARNING
-        ){
-            parent::operation_failed($error_detail, $errors, $register_type, $fail_title, $error_warning);
-    }
+        string $error_warning = self::ERROR_WARNING)
+            {parent::operation_failed($errors, $register_type, $fail_title, $error_warning);}
 
     protected function operation_succeed(&$args){
         try{
@@ -129,7 +127,7 @@ final class LoanRegisterManager extends FormManager{
                 $this->operation_succeed($args);
               
             } 
-            else $this->operation_failed('Empréstimo recusado pelos seguintes motivos:', $errors);
+            else $this->operation_failed($errors);
         }
     }
 }

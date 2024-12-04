@@ -3,7 +3,7 @@
 require_once(__DIR__ . '/../../managers/interface_mng.php');
 require_once(__DIR__ . '/../../managers/security_mng.php');
 require_once(__DIR__ . '/../../controllers/people_dao.php');
-require_once(__DIR__ . '/manager.php');
+require_once(__DIR__ . '/form_manager.php');
 
 final class LoginManager extends FormManager{
     const REGISTER_TYPE = 'login';
@@ -17,13 +17,13 @@ final class LoginManager extends FormManager{
     private function get_user(): ?Reader{
         return PeopleDAO::fetch_reader_by_login(trim(htmlspecialchars($_POST['login'] ?? '')));
     }
-
+//array $errors, string $register_type, string $fail_title, string $error_warning)
     protected function operation_failed(
-        string $error_detail, $errors = [],
+        array $errors,
         string $register_type = self::REGISTER_TYPE,
         string $fail_title = self::FAIL_TITLE,
         string $error_warning = self::ERROR_WARNING)
-            {parent::operation_failed($error_detail, $errors, $register_type, $fail_title, $error_warning);}
+            {parent::operation_failed($errors, $register_type, $fail_title, $error_warning);}
 
     public function operation_succeed(mixed &$user){
         header('Location:'.$user -> get_role().'_menu.php');
@@ -52,10 +52,10 @@ final class LoginManager extends FormManager{
         $errors = array();
         $user = self::get_user();
         if (is_null($user))
-            {$errors['invalid_login'] = 'Login informado não consta no cadastro.';}
+            {$errors['invalid_login'] = 'Login informado não consta no cadastro!';}
         else {
             if (!SecurityManager::check_password($user, $_POST['passphrase']))
-            {$errors['invalid_passphrase'] = 'Senha informada está incorreta!';}
+            {$errors['invalid_passphrase'] = 'A senha informada é incorreta!';}
         }
         
         return $errors;
@@ -70,7 +70,7 @@ final class LoginManager extends FormManager{
                 $this -> persist_post_to_session($errors);
             }
             else 
-                {$this->operation_failed('Seu acesso foi recusado pelos motivos abaixo:', $errors);}
+                {$this->operation_failed($errors);}
         }
     }
     

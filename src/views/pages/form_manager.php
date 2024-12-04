@@ -13,7 +13,7 @@ abstract class FormManager{
     }
 
     protected function operation_failed(
-        string $error_detail, $errors=[], string $register_type, string $fail_title, string $error_warning){
+        array $errors, string $register_type, string $fail_title, string $error_warning){
         
         if (isset($_POST['action'])) 
             {header("refresh:5; url=loan_element_detail.php");}
@@ -21,19 +21,28 @@ abstract class FormManager{
             {header("refresh:5; url=login.php");}
         else
             {header("refresh:5; url=$register_type"."_register.php");}
+        
+        $register_type = match ($register_type) {
+            'user' => 'leitor',
+            'loan' => 'empréstimo',
+            'opus' => 'obra',
+            'edition' => 'edição',
+            'book', 'bookcopy' => 'exemplar',
+            'publisher' => 'editora',
+            'writer' => 'autor',
+            'login' => 'acesso',
+        };
 
         InterfaceManager::echo_html_head("GABi | $fail_title", self::PAGE_TYPE);
         echo InterfaceManager::system_logo(self::PAGE_TYPE);
-        echo "<div id'failed'>";
-        echo "<h2>$error_warning</h2>";
-        echo "<p>O que houve: $error_detail</p>";
-        foreach($errors as $error) echo "
-            <ul>
-                <li>$error</li>
-            </ul>
-        ";
-        echo "<p>Em instantes, serás redirecionado para tentar novamente!</p>";
-        echo "</div>";
+            echo "<div id'failed'>";
+                echo "<h2>$error_warning</h2>";
+                echo "<p>O que houve: cadastro de $register_type recusado pelos motivos abaixo:</p>";
+                echo "<ul>";
+                    foreach($errors as $error) echo "<li>$error</li>";
+                echo "</ul>";
+                echo "<p>Em instantes, serás redirecionado para tentar novamente!</p>";
+            echo "</div>";
         InterfaceManager::echo_html_tail();
 
         $this -> persist_post_to_session($errors);
