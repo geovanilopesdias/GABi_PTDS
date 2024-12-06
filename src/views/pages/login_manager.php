@@ -17,7 +17,7 @@ final class LoginManager extends FormManager{
     private function get_user(): ?Reader{
         return PeopleDAO::fetch_reader_by_login(trim(htmlspecialchars($_POST['login'] ?? '')));
     }
-//array $errors, string $register_type, string $fail_title, string $error_warning)
+
     protected function operation_failed(
         array $errors,
         string $register_type = self::REGISTER_TYPE,
@@ -55,7 +55,7 @@ final class LoginManager extends FormManager{
             {$errors['invalid_login'] = 'Login informado não consta no cadastro!';}
         else {
             if (!SecurityManager::check_password($user, $_POST['passphrase']))
-            {$errors['invalid_passphrase'] = 'A senha informada é incorreta!';}
+            {$errors['invalid_passphrase'] = 'A senha informada está incorreta!';}
         }
         
         return $errors;
