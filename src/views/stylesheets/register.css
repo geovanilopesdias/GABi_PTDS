@@ -7,7 +7,15 @@
     filter: var(--darker-div-filter);
 }
 
-.search_disclaimer{
+.search_disclaimer {
     max-width: 25vw;
     justify-self: center;
+}
+
+.error_disclaimer {
+    max-width: 25vw;
+    justify-self: center;
+    font-style: italic;
+    color: red;
+    text-shadow: black 1px 0 10px;
 }

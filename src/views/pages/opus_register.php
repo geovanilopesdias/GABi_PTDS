@@ -23,16 +23,16 @@ final class OpusRegister extends Register{
                     InterfaceManager::writer_selector(true)."<br>
 
                     <input type='text' name='title' placeholder='Título' value='".(htmlspecialchars($form_data['title']) ?? '')."' required/></br>".
-                    ((!empty($errors)) ? InterfaceManager::search_input_disclaimer($errors['invalid_title']) : '') ."
+                    ((!empty($errors)) ? InterfaceManager::error_input_disclaimer($errors['invalid_title']) : '') ."
 
                     <input type='number' name='original_year' placeholder='Ano original da obra' value='".(htmlspecialchars($form_data['original_year']) ?? '')."' required/></br>".
-                    ((!empty($errors)) ? InterfaceManager::search_input_disclaimer($errors['invalid_original_year']) : '') ."
+                    ((!empty($errors)) ? InterfaceManager::error_input_disclaimer($errors['invalid_original_year']) : '') ."
 
                     <input type='text' name='ddc' placeholder='CDD' value='".(htmlspecialchars($form_data['ddc']) ?? '')."'/></br>".
-                    ((!empty($errors)) ? InterfaceManager::search_input_disclaimer($errors['invalid_asset_code']) : '') ."
+                    ((!empty($errors)) ? InterfaceManager::error_input_disclaimer($errors['invalid_asset_code']) : '') ."
 
                     <input type='text' name='alternative_url' placeholder='Weblink (http://example.com/file.pdf)' value='".(htmlspecialchars($form_data['alternative_url']) ?? '')."'/></br>".
-                    ((!empty($errors)) ? InterfaceManager::search_input_disclaimer($errors['invalid_alternative_url']) : '') .
+                    ((!empty($errors)) ? InterfaceManager::error_input_disclaimer($errors['invalid_alternative_url']) : '') .
                     InterfaceManager::register_button()."
                 </form>
             </div>

@@ -22,7 +22,7 @@ final class PublisherRegister extends Register{
                 <form class='register' action='".self::REGISTER_TYPE."_register_manager.php' method='post'>
                     <input type='text' name='name' placeholder='Nome da editora' value='".(htmlspecialchars($form_data['title']) ?? '')."' required/></br>".
                     InterfaceManager::search_input_disclaimer("Apenas o nome, não escreva 'editora'.").
-                    ((!empty($errors)) ? InterfaceManager::search_input_disclaimer($errors['invalid_name']) : '') .
+                    ((!empty($errors)) ? InterfaceManager::error_input_disclaimer($errors['invalid_name']) : '') .
                     InterfaceManager::register_button()."
                 </form>
             </div>

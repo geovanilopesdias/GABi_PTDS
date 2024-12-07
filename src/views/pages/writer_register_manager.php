@@ -43,13 +43,12 @@ final class WriterRegisterManager extends FormManager{
         if (!SecurityManager::is_name_valid(ucfirst(htmlspecialchars($_POST['name']))))
             {$errors['invalid_name'] = 'O nome '.htmlspecialchars($_POST['name']).' é inválido.';}
 
-        if (isset($_POST['birth_year'])){
-            $author_age = date("Y") - htmlspecialchars($_POST['birth_year']);
-            if ($author_age < self::MINIMAL_AUTHOR_AGE and
-            $author_age >= 0)
-            {$errors['invalid_birth_year'] = 'Autor deve ser maior de '.self::MINIMAL_AUTHOR_AGE.' anos';}
+        if (!empty($_POST['birth_year'])){
+            $author_age = intval(date("Y")) - intval(htmlspecialchars($_POST['birth_year']));
+            if ($author_age < self::MINIMAL_AUTHOR_AGE and $author_age >= 0)
+                {$errors['invalid_birth_year'] = 'Autor deve ser maior de '.self::MINIMAL_AUTHOR_AGE.' anos';}
             else if ((date("Y") - htmlspecialchars($_POST['birth_year'])) < 0)
-            {$errors['invalid_birth_year'] = 'Não insira um ano futuro!';}
+                {$errors['invalid_birth_year'] = 'Não insira um ano futuro!';}
         }
             
         return $errors;

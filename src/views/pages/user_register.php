@@ -30,10 +30,10 @@ final class UserRegister extends Register{
                         $radio_options, 'role', 'Cadastro de:', 'radio')."</br>".
                     InterfaceManager::input_checkbox_single('can_borrow', 'Poderá emprestar (válido apenas para professores)', '', false)."</br>
                     <input type='text' name='name' placeholder='Nome' value='".(htmlspecialchars($form_data['name']) ?? '')."' autofocus required/><br>".
-                    ((!empty($errors)) ? InterfaceManager::search_input_disclaimer($errors['invalid_name']) : '') ."
+                    ((!empty($errors)) ? InterfaceManager::error_input_disclaimer($errors['invalid_name']) : '') ."
                     
                     <input type='text' id='phone' name='phone' placeholder='Telefone' value='".(htmlspecialchars($form_data['phone']) ?? '519')."' required/><br>".
-                    ((!empty($errors)) ? InterfaceManager::search_input_disclaimer($errors['invalid_phone']) : '') .
+                    ((!empty($errors)) ? InterfaceManager::error_input_disclaimer($errors['invalid_phone']) : '') .
                     InterfaceManager::classroom_selector(false)."</br>".
                     InterfaceManager::register_button().
                 "</form>

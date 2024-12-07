@@ -25,15 +25,15 @@ final class BookcopyRegister extends Register{
                     <input type='number' min='0' pattern='\d+'
                         name='quantity' placeholder='Quantidade (vazio = 1)' value='".
                             (htmlspecialchars($form_data['quantity']) ?? '')."'></br>".
-                    ((!empty($errors)) ? InterfaceManager::search_input_disclaimer($errors['invalid_quantity']) : '') .
+                    ((!empty($errors)) ? InterfaceManager::error_input_disclaimer($errors['invalid_quantity']) : '') .
                             
                     InterfaceManager::input_checkbox_single('ordered_assets', 'cadastrar patrimônios ordenadamente', '', false)."<br>".
                     InterfaceManager::search_input_disclaimer("Para cadastro ordenado (ex.: 123, 124...), marque acima e informa abaixo o primeiro:") ."
                     <input type='text' name='asset_code' placeholder='Patrimônio(s)' value='".(htmlspecialchars($form_data['asset_code']) ?? '')."' required/>".
                     
                     InterfaceManager::search_input_disclaimer('Se desmarcada opção acima, separa os patrimônios com vírgula.').
-                    ((!empty($errors)) ? InterfaceManager::search_input_disclaimer($errors['invalid_asset_code']) : '') .
-                    ((!empty($errors)) ? InterfaceManager::search_input_disclaimer($errors['incoerent_quantity_asset_list']) : '') .
+                    ((!empty($errors)) ? InterfaceManager::error_input_disclaimer($errors['invalid_asset_code']) : '') .
+                    ((!empty($errors)) ? InterfaceManager::error_input_disclaimer($errors['incoerent_quantity_asset_list']) : '') .
                     
                     InterfaceManager::register_button()."
                 </form>

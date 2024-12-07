@@ -32,11 +32,11 @@ final class UserUpdater extends Updater{
 
                         <input type='text' name='name' placeholder='Nome' value='".
                             (htmlspecialchars($form_data['name'] ?? $user_instance -> get_name()))."' autofocus required/><br>".
-                        ((!empty($errors)) ? InterfaceManager::search_input_disclaimer($errors['invalid_name']) : '') ."
+                        ((!empty($errors)) ? InterfaceManager::error_input_disclaimer($errors['invalid_name']) : '') ."
                         
                         <input type='text' id='phone' name='phone' placeholder='Telefone' value='".
                             (htmlspecialchars($form_data['phone'] ?? $user_instance -> get_phone()))."' required/><br>".
-                        ((!empty($errors)) ? InterfaceManager::search_input_disclaimer($errors['invalid_phone']) : '') .
+                        ((!empty($errors)) ? InterfaceManager::error_input_disclaimer($errors['invalid_phone']) : '') .
                         InterfaceManager::updater_button().
                     "</form>
                 </div>

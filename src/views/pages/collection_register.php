@@ -22,7 +22,7 @@ final class CollectionRegister extends Register{
                 <form class='register' action='".self::REGISTER_TYPE."_register_manager.php' method='post'>".
                     InterfaceManager::publisher_selector(true)."<br>
                     <input type='text' name='name' placeholder='Nome' value='".(htmlspecialchars($form_data['name']) ?? '')."' required/></br>".
-                    ((!empty($errors)) ? InterfaceManager::search_input_disclaimer($errors['invalid_name']) : '') .
+                    ((!empty($errors)) ? InterfaceManager::error_input_disclaimer($errors['invalid_name']) : '') .
                     InterfaceManager::register_button()."
                 </form>
             </div>

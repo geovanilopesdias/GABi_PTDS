@@ -231,6 +231,11 @@ final class InterfaceManager{
             htmlspecialchars($disclaimer)."</p></br>";
     }
 
+    public static function error_input_disclaimer($disclaimer): string{
+        return "<p class='error_disclaimer'>".
+            htmlspecialchars($disclaimer)."</p></br>";
+    }
+
     /**
      * Ajustar para retornar à respectiva página de busca
      * com a mensagem acima da div de busca.

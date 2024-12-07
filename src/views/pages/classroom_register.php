@@ -23,10 +23,10 @@ final class ClassroomRegister extends Register{
                 <form class='register' action='".self::REGISTER_TYPE."_register_manager.php' method='post'>
                     <input type='text' name='names' placeholder='Nomes das turmas' value='".(htmlspecialchars($form_data['name']) ?? '')."' autofocus required/><br>".
                     InterfaceManager::search_input_disclaimer('Separe-as com vírgulas') .
-                    ((!empty($errors)) ? InterfaceManager::search_input_disclaimer($errors['invalid_name']) : '') ."
+                    ((!empty($errors)) ? InterfaceManager::error_input_disclaimer($errors['invalid_name']) : '') ."
                     
                     <input type='number' id='year' name='year' placeholder='Ano' value='".date("Y")."' required/><br>".
-                    ((!empty($errors)) ? InterfaceManager::search_input_disclaimer($errors['invalid_year']) : '') .
+                    ((!empty($errors)) ? InterfaceManager::error_input_disclaimer($errors['invalid_year']) : '') .
                     InterfaceManager::register_button().
                 "</form>
             </div>

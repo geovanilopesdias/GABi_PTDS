@@ -13,10 +13,10 @@ final class Login{
         <div class='login_container'>
             <form class='login' action='login_manager.php' method='post'>
                 <input type='text' name='login' placeholder='Login'/ autofocus required value='".htmlspecialchars($form_data['login'] ?? '')."'><br>".
-                ((!empty($errors)) ? InterfaceManager::search_input_disclaimer($errors['invalid_login']) : '') ."
+                ((!empty($errors)) ? InterfaceManager::error_input_disclaimer($errors['invalid_login']) : '') ."
 
                 <input type='password' name='passphrase' placeholder='Senha' required/><br>".
-                ((!empty($errors)) ? InterfaceManager::search_input_disclaimer($errors['invalid_passphrase']) : '') ."
+                ((!empty($errors)) ? InterfaceManager::error_input_disclaimer($errors['invalid_passphrase']) : '') ."
                 
                 <input type='submit' value='Acessar &#128214;'>
             </form>

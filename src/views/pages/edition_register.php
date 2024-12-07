@@ -25,26 +25,26 @@ final class EditionRegister extends Register{
                     InterfaceManager::collection_selector()."<br>
 
                     <input type='text' name='isbn' placeholder='ISBN' value='".(htmlspecialchars($form_data['isbn']) ?? '')."'/></br>".
-                    ((!empty($errors)) ? InterfaceManager::search_input_disclaimer($errors['invalid_isbn']) : '') ."
+                    ((!empty($errors)) ? InterfaceManager::error_input_disclaimer($errors['invalid_isbn']) : '') ."
 
                     <input type='number' min='1' name='edition_number' placeholder='Edição (e.g.: 2)' value='".(htmlspecialchars($form_data['edition_number']) ?? '')."'/></br>".
-                    ((!empty($errors)) ? InterfaceManager::search_input_disclaimer($errors['invalid_edition_number']) : '') ."
+                    ((!empty($errors)) ? InterfaceManager::error_input_disclaimer($errors['invalid_edition_number']) : '') ."
 
                     <input type='number' name='publishing_year' placeholder='Ano da edição' value='".(htmlspecialchars($form_data['publishing_year']) ?? '')."' /></br>".
-                    ((!empty($errors)) ? InterfaceManager::search_input_disclaimer($errors['invalid_publishing_year']) : '') ."
+                    ((!empty($errors)) ? InterfaceManager::error_input_disclaimer($errors['invalid_publishing_year']) : '') ."
 
                     <input type='number' min='1' name='pages' placeholder='Número de páginas' value='".(htmlspecialchars($form_data['pages']) ?? '')."'/></br>".
-                    ((!empty($errors)) ? InterfaceManager::search_input_disclaimer($errors['invalid_pages']) : '') ."
+                    ((!empty($errors)) ? InterfaceManager::error_input_disclaimer($errors['invalid_pages']) : '') ."
 
                     <input type='number' min='1' name='volume' placeholder='Volume' value='".(htmlspecialchars($form_data['volume']) ?? '')."'/></br>".
-                    ((!empty($errors)) ? InterfaceManager::search_input_disclaimer($errors['invalid_volume']) : '') ."
+                    ((!empty($errors)) ? InterfaceManager::error_input_disclaimer($errors['invalid_volume']) : '') ."
 
                     <fieldset><legend>Para mais de uma opção, separa com vírgulas:</legend>
                         <input type='text' name='cover_colors' placeholder='Cores da capa (azul, branco)' value='".(htmlspecialchars($form_data['cover_colors']) ?? '')."'/></br>".
-                        ((!empty($errors)) ? InterfaceManager::search_input_disclaimer($errors['invalid_cover_colors']) : '') ."
+                        ((!empty($errors)) ? InterfaceManager::error_input_disclaimer($errors['invalid_cover_colors']) : '') ."
 
                         <input type='text' name='translators' placeholder='Tradutores' value='".(htmlspecialchars($form_data['translators']) ?? '')."'/></br>".
-                        ((!empty($errors)) ? InterfaceManager::search_input_disclaimer($errors['invalid_translators']) : '') ."
+                        ((!empty($errors)) ? InterfaceManager::error_input_disclaimer($errors['invalid_translators']) : '') ."
                     </fieldset>".
 
                     InterfaceManager::register_button()."
