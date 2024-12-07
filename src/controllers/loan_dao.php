@@ -100,6 +100,23 @@ final class LoanDAO{
         
     }
 
+    public static function fetch_loan_history_by_loaner_id(int $loaner_id): ?array { 
+        $db_man = new DAOManager();
+        $search = ['loaner_id' => $loaner_id];
+        $dql = "
+            SELECT l.id AS id, b.asset_code AS \"patr.\", o.title AS título, 
+                l.loan_date AS retirada
+            FROM ". DB::LOAN_TABLE ." l 
+            JOIN ". DB::READER_TABLE ." r ON r.id = l.loaner_id
+            JOIN ". DB::BOOK_COPY_TABLE ." b ON b.id = l.book_copy_id
+            JOIN ". DB::EDITION_TABLE ." e ON e.id = b.edition_id 
+            JOIN ". DB::OPUS_TABLE ." o ON o.id = e.opus_id
+            WHERE r.id = :loaner_id";
+        return $db_man -> fetch_flex_dql($dql, $search);
+        
+    }
+
+
     public static function fetch_open_loans_by_loaner_id(int $loaner_id): ?array { 
         $db_man = new DAOManager();
         $search = ['loaner_id' => $loaner_id];

@@ -6,12 +6,12 @@ require_once(__DIR__ . '/menu.php');
 final class StudentMenu extends Menu{
     const MENU_TYPE = 'student';
     const MENU_HREF = [
-        'loan_search' => 'loan_search_readers.php',
+        'loan_history' => 'loan_history_reader.php',
         'book_search' => 'bookcopy_search_readers.php',
         ];
 
     const MENU_ICON_SRC = [
-        'loan_search' => self::IMAGE_DIR.'loan_search.png',
+        'loan_history' => self::IMAGE_DIR.'report_user_loan_history.png',
         'book_search' => self::IMAGE_DIR.'book_search.png',
         'synopsis' => self::IMAGE_DIR.'synopsis.png',
         ];
@@ -42,6 +42,16 @@ final class StudentMenu extends Menu{
                     Menu de Estudante
                 </caption>
                 <tr>
+                    <td class='super_label' colspan='3'>Recados</td>
+                </tr>
+                <tr>
+                    <td colspan='3'>
+                        <ul>
+                        <li>Nenhum recado</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
                     <td class='super_label'>Empréstimos</td>
                     <td class='super_label'>Livros</td>
                     <td class='super_label'>Sinopses</td>
@@ -49,9 +59,10 @@ final class StudentMenu extends Menu{
         
                 <tr>
                     <td>
-                    <a href='".self::MENU_HREF['loan_search']."'>
-                        <img class='menu_icon' src='".self::MENU_ICON_SRC['loan_search']."' />
-                    </a>
+                        <form method='get' action='".self::MENU_HREF['loan_history']."'>
+                            <input type='hidden' name='user_id' value='".$_SESSION['user_id']."'>
+                            <input class='menu_icon' type='image' src='".self::MENU_ICON_SRC['loan_history']."' alt='Empréstimos'>
+                        </form>
                     </td>
 
                     <td>

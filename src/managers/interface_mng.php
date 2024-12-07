@@ -183,6 +183,20 @@ final class InterfaceManager{
         ";//  
     }
 
+    public static function update_element_button(string $element_type, mixed $element): string{
+        return "
+            <form method='post' action='".$element_type."_updater.php'>
+                <input type='hidden' name='id' value='".$element -> get_id()."'>
+                <input 
+                    id='update_element_button' 
+                    class='back_buttons'
+                    type='submit' 
+                    value='&#9998; | MODIFICAR'>
+            </form>
+        ";
+    }
+
+
 
     /**
      * @var $register_type: Should be rather simply user, opus (etc.) or loan.
@@ -206,6 +220,10 @@ final class InterfaceManager{
 
     public static function register_button(): string {
         return "<input class='register_button' type='submit' value='Cadastrar &#x1F4BE;'>";
+    }
+
+    public static function updater_button(): string {
+        return "<input class='register_button' type='submit' value='Atualizar &#x1F4BE;'>";
     }
     
     public static function search_input_disclaimer($disclaimer): string{

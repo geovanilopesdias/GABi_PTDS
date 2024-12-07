@@ -36,7 +36,7 @@ final class ReaderDetail extends ElementDetail{
         if(!empty($open_loans)) {
             return InterfaceManager::table_of_results('loan', 'Empréstimos em aberto', $open_loans);
         }
-        else return "<p>Este usuário está em posse de livros.</p>";
+        else return "<p>Este usuário não está em posse de livros.</p>";
         
     }
 
