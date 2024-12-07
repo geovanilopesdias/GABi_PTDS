@@ -1,9 +1,9 @@
 <?php
     return [
-        'host' => 'localhost',
+        'host' => 'postgres.railway.internal',
         'port' => '5432',
-        'db_name' => 'postgres',
-        'db_user' => 'geovani_lopes_dias',
-        'db_pass' => 'rumsey_zagarelli_vuolo'
+        'db_name' => 'railway',
+        'db_user' => 'postgres',
+        'db_pass' => 'ENNmfKPveZLJTyqiFXqJAERabdUlAbaE'
     ];
 ?>
