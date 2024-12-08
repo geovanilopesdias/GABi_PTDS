@@ -95,6 +95,11 @@ final class SecurityManager{
     public static function is_updating_permited(string $element_type): bool{
         return in_array($element_type, ['user', 'book', 'bookcopy'], true);
     }
+
+    public static function can_user_register(int $reader_id): bool {
+        $u = PeopleDAO::fetch_reader_by_id($reader_id, true);
+        return $u -> get_can_register();
+    }
     
 }
 

@@ -180,15 +180,21 @@ final class InterfaceManager{
         $id_from_session = isset($_SESSION['form_data']['id']) ?
             intval($_SESSION['form_data']['id']) 
             : null;
-        return "
-            <div id='loan_button_grid'>".
-                ((!empty($errors)) ? self::search_input_disclaimer($errors['invalid_date'] ?? '') : '') .
-                (is_null($id_from_session) ? self::close_loan_button($loan_id) : self::close_loan_button($id_from_session)). 
-                ((!empty($errors)) ? self::search_input_disclaimer($errors['invalid_closing'] ?? '') : '') .
-                (is_null($id_from_session) ? self::renovate_loan_button($loan_id) : self::renovate_loan_button($id_from_session)).
-                ((!empty($errors)) ? self::search_input_disclaimer($errors['invalid_renovation'] ?? '') : '') ."
-            </div>
-        ";//  
+            
+        if (SecurityManager::can_user_register($_SESSION['user_id'])) {
+            return "
+                <div id='loan_button_grid'>".
+                    ((!empty($errors)) ? self::search_input_disclaimer($errors['invalid_date'] ?? '') : '') .
+                    (is_null($id_from_session) ? self::close_loan_button($loan_id) : self::close_loan_button($id_from_session)). 
+                    ((!empty($errors)) ? self::search_input_disclaimer($errors['invalid_closing'] ?? '') : '') .
+                    (is_null($id_from_session) ? self::renovate_loan_button($loan_id) : self::renovate_loan_button($id_from_session)).
+                    ((!empty($errors)) ? self::search_input_disclaimer($errors['invalid_renovation'] ?? '') : '') ."
+                </div>
+            ";
+        }
+
+        else {return "";}
+            
     }
 
     public static function update_element_button(string $element_type, mixed $element): string{
