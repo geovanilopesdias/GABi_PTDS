@@ -38,16 +38,16 @@ final class BookcopyDetail extends ElementDetail{
         $colors = $bookcopy['cover_colors'];
 
         $detail = "
-            <p><strong>Patrimônio:</strong> " . ucwords($bookcopy['asset_code']).
+            <p><strong>Patrimônio:</strong> " . $bookcopy['asset_code'].
                 " (".InterfaceManager::translate_book_status($bookcopy['status']).")</p>
-            <p><strong>Título:</strong> " . ucwords($bookcopy['title'])." $original_year</p>
+            <p><strong>Título:</strong> " . ucwords($bookcopy['title'] ?? '')." $original_year</p>
             $weblink
             <p><strong>CDD:</strong> " . $bookcopy['ddc']."</p>
             <p><strong>Cutter-Sanborn:</strong> " . $bookcopy['cutter_sanborn']."</p>
             <p><strong>Autores:</strong> $writers</p>
-            <p><strong>Editora:</strong> " . ucwords($bookcopy['publisher'])."</p>
-            <p><strong>Tradutores:</strong> " . ucwords($bookcopy['translators'])."</p>
-            <p><strong>Coleção:</strong> " . ucwords($bookcopy['collection'])."</p>
+            <p><strong>Editora:</strong> " . ucwords($bookcopy['publisher'] ?? '')."</p>
+            <p><strong>Tradutores:</strong> " . ucwords($bookcopy['translators'] ?? '')."</p>
+            <p><strong>Coleção:</strong> " . ucwords($bookcopy['collection'] ?? '')."</p>
             <p><strong>Volume:</strong> " . $bookcopy['volume']."</p>
             <p><strong>Edição:</strong> " . $bookcopy['edition_number']." $publishing_year</p>
             <p><strong>Páginas:</strong> " . $bookcopy['pages']." $publishing_year</p>

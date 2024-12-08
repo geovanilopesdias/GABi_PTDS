@@ -252,6 +252,8 @@ final class BookDAO{
             'id' => 'b.id', 'title' => 'o.title', 'writer' => 'w.name', 'isbn' => 'e.isbn',
             'collection' => 'c.name', 'cover_colors' => 'e.cover_colors'
         };
+        $does_search_by_id = $field == 'id';
+        $operator = ($does_search_by_id) ? '=' : 'ILIKE';
 
         $search = [$field => "%$value%"];
         $dql = "SELECT 
@@ -265,12 +267,12 @@ final class BookDAO{
             JOIN ". DB::EDITION_TABLE. " e ON e.opus_id = o.id 
             JOIN ". DB::COLLECTION_TABLE. " c ON c.id = e.collection_id 
             JOIN ". DB::BOOK_COPY_TABLE. " b ON b.edition_id = e.id 
-            WHERE $field_search ILIKE :$field 
+            WHERE $field_search $operator :$field 
             GROUP BY b.id, b.asset_code, b.status, e.cover_colors, 
                 o.title, o.alternative_url, 
                 o.cutter_sanborn
             ORDER BY o.title";
-        return $db_man->fetch_flex_dql($dql, $search);
+        return $db_man->fetch_flex_dql($dql, $search, $does_search_by_id);
     }
 
     public static function fetch_bookcopy_holistically_by(string $field, mixed $value): ?array {

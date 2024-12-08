@@ -464,8 +464,11 @@ final class DAOManager{
         try {
             foreach ($search as $f => $value) $stmt -> bindValue(":$f", $value);
             $stmt->execute();
-            if(!$is_unique) return $stmt->fetchAll(PDO::FETCH_ASSOC);
-            else return $stmt->fetch(PDO::FETCH_ASSOC);
+            error_log("Connection info: SQL Statement: \n" . $stmt->queryString);
+            if(!$is_unique)
+                {return $stmt->fetchAll(PDO::FETCH_ASSOC);}
+            else
+                {return $stmt->fetch(PDO::FETCH_ASSOC);}
         }
         catch (PDOException $e) {
             error_log("Connection failed: " . $e->getMessage() . " SQL Statement: \n" . $stmt->queryString);
