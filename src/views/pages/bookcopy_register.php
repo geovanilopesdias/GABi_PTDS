@@ -24,7 +24,7 @@ final class BookcopyRegister extends Register{
                     
                     <input type='number' min='0' pattern='\d+'
                         name='quantity' placeholder='Quantidade (vazio = 1)' value='".
-                            (htmlspecialchars($form_data['quantity']) ?? '')."'></br>".
+                            (htmlspecialchars($form_data['quantity'] ?? ''))."'></br>".
                     ((!empty($errors)) ? InterfaceManager::error_input_disclaimer($errors['invalid_quantity']) : '') .
                             
                     InterfaceManager::input_checkbox_single('ordered_assets', 'cadastrar patrimônios ordenadamente', '', false)."<br>".
