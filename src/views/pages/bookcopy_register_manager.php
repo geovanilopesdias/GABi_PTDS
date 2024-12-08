@@ -83,11 +83,12 @@ final class BookcopyRegisterManager extends FormManager{
         $edition = BookDAO::fetch_edition_with_opus_writer_data($bookcopy_data['edition_id']);
         return "
             <p><span class='data_header'>Exemplares cadastrados para:</span></p></br>
-            <p>".$edition['title'] . 
-            (isset($edition['isbn']) ? "(".$edition['isbn'].")" : '') .
-            (isset($edition['collection']) ? " da coleção ".$edition['collection'].")" : '') .
+            <p>".
+                (isset($edition['title']) ? $edition['title'] : '') . 
+                (isset($edition['isbn']) ? "(".$edition['isbn'].")" : '') .
+                (isset($edition['collection']) ? " da coleção ".$edition['collection'].")" : '') .
             "</p></br>
-            <p><span class='data_header'>Patrimônio(s) cadastrado(s):</span></p></br>".
+            <p><span class='data_header'>Patrimônio(s) cadastrado(s): </span></p>".
             implode(', ', $bookcopy_data['asset_code']);
     }
     

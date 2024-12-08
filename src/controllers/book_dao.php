@@ -202,8 +202,9 @@ final class BookDAO{
     public static function fetch_edition_with_opus_writer_data(int $edition_id): ?array { //OK
         $db_man = new DAOManager();
         
-        $fetched_opus = self::fetch_edition_by_id($edition_id);
-        if (empty($fetched_opus)) return null;
+        $fetched_edition = self::fetch_edition_by_id($edition_id);
+        if (empty($fetched_edition))
+            {return null;}
     
         $edition_fields = ['id', 'volume', 'edition_number', 'publishing_year', 'pages', 'cover_colors', 'translators'];
         $opus_fields = ['title', 'original_year', 'alternative_url', 'ddc', 'cutter_sanborn'];
@@ -223,7 +224,7 @@ final class BookDAO{
             " ORDER BY ".DB::OPUS_TABLE.".title";
         
         $search = ['edition_id' => $edition_id];
-        $results = $db_man->fetch_flex_dql($dql, $search);
+        $results = $db_man->fetch_flex_dql($dql, $search, true);
         foreach ($results as &$row) {
             if (isset($row['writers'])) {
                 $row['writers'] = json_decode($row['writers'], true); // Decode writers field into an array
