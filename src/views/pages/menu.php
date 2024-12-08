@@ -11,7 +11,7 @@ abstract class Menu{
 
     public function echo_structure(string $menu_type){
         session_start();
-        if (!isset($_SESSION['user_id']) and $_SESSION['user_role'] !== 'librarian') {
+        if (!isset($_SESSION['user_id'])) {
             header('Location: login.php'); exit;
         }
         $title = "GABi | ";
