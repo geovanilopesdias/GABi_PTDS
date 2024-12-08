@@ -53,12 +53,12 @@ final class OpusRegisterManager extends FormManager{
     protected function handle_errors() : array {
         $errors = array();
 
-        if (strlen($_POST['title']) < 2)
-            {$errors['invalid_title'] = 'Títulos precisam conter mais que dois caracteres!';}
+        if (strlen(trim($_POST['title'])) < 3)
+            {$errors['invalid_title'] = 'Títulos precisam conter mais que três caracteres!';}
 
         if (isset($_POST['original_year']))
-            if (($_POST['original_year']) > date("Y"))
-                {$errors['invalid_original_year'] = 'Não insires ano futuro';}
+            if (intval(($_POST['original_year'])) > intval(date("Y")))
+                {$errors['invalid_original_year'] = 'Não insiras um ano futuro!';}
 
         if (isset($_POST['alternative_url']))
             if (!SecurityManager::is_url_valid(htmlspecialchars($_POST['alternative_url'])))
@@ -102,9 +102,9 @@ final class OpusRegisterManager extends FormManager{
                 ];
                 $args['opus_data'] = [
                     'title' => htmlspecialchars($_POST['title']),
-                    'ddc' => htmlspecialchars($_POST['ddc']) ?? null,
-                    'original_year' => htmlspecialchars($_POST['original_year']) ?? null,
-                    'alternative_url' => htmlspecialchars($_POST['alternative_url']) ?? null,
+                    'ddc' => htmlspecialchars($_POST['ddc'] ?? null),
+                    'original_year' => intval(htmlspecialchars($_POST['original_year'] ?? null)),
+                    'alternative_url' => htmlspecialchars($_POST['alternative_url'] ?? null),
                 ];
                 $this->operation_succeed($args);
                 
