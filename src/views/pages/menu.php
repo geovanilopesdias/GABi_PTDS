@@ -4,7 +4,7 @@ require_once(__DIR__ . '/../../managers/interface_mng.php');
 
 abstract class Menu{
     const PAGE_TYPE = 'menu';
-    const IMAGE_DIR = __DIR__.'/../images/';     
+    const IMAGE_DIR = __DIR__.'/../../images/';     
         
     protected abstract function echo_logo_greeting();
     protected abstract function echo_menu_table();
