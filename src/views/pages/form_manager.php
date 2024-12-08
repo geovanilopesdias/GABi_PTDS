@@ -26,6 +26,7 @@ abstract class FormManager{
         
         $register_type = match ($register_type) {
             'user' => 'leitor',
+            'classroom' => 'turma',
             'loan' => 'empréstimo',
             'opus' => 'obra',
             'edition' => 'edição',

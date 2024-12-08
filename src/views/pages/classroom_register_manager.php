@@ -28,7 +28,7 @@ final class ClassroomRegisterManager extends FormManager{
             // $classroom_data = $args['classroom_data'];
             // $classroom_names = explode(',', $classroom_data['names']);
             foreach ($args['classroom_data']['names'] as $n)   
-                PeopleDAO::register_classroom(['name' => htmlspecialchars($n), 'year' => $args['classroom_data']['year']], $_SESSION['user_id']);
+                PeopleDAO::register_classroom(['name' => htmlspecialchars(trim($n)), 'year' => $args['classroom_data']['year']], $_SESSION['user_id']);
             $args['success_body'] = $this -> unordered_register_data($args['classroom_data']['names']);
             parent::operation_succeed($args);
         }
@@ -46,7 +46,7 @@ final class ClassroomRegisterManager extends FormManager{
                 {$errors['invalid_name'] = "Uma turma \"".htmlspecialchars($n)."\" já existe para ".htmlspecialchars($_POST['year']).".";}
         }
         
-        if ($_POST['year'] < date("Y")-1 or $_POST['year'] > date("Y")+1)
+        if (intval($_POST['year']) < intval(date("Y"))-1 or intval($_POST['year']) > intval(date("Y"))+1)
             {$errors['invalid_year'] = 'O ano '.htmlspecialchars($_POST['year']).' é muito antigo ou futuro.';}
         
         return $errors;
@@ -74,7 +74,7 @@ final class ClassroomRegisterManager extends FormManager{
                 ];
                 
                 $args['classroom_data'] = [
-                    'names' => explode(',', (htmlspecialchars($_POST['names']))),
+                    'names' => array_map('trim', explode(',', $_POST['names'])),
                     'year' => htmlspecialchars($_POST['year'])
                 ];
                 $this->operation_succeed($args);
