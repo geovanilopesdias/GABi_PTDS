@@ -34,7 +34,10 @@ abstract class ElementDetail{
     }
 
     public function echo_structure(string $element_type){
-        session_start();
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+        
         if (!isset($_SESSION['user_id']) or
             (($element_type === 'user' or $element_type === 'loan') and
                 $_SESSION['user_role'] !== 'librarian'))

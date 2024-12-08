@@ -174,7 +174,10 @@ final class InterfaceManager{
     }
 
     public static function loan_button_grid(int $loan_id, $errors): string{
-        $id_from_session = $_SESSION['form_data']['id'];
+        if (session_status() !== PHP_SESSION_ACTIVE)
+            {session_start();}
+
+        $id_from_session = intval($_SESSION['form_data']['id']) ?? '';
         return "
             <div id='loan_button_grid'>".
                 ((!empty($errors)) ? self::search_input_disclaimer($errors['invalid_date'] ?? '') : '') .

@@ -33,7 +33,7 @@ final class LoanDetail extends ElementDetail{
             <p><strong>Emprestado por:</strong> ".ucwords(($opener -> get_name() ?? '{REMOVIDO}'))." (em ".InterfaceManager::mask_timestamp($loan['opening_date']).")</p>
         ";
         if (is_null($loan['return_date'])) {
-            $detail .= InterfaceManager::loan_button_grid($element -> get_id(), $_SESSION['errors']);
+            $detail .= InterfaceManager::loan_button_grid($element -> get_id(), $_SESSION['errors'] ?? array());
         }
 
         else {
