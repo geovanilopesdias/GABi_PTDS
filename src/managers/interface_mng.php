@@ -256,12 +256,12 @@ final class InterfaceManager{
     
     public static function search_input_disclaimer($disclaimer): string{
         return "<p class='search_disclaimer'>".
-            htmlspecialchars($disclaimer)."</p></br>";
+            htmlspecialchars($disclaimer ?? '')."</p></br>";
     }
 
     public static function error_input_disclaimer($disclaimer): string{
         return "<p class='error_disclaimer'>".
-            htmlspecialchars($disclaimer)."</p></br>";
+            htmlspecialchars($disclaimer ?? '')."</p></br>";
     }
 
     /**
@@ -270,7 +270,7 @@ final class InterfaceManager{
      */
     public static function no_results_disclaimer($disclaimer): string{
         return "<div class='no_results_disclaimer'><p>".
-            htmlspecialchars($disclaimer)."</p></br></div>";
+            htmlspecialchars($disclaimer ?? '')."</p></br></div>";
     }
 
     /**
@@ -305,15 +305,15 @@ final class InterfaceManager{
                 ";
             }
             return $div_name ?
-                "<div id='".htmlspecialchars($div_name)."'>
+                "<div id='".htmlspecialchars($div_name ?? '')."'>
                     <fieldset>
-                        <legend>".htmlspecialchars($fieldset_legend)."</legend>
+                        <legend>".htmlspecialchars($fieldset_legend ?? '')."</legend>
                         $radio_group
                     </fieldset>
                 </div>" :
 
                 "<fieldset>
-                    <legend>".htmlspecialchars($fieldset_legend)."</legend>
+                    <legend>".htmlspecialchars($fieldset_legend ?? '')."</legend>
                     $radio_group
                 </fieldset>";
     }
@@ -504,8 +504,8 @@ final class InterfaceManager{
                     <input type='submit' class='element_detail_link' value='&#128065;'></form></td>", 
                     
                 // Readers
-                'telefone' => "<td>" . self::mask_phone(htmlspecialchars($row[$header])) . "</td>",
-                'nome' => "<td>" . ucwords(htmlspecialchars($row[$header])) . "</td>",
+                'telefone' => "<td>" . self::mask_phone(htmlspecialchars($row[$header] ?? '')) . "</td>",
+                'nome' => "<td>" . ucwords(htmlspecialchars($row[$header] ?? '')) . "</td>",
                 'tipo' => ($row[$header] === 'student') ? "<td>Discente</td>" : "<td>Docente</td>",
                 'último acesso', 'retirada', 'devolução' => "<td>" . self::mask_timestamp(htmlspecialchars($row[$header])) . "</td>",
                 'dívida' => "<td>R$ " . number_format(trim(htmlspecialchars($row[$header])), 2, ',', '.') . "</td>",
@@ -514,12 +514,12 @@ final class InterfaceManager{
                 'título' => "<td>" . htmlspecialchars($row[$header]) . "</td>",
                 
                 'autores' => "<td>" . implode(', ', array_map(function($author) {
-                    return htmlspecialchars($author['name']) . " (" . htmlspecialchars($author['birth_year']) . ")";},
+                    return htmlspecialchars($author['name']) . " (" . htmlspecialchars($author['birth_year'] ?? '') . ")";},
                     json_decode($row[$header], true))) . "</td>",
-                'situação' => "<td>" . self::translate_book_status(htmlspecialchars($row[$header])) . "</td>",
+                'situação' => "<td>" . self::translate_book_status(htmlspecialchars($row[$header] ?? '')) . "</td>",
                 
-'weblink' => "<td><a id='opus_weblink' target='blank' href='" . htmlspecialchars($row[$header]) . "'>&#128279;</a></td>",
-                default => "<td>" . ucfirst(htmlspecialchars($row[$header])) . "</td>"
+'weblink' => "<td><a id='opus_weblink' target='blank' href='" . htmlspecialchars($row[$header] ?? '') . "'>&#128279;</a></td>",
+                default => "<td>" . ucfirst(htmlspecialchars($row[$header] ?? '')) . "</td>"
             };
             $table .= "</tr>";
             $tr_class = ($tr_class === 'odd') ? 'even' : 'odd';
