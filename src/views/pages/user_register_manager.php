@@ -100,9 +100,9 @@ final class UserRegisterManager extends FormManager{
                 <li><span class='data_header'>Senha provisória:</span> " . htmlspecialchars($reader_data['passphrase']) . "</li>
                 <li><span class='data_header'>Turma(s):</span><ul>";
     
-        if (!empty($reader_data['reader_data']['classrooms_id']) && is_array($reader_data['classrooms'])) 
+        if (!empty($reader_data['reader_data']['classrooms_id'])) 
             foreach ($reader_data['reader_data']['classrooms_id'] as $id) {
-                $c = PeopleDAO::fetch_classroom_by_id(htmlspecialchars($id));
+                $c = PeopleDAO::fetch_classroom_by_id(intval(htmlspecialchars($id)));
                 $list .= "<li>" . $c -> get_name() . "</li>";
         }
                 
