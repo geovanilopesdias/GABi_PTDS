@@ -4,6 +4,7 @@ require_once(__DIR__ . '/form_manager.php');
 require_once(__DIR__ . '/../../controllers/loan_dao.php');
 require_once(__DIR__ . '/../../controllers/book_dao.php');
 require_once(__DIR__ . '/../../controllers/people_dao.php');
+require_once(__DIR__ . '/../../managers/security_mng.php');
 
 final class LoanUpdateManager extends FormManager {
     const UPDATE_TYPE = 'loan';
@@ -56,7 +57,7 @@ final class LoanUpdateManager extends FormManager {
         $loan = LoanDAO::fetch_loan_by_id($_POST['id']);
         $book = BookDAO::fetch_bookcopy_by_id($loan -> get_book_copy_id());
         $loaner = PeopleDAO::fetch_reader_by_id($loan -> get_loaner_id(), true);
-        $date = new DateTime(htmlspecialchars($_POST['date']));
+        $date = SecurityManager::toDateTimeOrNull(htmlspecialchars($_POST['date'] ?? ''));
 
         if ($date < $loan -> get_loan_date())
             {$errors['invalid_date'] = 'A data precisa ser anterior (ou a mesma) à retirada!';}
@@ -120,17 +121,17 @@ final class LoanUpdateManager extends FormManager {
                 $book = BookDAO::fetch_bookcopy_holistically_by_asset_code($copy -> get_asset_code());
                 $loaner = PeopleDAO::fetch_reader_by_id($loan -> get_loaner_id(), true);
                 
-                $args['loaner_id'] = intval(htmlspecialchars($_POST['loaner_id']));
+                $args['loaner_id'] = intval(htmlspecialchars($_POST['loaner_id'] ?? ''));
                 $args['loaner_name'] = $loaner -> get_name();
                 $args['title'] = $book['title'];
                 $args['asset_code'] = $book['asset_code'];
-                $args['loan_date'] = (new DateTime(htmlspecialchars($_POST['date'])));
+                $args['loan_date'] = SecurityManager::toDateTimeOrNull(htmlspecialchars($_POST['date'] ?? ''));
                 
 
                 if ($_POST['action' == 'renovate']) {
                     // It shall update with the library settings:
                     $args['return_until'] =
-                    (new DateTime(htmlspecialchars($_POST['date']))) ->
+                    (SecurityManager::toDateTimeOrNull(htmlspecialchars($_POST['date'] ?? ''))) ->
                         add(new DateInterval('P7D')) -> format('d/m/Y');
                 }
 

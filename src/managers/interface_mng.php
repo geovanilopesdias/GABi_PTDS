@@ -177,11 +177,11 @@ final class InterfaceManager{
         $id_from_session = $_SESSION['form_data']['id'];
         return "
             <div id='loan_button_grid'>".
-                ((!empty($errors)) ? self::search_input_disclaimer($errors['invalid_date']) : '') .
+                ((!empty($errors)) ? self::search_input_disclaimer($errors['invalid_date'] ?? '') : '') .
                 (is_null($id_from_session) ? self::close_loan_button($loan_id) : self::close_loan_button($id_from_session)). 
-                ((!empty($errors)) ? self::search_input_disclaimer($errors['invalid_closing']) : '') .
+                ((!empty($errors)) ? self::search_input_disclaimer($errors['invalid_closing'] ?? '') : '') .
                 (is_null($id_from_session) ? self::renovate_loan_button($loan_id) : self::renovate_loan_button($id_from_session)).
-                ((!empty($errors)) ? self::search_input_disclaimer($errors['invalid_renovation']) : '') ."
+                ((!empty($errors)) ? self::search_input_disclaimer($errors['invalid_renovation'] ?? '') : '') ."
             </div>
         ";//  
     }

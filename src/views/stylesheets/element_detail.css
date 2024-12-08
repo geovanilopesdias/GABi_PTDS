@@ -1,9 +1,4 @@
 #element_detail {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
-    align-items: center;
     width: 100vh;
     height: 100%;
     margin: 5px;
@@ -14,8 +9,15 @@
     background-color: var(--light-font-color);
 }
 
+#button_grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+}
 
-#element_detail form {
+#button_grid form {
     flex: 1; 
     min-width: 150px; 
     text-align: center; 
