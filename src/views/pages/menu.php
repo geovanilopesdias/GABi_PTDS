@@ -1,5 +1,5 @@
 <?php
-
+session_start();
 require_once(__DIR__ . '/../../managers/interface_mng.php');
 
 abstract class Menu{
@@ -10,7 +10,6 @@ abstract class Menu{
     protected abstract function echo_menu_table();
 
     public function echo_structure(string $menu_type){
-        session_start();
         if (!isset($_SESSION['user_id'])) {
             header('Location: login.php'); exit;
         }

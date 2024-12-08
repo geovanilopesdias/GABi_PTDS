@@ -1,5 +1,5 @@
 <?php
-
+session_start();
 require_once(__DIR__ . '/../../managers/interface_mng.php');
 
 abstract class FormManager{

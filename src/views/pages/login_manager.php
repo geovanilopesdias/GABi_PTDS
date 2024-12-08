@@ -1,5 +1,5 @@
 <?php
-
+session_start();
 require_once(__DIR__ . '/../../managers/interface_mng.php');
 require_once(__DIR__ . '/../../managers/security_mng.php');
 require_once(__DIR__ . '/../../controllers/people_dao.php');
@@ -41,6 +41,7 @@ final class LoginManager extends FormManager{
             $user = self::get_user();
             $new_login = new DateTime('now', new DateTimeZone('America/Sao_Paulo'));
             PeopleDAO::update_reader_last_login($user -> get_id(), $new_login);
+            session_start();
             $_SESSION['user_id'] = $user -> get_id();
             $_SESSION['user_role'] = $user -> get_role();
             $_SESSION['user_name'] = ($user -> get_role() == 'teacher') ?
