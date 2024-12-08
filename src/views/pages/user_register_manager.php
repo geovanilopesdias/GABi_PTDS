@@ -68,8 +68,6 @@ final class UserRegisterManager extends FormManager{
 
     protected function handle_errors() : array {
         $errors = array();
-        // if (!isset($_POST['name'], $_POST['phone'], $_POST['classrooms']))
-        //     {$errors['empty_fields'] = 'Todos os campos são obrigatórios.';}
         
         $login = SecurityManager::generate_login(
             htmlspecialchars($_POST['name']),
@@ -131,6 +129,7 @@ final class UserRegisterManager extends FormManager{
                     ),
                     'phone' => preg_replace('/\D/', '', htmlspecialchars($_POST['phone'])),
                     'passphrase' => SecurityManager::generate_provisory_passphrase(),
+                    'classrooms' => $_POST['classrooms'],
                 ];
                 $this->operation_succeed($args);
                 

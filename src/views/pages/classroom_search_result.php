@@ -35,11 +35,11 @@ final class ClassroomSearchResults extends SearchResults{
             $search_type = htmlspecialchars($_GET['radio_search_for'] ?? 'all');
             
             $fetched_results = match ($search_type) {
-                'stu' => PeopleDAO::fetch_all_students_from_classroom($classroom_id),
-                'tea' => PeopleDAO::fetch_all_teachers_from_classroom($classroom_id),
+                'stu' => PeopleDAO::fetch_all_students_from_classroom($classroom_id) ?? array(),
+                'tea' => PeopleDAO::fetch_all_teachers_from_classroom($classroom_id) ?? array(),
                 default => array_merge(
-                    PeopleDAO::fetch_all_students_from_classroom($classroom_id),
-                    PeopleDAO::fetch_all_teachers_from_classroom($classroom_id)
+                    PeopleDAO::fetch_all_students_from_classroom($classroom_id) ?? array(),
+                    PeopleDAO::fetch_all_teachers_from_classroom($classroom_id) ?? array()
                 ),
             };
 
