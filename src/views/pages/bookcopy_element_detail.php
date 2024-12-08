@@ -19,12 +19,6 @@ final class BookcopyDetail extends ElementDetail{
         $bookcopy = BookDAO::fetch_bookcopy_holistically_by_asset_code($element -> get_asset_code());
         if(empty($bookcopy)) return "<h1>Puxa vida! Erro ao construir o exemplar...</h1>";
         
-        // CORRIGIR:
-        // $loan_link = ($bookcopy['status'] === 'loaned') ?
-        //     "<form method='post' action='loan_element_detail.php'>
-        //         <input type='hidden' value='".$bookcopy['id']."'>
-        //         <input type='submit' class='element_detail_link' value='&#128065;'>
-        //     </form>" : "";
         $weblink = (!is_null($bookcopy['alternative_url'])) ?
             "<p><strong>Disponível online:</strong>  
                 <a id='opus_weblink' target='blank' href='" . htmlspecialchars($bookcopy['alternative_url']) . "'>&#128279;</a>

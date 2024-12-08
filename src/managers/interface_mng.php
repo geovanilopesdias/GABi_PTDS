@@ -197,7 +197,7 @@ final class InterfaceManager{
             
     }
 
-    public static function update_element_button(string $element_type, mixed $element): string{
+    protected static function update_element_button(string $element_type, mixed $element): string{
         if(SecurityManager::is_updating_permited($element_type)) {
             return "
                 <form method='post' action='".$element_type."_updater.php'>
@@ -218,7 +218,7 @@ final class InterfaceManager{
      * Returns a post-form to deleter.php only if the element_type is permited from
      * SecurityManager validation method. Otherwise, it returns an empty string.
      */
-    public static function delete_element_button(string $element_type, mixed $element): string{
+    protected static function delete_element_button(string $element_type, mixed $element): string{
         if(SecurityManager::is_deletion_permited($element_type)) {
             return "
                 <form method='post' action='delete_manager.php'>
@@ -252,6 +252,30 @@ final class InterfaceManager{
                     value='&#x25c0; | NOVO CADASTRO'>
             </form>
         ";
+    }
+
+    public static function menu_update_delete_button_grid(string $element_type, mixed $element): string{
+        if (session_status() !== PHP_SESSION_ACTIVE)
+            {session_start();}
+
+        if (SecurityManager::can_user_register($_SESSION['user_id'])) {
+            return "
+                <div id='menu_update_delete_button_grid'>".
+                    self::back_to_menu_button($element_type).
+                    self::update_element_button($element_type, $element).
+                    self::delete_element_button($element_type, $element). "
+                </div>
+            ";
+        }
+
+        else {
+            return "
+                <div id='menu_update_delete_button_grid'>".
+                    self::back_to_menu_button($element_type). "
+                </div>
+            ";
+        }
+            
     }
     
     // ----- For forms

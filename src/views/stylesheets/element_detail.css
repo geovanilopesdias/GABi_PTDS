@@ -9,7 +9,7 @@
     background-color: var(--light-font-color);
 }
 
-#button_grid {
+#menu_update_delete_button_grid {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
