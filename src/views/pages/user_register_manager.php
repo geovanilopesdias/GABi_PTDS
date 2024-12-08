@@ -100,9 +100,12 @@ final class UserRegisterManager extends FormManager{
                 <li><span class='data_header'>Senha provisória:</span> " . htmlspecialchars($reader_data['passphrase']) . "</li>
                 <li><span class='data_header'>Turma(s):</span><ul>";
     
-        if (!empty($reader_data['classrooms']) && is_array($reader_data['classrooms'])) 
-            foreach ($reader_data['classrooms'] as $c) 
-                $list .= "<li>" . htmlspecialchars($c) . "</li>";
+        if (!empty($reader_data['reader_data']['classrooms_id']) && is_array($reader_data['classrooms'])) 
+            foreach ($reader_data['reader_data']['classrooms_id'] as $id) {
+                $c = PeopleDAO::fetch_classroom_by_id(htmlspecialchars($id));
+                $list .= "<li>" . $c -> get_name() . "</li>";
+        }
+                
             
         else $list .= "<li>Nenhuma turma selecionada.</li>";    
         
@@ -129,7 +132,7 @@ final class UserRegisterManager extends FormManager{
                     ),
                     'phone' => preg_replace('/\D/', '', htmlspecialchars($_POST['phone'])),
                     'passphrase' => SecurityManager::generate_provisory_passphrase(),
-                    'classrooms' => $_POST['classrooms'],
+                    'classrooms_ids' => $_POST['classrooms_ids'],
                 ];
                 $this->operation_succeed($args);
                 
