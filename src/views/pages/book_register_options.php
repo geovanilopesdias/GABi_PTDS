@@ -13,7 +13,6 @@ final class BookRegisterOptions extends Menu{
         'publisher_register' => 'publisher_register.php',
         'writer_register' => 'writer_register.php'];
 
-    const IMAGE_DIR = '/code/src/views/images/';     
     const MENU_ICON_SRC = [
         'opus_register' => self::IMAGE_DIR.'opus_register.png',
         'edition_register' => self::IMAGE_DIR.'edition_register.png',
