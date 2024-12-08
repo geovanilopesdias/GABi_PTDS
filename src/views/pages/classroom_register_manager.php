@@ -28,7 +28,7 @@ final class ClassroomRegisterManager extends FormManager{
             $classroom_data = $args['classroom_data'];
             $classroom_names = explode(',', $classroom_data['names']);
             foreach ($classroom_names as $n)   
-                PeopleDAO::register_classroom(['name' => $n, 'year' => $classroom_data['year']], $_SESSION['user_id']);
+                PeopleDAO::register_classroom(['name' => htmlspecialchars($n), 'year' => $classroom_data['year']], $_SESSION['user_id']);
             $args['success_body'] = $this -> unordered_register_data($classroom_data);
             parent::operation_succeed($args);
         }
@@ -72,8 +72,9 @@ final class ClassroomRegisterManager extends FormManager{
                     'success_title' => 'Cadastro aceito',
                     'success_message' => 'Cadastro de turma realizado com sucesso'
                 ];
+                
                 $args['classroom_data'] = [
-                    'names' => htmlspecialchars($_POST['names']),
+                    'names' => $_POST['names'],
                     'year' => htmlspecialchars($_POST['year'])
                 ];
                 $this->operation_succeed($args);

@@ -21,7 +21,7 @@ final class ClassroomRegister extends Register{
         echo "
             <div id='register_form'>
                 <form class='register' action='".self::REGISTER_TYPE."_register_manager.php' method='post'>
-                    <input type='text' name='names' placeholder='Nomes das turmas' value='".(htmlspecialchars($form_data['name']) ?? '')."' autofocus required/><br>".
+                    <input type='text' name='names' placeholder='Nomes das turmas' value='".(htmlspecialchars($form_data['name'] ?? ''))."' autofocus required/><br>".
                     InterfaceManager::search_input_disclaimer('Separe-as com vírgulas') .
                     ((!empty($errors)) ? InterfaceManager::error_input_disclaimer($errors['invalid_name']) : '') ."
                     
