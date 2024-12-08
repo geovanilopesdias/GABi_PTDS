@@ -88,7 +88,7 @@ final class BookcopyRegisterManager extends FormManager{
             (isset($edition['collection']) ? " da coleção ".$edition['collection'].")" : '') .
             "</p></br>
             <p><span class='data_header'>Patrimônio(s) cadastrado(s):</span></p></br>".
-            $bookcopy_data['asset_code'];
+            implode(', ', $bookcopy_data['asset_code']);
     }
     
 
@@ -100,9 +100,9 @@ final class BookcopyRegisterManager extends FormManager{
                 $args = [
                     'register_type' => self::REGISTER_TYPE,
                     'success_title' => 'Cadastro aceito',
-                    'success_message' => 'Cadastro de usuário realizado com sucesso'
+                    'success_message' => 'Cadastro de exemplar realizado com sucesso'
                 ];
-                $args['bookcopy_data'] = ['edition_id' => htmlspecialchars($_POST['edition_id'])];
+                $args['bookcopy_data']['edition_id'] = intval(htmlspecialchars($_POST['edition_id']));
 
                 if (isset($_POST['ordered_assets'])) {
                     $base_code = filter_var($_POST['asset_code'], FILTER_VALIDATE_INT);
