@@ -177,7 +177,9 @@ final class InterfaceManager{
         if (session_status() !== PHP_SESSION_ACTIVE)
             {session_start();}
 
-        $id_from_session = intval($_SESSION['form_data']['id']) ?? '';
+        $id_from_session = isset($_SESSION['form_data']['id']) ?
+            intval($_SESSION['form_data']['id']) 
+            : null;
         return "
             <div id='loan_button_grid'>".
                 ((!empty($errors)) ? self::search_input_disclaimer($errors['invalid_date'] ?? '') : '') .
