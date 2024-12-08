@@ -38,7 +38,7 @@ final class UserRegisterManager extends FormManager{
                 $classroom_name = $classroom -> get_name();
             };
 
-            if ($_SESSION['role'] === 'student'){
+            if ($_POST['role'] === 'stu'){
                 PeopleDAO::register_student($reader_data, $_SESSION['user_id']);
                 $student_fetched = PeopleDAO::fetch_reader_by_login($reader_data['login']);
                 foreach ($classrooms_ids as $c_id)
@@ -47,7 +47,7 @@ final class UserRegisterManager extends FormManager{
                         $_SESSION['user_id']);
             }
             else { // Teacher register
-                if ($_SESSION['can_borrow'] === 'on')
+                if (isset($_POST['can_borrow']))
                     PeopleDAO::register_loaner_teacher($reader_data, $_SESSION['user_id']);
                 else
                     PeopleDAO::register_non_loaner_teacher($reader_data, $_SESSION['user_id']);
