@@ -24,15 +24,16 @@ final class OpusRegisterManager extends FormManager{
 
     protected function operation_succeed(&$args){
         try{
-            $opus_data = $args['opus_data'];   
-            $last_opus_inserted_id = BookDAO::register_opus($opus_data, $_SESSION['user_id']);
+            $last_opus_inserted_id = BookDAO::register_opus($args['opus_data'], $_SESSION['user_id']);
 
             // Authorship registration:
             if(is_array($_POST['writer_ids'])){
                 foreach ($_POST['writer_ids'] as $w_id)
-                    BookDAO::register_authorship(
-                        ['opus_id' => $last_opus_inserted_id,
-                        'writer_id' => htmlspecialchars($w_id)], $_SESSION['user_id']);
+                    $data = [
+                        'opus_id' => $last_opus_inserted_id,
+                        'writer_id' => htmlspecialchars($w_id)
+                    ];
+                    BookDAO::register_authorship($data, $_SESSION['user_id']);
             }
             else {
                 BookDAO::register_authorship(
@@ -40,12 +41,12 @@ final class OpusRegisterManager extends FormManager{
                     'writer_id' => htmlspecialchars($_POST['writer_ids'])], $_SESSION['user_id']);
             }
 
-            $args['success_body'] = $this -> unordered_register_data($opus_data);
+            $args['success_body'] = $this -> unordered_register_data($args['opus_data']);
             parent::operation_succeed($args);
         }
         catch (Exception $e){
-            echo "Puxa vida, desculpe-nos. Houve um erro em nosso sistema!\n".
-            $e -> getMessage();
+            echo "Puxa vida, desculpe-nos. Houve um erro durante o cadastro de obra!\n".
+            error_log($e -> getMessage());
         }
     }
 
