@@ -23,11 +23,11 @@ final class LoanRegister extends Register{
                     InterfaceManager::reader_selector()."<br>".
                     ((!empty($errors)) ? InterfaceManager::error_input_disclaimer($errors['debtor_loaner']) : '') ."
                     
-                    <input type='text' name='asset_code' placeholder='Patrimônios' value='".(htmlspecialchars($form_data['asset_code']) ?? '')."' required/></br>".
+                    <input type='text' name='asset_code' placeholder='Patrimônios' value='".(htmlspecialchars($form_data['asset_code'] ?? ''))."' required/></br>".
                     InterfaceManager::search_input_disclaimer('Para vários exemplares, separe os valores com vírgulas.').
                     ((!empty($errors)) ? InterfaceManager::error_input_disclaimer($errors['invalid_asset_code']) : '') ."
 
-                    <input type='date' name='loan_date' placeholder='Ano original da obra' value='".(htmlspecialchars($form_data['original_year']) ?? '')."' required/></br>".
+                    <input type='date' name='loan_date' placeholder='Ano original da obra' value='".(htmlspecialchars($form_data['original_year'] ?? ''))."' required/></br>".
                     InterfaceManager::search_input_disclaimer('Seleciona acima o dia da retirada.').
                     ((!empty($errors)) ? InterfaceManager::error_input_disclaimer($errors['invalid_date']) : '') .
 

@@ -24,26 +24,26 @@ final class EditionRegister extends Register{
                     InterfaceManager::publisher_selector()."<br>".
                     InterfaceManager::collection_selector()."<br>
 
-                    <input type='text' name='isbn' placeholder='ISBN' value='".(htmlspecialchars($form_data['isbn']) ?? '')."'/></br>".
+                    <input type='text' name='isbn' placeholder='ISBN' value='".(htmlspecialchars($form_data['isbn'] ?? ''))."'/></br>".
                     ((!empty($errors)) ? InterfaceManager::error_input_disclaimer($errors['invalid_isbn']) : '') ."
 
-                    <input type='number' min='1' name='edition_number' placeholder='Edição (e.g.: 2)' value='".(htmlspecialchars($form_data['edition_number']) ?? '')."'/></br>".
+                    <input type='number' min='1' name='edition_number' placeholder='Edição (e.g.: 2)' value='".(htmlspecialchars($form_data['edition_number'] ?? ''))."'/></br>".
                     ((!empty($errors)) ? InterfaceManager::error_input_disclaimer($errors['invalid_edition_number']) : '') ."
 
-                    <input type='number' name='publishing_year' placeholder='Ano da edição' value='".(htmlspecialchars($form_data['publishing_year']) ?? '')."' /></br>".
+                    <input type='number' name='publishing_year' placeholder='Ano da edição' value='".(htmlspecialchars($form_data['publishing_year'] ?? ''))."' /></br>".
                     ((!empty($errors)) ? InterfaceManager::error_input_disclaimer($errors['invalid_publishing_year']) : '') ."
 
-                    <input type='number' min='1' name='pages' placeholder='Número de páginas' value='".(htmlspecialchars($form_data['pages']) ?? '')."'/></br>".
+                    <input type='number' min='1' name='pages' placeholder='Número de páginas' value='".(htmlspecialchars($form_data['pages'] ?? ''))."'/></br>".
                     ((!empty($errors)) ? InterfaceManager::error_input_disclaimer($errors['invalid_pages']) : '') ."
 
-                    <input type='number' min='1' name='volume' placeholder='Volume' value='".(htmlspecialchars($form_data['volume']) ?? '')."'/></br>".
+                    <input type='number' min='1' name='volume' placeholder='Volume' value='".(htmlspecialchars($form_data['volume'] ?? ''))."'/></br>".
                     ((!empty($errors)) ? InterfaceManager::error_input_disclaimer($errors['invalid_volume']) : '') ."
 
                     <fieldset><legend>Para mais de uma opção, separa com vírgulas:</legend>
-                        <input type='text' name='cover_colors' placeholder='Cores da capa (azul, branco)' value='".(htmlspecialchars($form_data['cover_colors']) ?? '')."'/></br>".
+                        <input type='text' name='cover_colors' placeholder='Cores da capa (azul, branco)' value='".(htmlspecialchars($form_data['cover_colors'] ?? ''))."'/></br>".
                         ((!empty($errors)) ? InterfaceManager::error_input_disclaimer($errors['invalid_cover_colors']) : '') ."
 
-                        <input type='text' name='translators' placeholder='Tradutores' value='".(htmlspecialchars($form_data['translators']) ?? '')."'/></br>".
+                        <input type='text' name='translators' placeholder='Tradutores' value='".(htmlspecialchars($form_data['translators'] ?? ''))."'/></br>".
                         ((!empty($errors)) ? InterfaceManager::error_input_disclaimer($errors['invalid_translators']) : '') ."
                     </fieldset>".
 

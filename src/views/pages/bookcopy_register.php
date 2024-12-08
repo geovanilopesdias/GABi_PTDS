@@ -29,7 +29,7 @@ final class BookcopyRegister extends Register{
                             
                     InterfaceManager::input_checkbox_single('ordered_assets', 'cadastrar patrimônios ordenadamente', '', false)."<br>".
                     InterfaceManager::search_input_disclaimer("Para cadastro ordenado (ex.: 123, 124...), marque acima e informa abaixo o primeiro:") ."
-                    <input type='text' name='asset_code' placeholder='Patrimônio(s)' value='".(htmlspecialchars($form_data['asset_code']) ?? '')."' required/>".
+                    <input type='text' name='asset_code' placeholder='Patrimônio(s)' value='".(htmlspecialchars($form_data['asset_code'] ?? ''))."' required/>".
                     
                     InterfaceManager::search_input_disclaimer('Se desmarcada opção acima, separa os patrimônios com vírgula.').
                     ((!empty($errors)) ? InterfaceManager::error_input_disclaimer($errors['invalid_asset_code']) : '') .
