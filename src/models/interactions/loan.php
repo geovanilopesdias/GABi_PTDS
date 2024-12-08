@@ -1,14 +1,14 @@
 <?php
 
 final class Loan{
-    private ?int $id, $closer_id, $debt_receiver_id;
-    private int $book_copy_id, $loaner_id, $opener_id;
+    private ?int $id, $closer_id, $debt_receiver_id, $loaner_id, $opener_id;
+    private int $book_copy_id;
     private ?DateTime $closing_date, $return_date;
     private DateTime $opening_date, $loan_date;
     private float $debt;
 
     private function __construct(
-        int $book_copy_id, int $loaner_id, int $opener_id,
+        int $book_copy_id, ?int $loaner_id, ?int $opener_id,
         DateTime $opening_date, DateTime $loan_date,
         ?float $debt = 0,
         ?int $id = null, ?int $closer_id = null, ?int $debt_receiver_id = null,
@@ -33,8 +33,8 @@ final class Loan{
             'closer_id' => $this->closer_id ?? null,
             'debt_receiver_id' => $this->debt_receiver_id ?? null,
             'book_copy_id' => $this->book_copy_id,
-            'loaner_id' => $this->loaner_id,
-            'opener_id' => $this->opener_id,
+            'loaner_id' => $this->loaner_id ?? null,
+            'opener_id' => $this->opener_id ?? null,
             'closing_date' => $this->closing_date ?? null,
             'return_date' => $this->return_date ?? null,
             'opening_date' => $this->opening_date,

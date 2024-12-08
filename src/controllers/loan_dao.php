@@ -89,7 +89,7 @@ final class LoanDAO{
             SELECT l.id, l.loan_date AS retirada, 
                 r.name AS nome, r.role AS tipo, o.title AS título 
             FROM ". DB::LOAN_TABLE ." l 
-            JOIN ". DB::READER_TABLE ." r ON r.id = l.loaner_id
+            LEFT JOIN ". DB::READER_TABLE ." r ON r.id = l.loaner_id
             JOIN ". DB::BOOK_COPY_TABLE ." b ON b.id = l.book_copy_id
             JOIN ". DB::EDITION_TABLE ." e ON e.id = b.edition_id 
             JOIN ". DB::OPUS_TABLE ." o ON o.id = e.opus_id
@@ -124,8 +124,8 @@ final class LoanDAO{
             SELECT l.id AS id, b.asset_code AS \"patr.\", o.title AS título, 
                 l.loan_date AS retirada
             FROM ". DB::LOAN_TABLE ." l 
-            JOIN ". DB::READER_TABLE ." r ON r.id = l.loaner_id
-            JOIN ". DB::BOOK_COPY_TABLE ." b ON b.id = l.book_copy_id
+            LEFT JOIN ". DB::READER_TABLE ." r ON r.id = l.loaner_id
+            LEFT JOIN ". DB::BOOK_COPY_TABLE ." b ON b.id = l.book_copy_id
             JOIN ". DB::EDITION_TABLE ." e ON e.id = b.edition_id 
             JOIN ". DB::OPUS_TABLE ." o ON o.id = e.opus_id
             WHERE r.id = :loaner_id AND l.return_date is null";
@@ -140,8 +140,8 @@ final class LoanDAO{
             SELECT l.".implode(', l.', DB::LOAN_FIELDS)." , 
                 r.name, b.asset_code, o.title 
             FROM ". DB::LOAN_TABLE ." l 
-            JOIN ". DB::READER_TABLE ." r ON r.id = l.loaner_id
-            JOIN ". DB::BOOK_COPY_TABLE ." b ON b.id = l.book_copy_id
+            LEFT JOIN ". DB::READER_TABLE ." r ON r.id = l.loaner_id
+            LEFT JOIN ". DB::BOOK_COPY_TABLE ." b ON b.id = l.book_copy_id
             JOIN ". DB::EDITION_TABLE ." e ON e.id = b.edition_id 
             JOIN ". DB::OPUS_TABLE ." o ON o.id = e.opus_id
             WHERE l.id = :loan_id";

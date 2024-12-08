@@ -2,6 +2,7 @@
 
 require_once (__DIR__.'/../controllers/people_dao.php');
 require_once (__DIR__.'/../controllers/book_dao.php');
+require_once (__DIR__.'/security_mng.php');
 
 final class InterfaceManager{
     const PAGE_TYPE = [
@@ -184,16 +185,43 @@ final class InterfaceManager{
     }
 
     public static function update_element_button(string $element_type, mixed $element): string{
-        return "
-            <form method='post' action='".$element_type."_updater.php'>
-                <input type='hidden' name='id' value='".$element -> get_id()."'>
-                <input 
-                    id='update_element_button' 
-                    class='back_buttons'
-                    type='submit' 
-                    value='&#9998; | MODIFICAR'>
-            </form>
-        ";
+        if(SecurityManager::is_updating_permited($element_type)) {
+            return "
+                <form method='post' action='".$element_type."_updater.php'>
+                    <input type='hidden' name='id' value='".$element -> get_id()."'>
+                    <input 
+                        id='update_element_button' 
+                        class='back_buttons'
+                        type='submit' 
+                        value='&#9998; | MODIFICAR'>
+                </form>
+            ";
+        }
+
+        else return "";
+    }
+
+    /**
+     * Returns a post-form to deleter.php only if the element_type is permited from
+     * SecurityManager validation method. Otherwise, it returns an empty string.
+     */
+    public static function delete_element_button(string $element_type, mixed $element): string{
+        if(SecurityManager::is_deletion_permited($element_type)) {
+            return "
+                <form method='post' action='delete_manager.php'>
+                    <input type='hidden' name='id' value='".$element -> get_id()."'>
+                    <input type='hidden' name='element_type' value='$element_type'>
+                    <input type='hidden' name='deletion_step' value='confirmation'>
+                    <input 
+                        id='delete_element_button' 
+                        class='back_buttons'
+                        type='submit' 
+                        value='&#128465; | EXCLUIR'>
+                </form>
+            ";
+        }
+        
+        else return "";
     }
 
 

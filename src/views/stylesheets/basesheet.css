@@ -92,10 +92,10 @@ input, select {
 /*----- Page Buttons in General ----- */
 .back_buttons {
   font-family: Chakra Petch, sans-serif;
-  font-size: 12px;
+  font-size: .8em;
   font-weight: bold;
   color: var(--light-font-color);
-  padding: 10px;
+  padding: 0.5em 1em;
   margin-top: 20px;
   border-radius: 5px;
   cursor: pointer;
@@ -124,6 +124,18 @@ input, select {
 
 #back_to_register_button{
   background-color: var(--dark-font-color);
+  margin: 5px;
+}
+
+#delete_element_button {
+  background-color: rgb(167, 4, 4);
+  color: var(--light-font-color);
+  margin: 5px;
+}
+
+#cancel_button {
+  background-color: grey;
+  color: black;
   margin: 5px;
 }
 

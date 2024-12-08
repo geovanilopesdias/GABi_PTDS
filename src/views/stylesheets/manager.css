@@ -7,3 +7,45 @@
     font-weight: bold;
 }
 
+
+/* Deletion page setting: */
+#deletion {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: auto auto;
+    gap: 1rem;
+    width: auto;
+    height: auto;
+    margin: 1rem;
+    padding: .7em;
+    background-color: var(--login-menu-bgc);
+    border-radius: 50px 50px 0px 0px;
+    filter: var(--login-menu-filter);
+    border: 1px solid #ccc;
+}
+
+#deletion_data {
+    grid-column: 1/ span 3;
+    grid-row: 1;
+}
+
+#deletion_form {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+#cancel_form {
+    grid-column: 2;
+    grid-row: 2;
+}
+
+#back_menu {
+    grid-column: 3;
+    grid-row: 2;
+}
+
+/* #deletion_form, #cancel_form, #back_menu {
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+} */

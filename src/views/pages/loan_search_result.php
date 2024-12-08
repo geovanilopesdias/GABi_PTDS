@@ -26,7 +26,8 @@ final class LoanSearchResults extends SearchResults{
                 $value = htmlspecialchars(trim($_GET[$f]));
                 $keywords .= "$value ";
                 $loans = LoanDAO::fetch_loan_by($f, $value, $open_only);
-                foreach ($loans as $l) if (!in_array($l['id'], $results, true)) $results[] = $l;
+                foreach ($loans as $l)
+                    {if (!in_array($l['id'], $results, true)) $results[] = $l;}
             }
         }
                 

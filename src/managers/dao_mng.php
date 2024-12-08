@@ -199,7 +199,7 @@ final class DAOManager{
         }
         catch (PDOException $e) {
             error_log("Connection failed in deleting: " . $e->getMessage(). "DML: $sql");
-            return null;
+            return false;
         }
     }
     

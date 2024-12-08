@@ -87,6 +87,15 @@ final class SecurityManager{
         $edition = BookDAO::fetch_edition_by_isbn($isbn);
         return !empty($edition);
     }
+
+    public static function is_deletion_permited(string $element_type): bool{
+        return in_array($element_type, ['user', 'book', 'bookcopy'], true);
+    }        
+
+    public static function is_updating_permited(string $element_type): bool{
+        return in_array($element_type, ['user', 'book', 'bookcopy'], true);
+    }
+    
 }
 
 ?>
