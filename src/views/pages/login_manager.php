@@ -12,7 +12,11 @@ final class LoginManager extends FormManager{
     const SUCCESS_TITLE = '';
     const SUCCESS_MESSAGE = '';
 
-    public function __construct() {}
+    public function __construct() {
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+    }
 
     private function get_user(): ?Reader{
         return PeopleDAO::fetch_reader_by_login(trim(htmlspecialchars($_POST['login'] ?? '')));

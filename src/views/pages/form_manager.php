@@ -9,7 +9,9 @@ abstract class FormManager{
     protected abstract function handle_errors();
     
     public function manage_post_variable(){
-        session_start();
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
     }
 
     protected function operation_failed(
