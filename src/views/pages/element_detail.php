@@ -53,11 +53,11 @@ abstract class ElementDetail{
         InterfaceManager::echo_html_head($title, self::PAGE_TYPE);
         echo InterfaceManager::system_logo(self::PAGE_TYPE);
         echo "<div id='element_detail'>";
+        echo InterfaceManager::back_to_menu_button();
         echo InterfaceManager::update_element_button($element_type, self::get_element($element_type));
         echo InterfaceManager::delete_element_button($element_type, self::get_element($element_type));
         echo $this -> detail_element(self::get_element($element_type));
         echo $this -> data_table(self::get_element($element_type));
-        echo InterfaceManager::back_to_menu_button();
         echo "</div>";
         InterfaceManager::echo_html_tail();
         exit;
