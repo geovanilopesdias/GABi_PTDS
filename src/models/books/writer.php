@@ -40,7 +40,7 @@ final class Writer{
                 $data['name']
             );
         else{
-            $w = new Writer($data['id'], $data['birth_year']);
+            $w = new Writer(null, $data['birth_year']);
             $w -> set_name($data['name']);
             return $w;
         }
