@@ -45,7 +45,6 @@ final class LoginManager extends FormManager{
             $user = self::get_user();
             $new_login = new DateTime('now', new DateTimeZone('America/Sao_Paulo'));
             PeopleDAO::update_reader_last_login($user -> get_id(), $new_login);
-            session_start();
             $_SESSION['user_id'] = $user -> get_id();
             $_SESSION['user_role'] = $user -> get_role();
             $_SESSION['user_name'] = ($user -> get_role() == 'teacher') ?
@@ -72,8 +71,8 @@ final class LoginManager extends FormManager{
             $errors = $this -> handle_errors(); 
             if (empty($errors)) {
                 $user = self::get_user();
-                $this -> operation_succeed($user);
                 $this -> persist_post_to_session($errors);
+                $this -> operation_succeed($user);
             }
             else
                 {$this->operation_failed($errors);}
