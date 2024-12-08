@@ -74,7 +74,7 @@ final class ClassroomRegisterManager extends FormManager{
                 ];
                 
                 $args['classroom_data'] = [
-                    'names' => $_POST['names'],
+                    'names' => explode(',', (htmlspecialchars($_POST['names']))),
                     'year' => htmlspecialchars($_POST['year'])
                 ];
                 $this->operation_succeed($args);
