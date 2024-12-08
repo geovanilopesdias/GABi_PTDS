@@ -38,13 +38,13 @@ final class BookcopyDetail extends ElementDetail{
             $weblink
             <p><strong>CDD:</strong> " . $bookcopy['ddc']."</p>
             <p><strong>Cutter-Sanborn:</strong> " . $bookcopy['cutter_sanborn']."</p>
-            <p><strong>Autores:</strong> $writers</p>
-            <p><strong>Editora:</strong> " . ucwords($bookcopy['publisher'] ?? '')."</p>
-            <p><strong>Tradutores:</strong> " . ucwords($bookcopy['translators'] ?? '')."</p>
-            <p><strong>Coleção:</strong> " . ucwords($bookcopy['collection'] ?? '')."</p>
+            <p><strong>Autor(es):</strong> " . ucwords($writers ?? 'Não cadastrado')."</p>
+            <p><strong>Editora:</strong> " . ucwords($bookcopy['publisher'] ?? 'Não cadastrado')."</p>
+            <p><strong>Tradutor(es):</strong> " . ucwords($bookcopy['translators'] ?? 'Não cadastrado')."</p>
+            <p><strong>Coleção:</strong> " . ucwords($bookcopy['collection'] ?? 'Não cadastrado')."</p>
             <p><strong>Volume:</strong> " . $bookcopy['volume']."</p>
             <p><strong>Edição:</strong> " . $bookcopy['edition_number']." $publishing_year</p>
-            <p><strong>Páginas:</strong> " . $bookcopy['pages']." $publishing_year</p>
+            <p><strong>Páginas:</strong> " . $bookcopy['pages']."</p>
             <p><strong>Cores da capa:</strong> $colors</p>
         ";
         
