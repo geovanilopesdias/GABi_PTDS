@@ -57,7 +57,9 @@ final class BookSearchResults extends SearchResults{
         }
     
         if (empty($results)) {
-            echo InterfaceManager::no_results_disclaimer("Não encontramos exemplares de: '$keywords'");
+            echo InterfaceManager::no_results_disclaimer(
+                "Não encontramos exemplares na busca por '$keywords'"
+            );
             return;
         }
     

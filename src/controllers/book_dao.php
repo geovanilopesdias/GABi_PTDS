@@ -265,7 +265,7 @@ final class BookDAO{
             JOIN ".DB::OPUS_TABLE. " o ON a.opus_id = o.id 
             JOIN ". DB::WRITER_TABLE. " w ON a.writer_id = w.id 
             JOIN ". DB::EDITION_TABLE. " e ON e.opus_id = o.id 
-            JOIN ". DB::COLLECTION_TABLE. " c ON c.id = e.collection_id 
+            LEFT JOIN ". DB::COLLECTION_TABLE. " c ON c.id = e.collection_id 
             JOIN ". DB::BOOK_COPY_TABLE. " b ON b.edition_id = e.id 
             WHERE $field_search $operator :$field 
             GROUP BY b.id, b.asset_code, b.status, e.cover_colors, 
@@ -304,7 +304,7 @@ final class BookDAO{
             " JOIN ". DB::WRITER_TABLE. " w ON a.writer_id = w.id".
             " JOIN ". DB::EDITION_TABLE. " e ON e.opus_id = o.id".
             " JOIN ". DB::BOOK_COPY_TABLE. " b ON b.edition_id = e.id".
-            " JOIN ". DB::PUBLISHER_TABLE. " p ON p.id = e.publisher_id".
+            " LEFT JOIN ". DB::PUBLISHER_TABLE. " p ON p.id = e.publisher_id".
             " WHERE $field_search ILIKE :$field 
             GROUP BY b.id, b.asset_code, b.status, e.isbn, e.volume, e.edition_number,
                 e.publishing_year, e.pages, e.cover_colors, e.translators,
@@ -338,7 +338,7 @@ final class BookDAO{
             " JOIN ". DB::WRITER_TABLE. " ON ".DB::AUTHORSHIP_TABLE.".writer_id = ".DB::WRITER_TABLE.".id".
             " JOIN ". DB::EDITION_TABLE. " ON ".DB::EDITION_TABLE.".opus_id = ".DB::OPUS_TABLE.".id".
             " JOIN ". DB::BOOK_COPY_TABLE. " ON ".DB::BOOK_COPY_TABLE.".edition_id = ".DB::EDITION_TABLE.".id".
-            " JOIN ". DB::PUBLISHER_TABLE. " ON ".DB::PUBLISHER_TABLE.".id = ".DB::EDITION_TABLE.".publisher_id".
+            " LEFT JOIN ". DB::PUBLISHER_TABLE. " ON ".DB::PUBLISHER_TABLE.".id = ".DB::EDITION_TABLE.".publisher_id".
             " WHERE ".DB::BOOK_COPY_TABLE.".asset_code = :asset_code".
             " GROUP BY ".DB::BOOK_COPY_TABLE . ".id, ".DB::EDITION_TABLE . ".id, ".DB::OPUS_TABLE.".id, ".DB::PUBLISHER_TABLE . ".name".
             " ORDER BY ".DB::OPUS_TABLE.".title";
