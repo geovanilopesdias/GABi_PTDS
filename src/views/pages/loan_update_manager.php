@@ -29,7 +29,7 @@ final class LoanUpdateManager extends FormManager {
     protected function operation_succeed(&$args){
         try{
             $loan = LoanDAO::fetch_loan_by_id($args['loan_id']);
-            $date = new DateTime($args['date']);
+            $date = SecurityManager::toDateTimeOrNull($args['date'] ?? '');
             if ($args['action'] === 'close')
                 {LoanDAO::close_loan($loan -> get_id(), $_SESSION['user_id'], $date);}
             else {
@@ -80,8 +80,6 @@ final class LoanUpdateManager extends FormManager {
                     $loan_data['loaner_name'] . "</li>
                 <li><span class='data_header'>Obra:</span> " .
                     $loan_data['title'] . " (".$loan_data['asset_code'].")</li>
-                <li><span class='data_header'>Devolver até:</span> " .
-                    $loan_data['return_until'] . "</li>
             </ul>";
         }
 
@@ -128,11 +126,11 @@ final class LoanUpdateManager extends FormManager {
                 $args['loan_date'] = SecurityManager::toDateTimeOrNull(htmlspecialchars($_POST['date'] ?? ''));
                 
 
-                if ($_POST['action' == 'renovate']) {
+                if ($_POST['action'] == 'renovate') {
                     // It shall update with the library settings:
                     $args['return_until'] =
-                    (SecurityManager::toDateTimeOrNull(htmlspecialchars($_POST['date'] ?? ''))) ->
-                        add(new DateInterval('P7D')) -> format('d/m/Y');
+                    ((SecurityManager::toDateTimeOrNull(htmlspecialchars($_POST['date'] ?? ''))) ->
+                        add(new DateInterval('P7D'))) -> format('d/m/Y');
                 }
 
                 $this->operation_succeed($args);
