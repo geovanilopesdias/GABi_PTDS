@@ -130,8 +130,10 @@ final class InterfaceManager{
     }
 
     public static function back_to_search_button(string $search_type): string{
+        $search_page_suffix = ($_SESSION['user_role'] == 'student') ?
+            '_readers' : '';
         return "
-            <form method='post' action='".$search_type."_search.php'>
+            <form method='post' action='".$search_type."_search$search_page_suffix.php'>
                 <input 
                     id='back_to_search_button' 
                     class='back_buttons'
