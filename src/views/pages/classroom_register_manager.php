@@ -25,11 +25,11 @@ final class ClassroomRegisterManager extends FormManager{
 
     protected function operation_succeed(&$args){
         try{
-            $classroom_data = $args['classroom_data'];
-            $classroom_names = explode(',', $classroom_data['names']);
-            foreach ($classroom_names as $n)   
-                PeopleDAO::register_classroom(['name' => htmlspecialchars($n), 'year' => $classroom_data['year']], $_SESSION['user_id']);
-            $args['success_body'] = $this -> unordered_register_data($classroom_data);
+            // $classroom_data = $args['classroom_data'];
+            // $classroom_names = explode(',', $classroom_data['names']);
+            foreach ($args['classroom_data']['names'] as $n)   
+                PeopleDAO::register_classroom(['name' => htmlspecialchars($n), 'year' => $args['classroom_data']['year']], $_SESSION['user_id']);
+            $args['success_body'] = $this -> unordered_register_data($args['classroom_data']['names']);
             parent::operation_succeed($args);
         }
         catch (Exception $e){
@@ -52,11 +52,11 @@ final class ClassroomRegisterManager extends FormManager{
         return $errors;
     }
 
-    protected function unordered_register_data(array $classroom_data): string {
+    protected function unordered_register_data(array $classroom_names): string {
         $list = "
-            <p><span class='classroom_data_header'>Turmas cadastradas:</span></p></br><ul>";
+            <p><span class='data_header'>Turma cadastrada:</span></p></br><ul>";
     
-        foreach ($classroom_data['names'] as $n) $list .= "<li>" . htmlspecialchars($n) . "</li>";
+        foreach ($classroom_names as $n) $list .= "<li>" . htmlspecialchars($n) . "</li>";
         $list .= "</ul>";
         return $list;
     }
