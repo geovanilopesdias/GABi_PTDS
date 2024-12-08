@@ -397,16 +397,25 @@ final class InterfaceManager{
     public static function writer_selector(bool $is_required = true): string{
         $writer_intances = BookDAO::fetch_all_writers();
         $required = ($is_required) ? 'required' : '';
-        $selector = "
-            <select name='writer_ids[]' class='selector' $required multiple size='3'>
-                <option value=''>--- Seleciona um ou mais autores</option>";
-        foreach ($writer_intances as $w)
-            $selector .= "<option value='".$w->get_id()."'>".
-                              $w->get_name().
-                              (($w->get_birth_year() > 0) ? ' ('.$w->get_birth_year().')' : '').
-                              "</option>";
+        if(!empty($writer_intances)){
+            $selector = "
+                <select name='writer_ids[]' class='selector' $required multiple size='3'>
+                    <option value=''>--- Seleciona um ou mais autores</option>";
+            foreach ($writer_intances as $w)
+                $selector .= "<option value='".$w->get_id()."'>".
+                        $w->get_name().
+                        (($w->get_birth_year() > 0) ? ' ('.$w->get_birth_year().')' : '').
+                    "</option>";
         
-        return "$selector</select><br>";
+            return "$selector</select><br>";
+        }
+
+        else {
+            return self::error_input_disclaimer('
+                Não há autores cadastrados! Cadastre um primeiro.
+            ');
+        }
+
     }
 
     public static function opus_selector(bool $is_required = true): string{
@@ -430,7 +439,7 @@ final class InterfaceManager{
         $selector = "
             <select name='edition_id' class='selector' $required>
                 <option value=''>--- Seleciona uma edição</option>";
-        foreach ($editions as $e)
+            foreach ($editions as $e)
             $selector .= "<option value='".$e['id']."'>".
                               $e['title'].
                               (!is_null($e['publisher']) ? ' | Ed.: '.$e['publisher'] : '').
@@ -444,26 +453,43 @@ final class InterfaceManager{
 
     public static function publisher_selector(): string{
         $pub_intances = BookDAO::fetch_all_publishers();
-        $selector = "
+        if(!empty($pub_intances)) {
+            $selector = "
             <select name='publisher_id' class='selector'>
                 <option value=''>--- Seleciona uma editora</option>";
-        foreach ($pub_intances as $p)
-            $selector .= "<option value='".$p->get_id()."'>".
-                              $p->get_name()."</option>";
+            foreach ($pub_intances as $p)
+                $selector .= "<option value='".$p->get_id()."'>".
+                                $p->get_name()."</option>";
+            
+            return "$selector</select><br>";
+        }
+
+        else {
+            return self::error_input_disclaimer('
+                Não há editoras cadastradas! Cadastre uma primeiro.
+            ');
+        }
         
-        return "$selector</select><br>";
     }
 
     public static function collection_selector(): string{
         $coll_intances = BookDAO::fetch_all_collections();
-        $selector = "
-            <select name='collection_id' class='selector'>
-                <option value=''>--- Seleciona uma coleção</option>";
-        foreach ($coll_intances as $c)
-            $selector .= "<option value='".$c->get_id()."'>".
-                              $c->get_name()."</option>";
-        
-        return "$selector</select><br>";
+        if(!empty($coll_intances)) {
+            $selector = "
+                <select name='collection_id' class='selector'>
+                    <option value=''>--- Seleciona uma coleção</option>";
+            foreach ($coll_intances as $c)
+                $selector .= "<option value='".$c->get_id()."'>".
+                                $c->get_name()."</option>";
+            
+            return "$selector</select><br>";
+        }
+
+        else {
+            return self::error_input_disclaimer('
+                Não há coleções cadastradas! Cadastre uma primeiro.
+            ');
+        }
     }
 
     /**

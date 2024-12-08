@@ -125,6 +125,7 @@ final class BookDAO{
 
     public static function fetch_all_publishers() { // OK
         $db_man = new DAOManager();
+        $pubs_instances = array();
         $fetched_pubs = $db_man -> fetch_all_records_from(DB::PUBLISHER_TABLE, 'name');
         foreach($fetched_pubs as $w) $pubs_instances[] = Publisher::fromArray($w, true);
         return $pubs_instances;
@@ -132,6 +133,7 @@ final class BookDAO{
 
     public static function fetch_all_collections() {  // OK
         $db_man = new DAOManager();
+        $colls_instances = array();
         $fetched_collections = $db_man -> fetch_all_records_from(DB::COLLECTION_TABLE, 'name');
         foreach($fetched_collections as $c) $colls_instances[] = Collection::fromArray($c, true);
         return $colls_instances;
