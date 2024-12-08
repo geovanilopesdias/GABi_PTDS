@@ -68,10 +68,10 @@ final class LoginManager extends FormManager{
             if (empty($errors)) {
                 $user = self::get_user();
                 $this -> operation_succeed($user);
-            }
-            else {
                 $this -> persist_post_to_session($errors);
-                $this->operation_failed($errors);}
+            }
+            else
+                {$this->operation_failed($errors);}
         }
     }
 }
