@@ -165,7 +165,7 @@ final class LibrarianMenu extends Menu{
                     <img class='report_icon' src='".self::MENU_ICON_SRC['classroom_search']."' />
                     </td>
                     <td colspan='2'>
-                    <a href='".self::MENU_HREF['library_settings']."'>
+                    <a href=''>
                     <img class='report_icon' src='".self::MENU_ICON_SRC['library_settings']."' />
                     </td>
                 </tr>
